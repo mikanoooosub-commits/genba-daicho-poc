@@ -1,0 +1,270 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.9rem;
+
+  /* すっきり・実用寄りのニュートラルトーン */
+  --background: oklch(0.98 0.004 260);
+  --foreground: oklch(0.26 0.02 260);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.26 0.02 260);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.26 0.02 260);
+
+  --primary: oklch(0.55 0.16 255);
+  --primary-foreground: oklch(0.99 0.005 260);
+
+  --secondary: oklch(0.95 0.01 260);
+  --secondary-foreground: oklch(0.32 0.03 260);
+
+  --muted: oklch(0.96 0.006 260);
+  --muted-foreground: oklch(0.53 0.02 260);
+
+  --accent: oklch(0.95 0.02 255);
+  --accent-foreground: oklch(0.34 0.05 260);
+
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.99 0.005 260);
+
+  --border: oklch(0.91 0.008 260);
+  --input: oklch(0.92 0.008 260);
+  --ring: oklch(0.55 0.16 255);
+
+  --chart-1: oklch(0.55 0.16 255);
+  --chart-2: oklch(0.65 0.16 150);
+  --chart-3: oklch(0.7 0.15 60);
+  --chart-4: oklch(0.6 0.2 25);
+  --chart-5: oklch(0.6 0.12 300);
+
+  /* 評価に対応するピン／バッジ色 */
+  --rating-good: oklch(0.62 0.16 150);   /* 緑：良好 */
+  --rating-normal: oklch(0.68 0.01 260); /* グレー：普通 */
+  --rating-bad: oklch(0.6 0.2 25);       /* 赤：非推奨 */
+}
+
+.dark {
+  --background: oklch(0.22 0.01 260);
+  --foreground: oklch(0.95 0.005 260);
+
+  --card: oklch(0.27 0.012 260);
+  --card-foreground: oklch(0.95 0.005 260);
+
+  --popover: oklch(0.27 0.012 260);
+  --popover-foreground: oklch(0.95 0.005 260);
+
+  --primary: oklch(0.62 0.16 255);
+  --primary-foreground: oklch(0.18 0.02 260);
+
+  --secondary: oklch(0.33 0.02 260);
+  --secondary-foreground: oklch(0.95 0.005 260);
+
+  --muted: oklch(0.3 0.015 260);
+  --muted-foreground: oklch(0.7 0.02 260);
+
+  --accent: oklch(0.36 0.04 260);
+  --accent-foreground: oklch(0.95 0.005 260);
+
+  --destructive: oklch(0.62 0.2 25);
+  --destructive-foreground: oklch(0.95 0.005 260);
+
+  --border: oklch(0.4 0.02 260 / 50%);
+  --input: oklch(0.4 0.02 260 / 50%);
+  --ring: oklch(0.62 0.16 255);
+
+  --rating-good: oklch(0.66 0.16 150);
+  --rating-normal: oklch(0.6 0.01 260);
+  --rating-bad: oklch(0.62 0.2 25);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-rating-good: var(--rating-good);
+  --color-rating-normal: var(--rating-normal);
+  --color-rating-bad: var(--rating-bad);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-mplus-rounded), ui-sans-serif, system-ui, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* iOS Safari の date/time 入力の見た目崩れ・はみ出し対策 */
+input[type="date"],
+input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  min-width: 0;
+  min-height: 2.75rem; /* h-11 相当。iOSで潰れるのを防ぐ */
+}
+input[type="date"]::-webkit-date-and-time-value,
+input[type="time"]::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  margin-left: auto;
+}
+
+/* ── Leaflet 地図まわりの調整 ─────────────────────────────────────────── */
+.flyer-pin {
+  background: transparent;
+  border: none;
+}
+.leaflet-tooltip.flyer-label {
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  padding: 1px 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #111;
+  white-space: nowrap;
+}
+.leaflet-tooltip.flyer-label::before {
+  display: none; /* 吹き出しの三角を隠す */
+}
+
+/* ホバー時の履歴プレビュー */
+.flyer-history {
+  min-width: 180px;
+  font-size: 12px;
+  color: #111;
+  cursor: pointer;
+}
+.flyer-history:hover .flyer-history-hint {
+  text-decoration: underline;
+}
+.flyer-history-title {
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.flyer-history-empty {
+  color: #6b7280;
+}
+.flyer-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.flyer-history-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.flyer-history-count {
+  margin-left: auto;
+  font-weight: 700;
+}
+.flyer-history-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  flex-shrink: 0;
+}
+.flyer-history-more {
+  color: #6b7280;
+  margin-top: 2px;
+}
+.flyer-history-hint {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid #e5e7eb;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* 現在地マーカー */
+.flyer-current {
+  background: transparent;
+  border: none;
+}
+
+/* 小学校の青ピン */
+.flyer-school {
+  background: transparent;
+  border: none;
+}
+.flyer-school-popup {
+  min-width: 140px;
+  font-size: 13px;
+  color: #111;
+}
+.flyer-school-popup a {
+  display: inline-block;
+  margin-top: 4px;
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+.flyer-school-popup a:hover {
+  text-decoration: underline;
+}
+.flyer-school-nolink {
+  color: #6b7280;
+}
+
+/* マップメモのホバー吹き出し */
+.flyer-note {
+  background: transparent;
+  border: none;
+}
+.leaflet-tooltip.flyer-note-tip {
+  max-width: 220px;
+  font-size: 12px;
+  color: #111;
+  white-space: normal;
+}
