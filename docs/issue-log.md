@@ -35,3 +35,5 @@
 devサーバー(`npm run dev` または対象プレビュー)を再起動していただく必要がある**。
 以後、devサーバー稼働中は `npm run build` を実行しない(`.next`を共有する検証は避け、
 `npx tsc --noEmit`・`npm run lint` のみに留める)よう運用を改める。
+
+補足(WO-008・2026-10-01): Vercel 本番(`genba-daicho-poc.vercel.app`)への初回ログイン直後に、ISSUE-001(PGRST303)のエラーは表示されなかった(ユーザー目視・1回のみ)。再発しないことの証明ではないため、ISSUE-001 の状態は変えない。
