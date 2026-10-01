@@ -30,7 +30,8 @@ import {
 import type { SiteWithClient } from "@/lib/data/queries-sites";
 import type { LatestJob } from "@/lib/validation/site";
 import { formatDate } from "@/lib/format";
-import type { SiteMapPin } from "@/components/sites/site-map";
+import type { SiteMapMember, SiteMapPin } from "@/components/sites/site-map";
+import { compareRoomNo, groupByBuilding, mostUrgentStatus } from "@/lib/map-grouping";
 
 const SiteMap = dynamic(() => import("@/components/sites/site-map"), {
   ssr: false,
@@ -65,6 +66,8 @@ type Props = {
 };
 
 const CONTENT_HEAD_LENGTH = 20;
+/** 検索語の上限(検索欄の maxLength・siteSearchInputSchema と同じ) */
+const MAX_SEARCH_LENGTH = 50;
 
 function contentHead(content: string | null | undefined): string | null {
   const text = content?.replace(/\s+/g, " ").trim();
@@ -88,23 +91,37 @@ export function SiteMapView({
 
   const matchedIds = useMemo(() => new Set((matchedSites ?? []).map((s) => s.id)), [matchedSites]);
 
-  const pins: SiteMapPin[] = useMemo(
-    () =>
-      placedSites.map((s) => ({
+  // 現場ごとの情報を作り、「同じ建物・近い位置」を1本のピンにまとめる(D71)。ピンの色の判定は現場ごとのまま(D65)
+  const pins: SiteMapPin[] = useMemo(() => {
+    const placedWithInfo = placedSites.map((s) => ({
+      buildingName: s.building_name,
+      lat: s.lat,
+      lng: s.lng,
+      member: {
         id: s.id,
-        buildingName: s.building_name,
         roomNo: s.room_no,
         clientName: s.client?.name ?? "発注元未設定",
-        lat: s.lat,
-        lng: s.lng,
         status: statusMap[s.id]?.status ?? "未請求",
         latestJobDate: statusMap[s.id]?.latest_job_date ?? null,
         latestWorkType: latestJobs[s.id]?.work_type ?? null,
         latestContentHead: contentHead(latestJobs[s.id]?.content),
-        highlighted: matchedIds.has(s.id),
-      })),
-    [placedSites, statusMap, latestJobs, matchedIds]
-  );
+      } satisfies SiteMapMember,
+    }));
+    return groupByBuilding(placedWithInfo).map((group) => {
+      const members = group
+        .map((g) => g.member)
+        .sort((x, y) => compareRoomNo(x.roomNo, y.roomNo));
+      return {
+        key: members[0].id,
+        buildingName: group[0].buildingName,
+        lat: group.reduce((sum, g) => sum + g.lat, 0) / group.length,
+        lng: group.reduce((sum, g) => sum + g.lng, 0) / group.length,
+        status: mostUrgentStatus(members.map((m) => m.status)),
+        members,
+        highlighted: members.some((m) => matchedIds.has(m.id)),
+      };
+    });
+  }, [placedSites, statusMap, latestJobs, matchedIds]);
 
   // 検索で座標つきの現場が一致したときは、その現場の中心に寄せる。無ければ全ピンの中心
   const center = useMemo<[number, number]>(() => {
@@ -155,6 +172,9 @@ export function SiteMapView({
           center={center}
           onMapClick={(lat, lng) => setNewSiteCoords({ lat, lng })}
           onPinClick={(id) => router.push(`/sites/${id}`)}
+          onMoreRooms={(buildingName) =>
+            router.push(`/?q=${encodeURIComponent(buildingName.slice(0, MAX_SEARCH_LENGTH))}`)
+          }
         />
       </div>
 

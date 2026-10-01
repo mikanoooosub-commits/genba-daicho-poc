@@ -45,7 +45,7 @@ flowchart LR
 
 | コンポーネント | 役割 | 実行場所 |
 |---|---|---|
-| `src/app/(main)/page.tsx` | ①地図画面。現場ピンを`site_status`ビューの状態で色分け表示。ピンクリックで現場詳細へ、地図クリックで現場を新規登録。上部に現場検索(`?q=`。建物名・住所メモ・部屋番号の部分一致をサーバー側の `searchSites` で実行し、入力は zod 検証)、吹き出しに前回施工の日付・工種・内容先頭(`getLatestJobsBySite`)。CHANGE-A-017・018 | クライアント(ブラウザ)+サーバー(Server Components) |
+| `src/app/(main)/page.tsx` | ①地図画面。現場ピンを`site_status`ビューの状態で色分け表示。ピンクリックで現場詳細へ、地図クリックで現場を新規登録。上部に現場検索(`?q=`。建物名・住所メモ・部屋番号の部分一致をサーバー側の `searchSites` で実行し、入力は zod 検証)、吹き出しに前回施工の日付・工種・内容先頭(`getLatestJobsBySite`)。CHANGE-A-017・018。**同じ建物・近い位置(30m以内)の現場は `src/lib/map-grouping.ts` の `groupByBuilding` で1本のピンにまとめる**(ブラウザ側の集計。DB・ビューは変えない。色の判定は現場ごとのまま `mostUrgentStatus` でまとめピンの色を借りる。CHANGE-P-001) | クライアント(ブラウザ)+サーバー(Server Components) |
 | `src/app/(main)/sites/[id]/page.tsx`(新設) | ②現場詳細。施工履歴・前回施工日の照会・同じ建物(建物名完全一致・削除済み除く)の他の部屋の一覧(`getSiblingSites`。CHANGE-A-019)・施工の登録編集・その現場の請求一覧・現場自体の論理削除/復元(ISSUE-008対応・CHANGE-A-015)。`getSiteById`は`is_deleted`で絞っていないため、削除済み現場も404にせず取得でき、画面上部に削除済みバナー+復元ボタンを出す。削除時は`setSiteDeletedAction`内の`redirect("/")`で地図へ遷移(CHANGE-A-011と同じ理由)、復元時は同じページに留まり`router.refresh()`で反映 | サーバー(Server Components)+クライアント(削除/復元ボタン) |
 | `src/app/(main)/ledger/page.tsx`(新設) | ③台帳。`invoice_ledger`ビューを発注元別・集客経路別・月次で集計。未入金候補の一覧。請求・入金の登録編集 | サーバー(Server Components) |
 | `src/app/(main)/clients/page.tsx`(新設) | ④発注元マスタ。追加・編集 | サーバー(Server Components) |
