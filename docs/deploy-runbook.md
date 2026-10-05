@@ -43,3 +43,8 @@
 1. Vercel: プロジェクトの Settings → General から削除、または Domains を外す(公開が止まる)。
 2. Supabase: プロジェクトの Settings → General → Pause project(一時停止。復元可能)。
 3. 念のため GitHub リポジトリが private のままであることを確認する。
+
+## 7. 入れ替えの記録
+| 日 | 内容 | コミット | 戻し先 |
+|---|---|---|---|
+| 2026-10-06 | v1(地図つき)から v2(物件・案件の台帳)に入れ替え(`rebuild` を `main` に早送りでマージ。D92)。DB は migration_005〜007 を適用済みで、戻さない(足すだけ) | `a80cacf` | 直前の Production = `4e29e0d`(v1)。Vercel の Deployments で「Promote to Production」 |
