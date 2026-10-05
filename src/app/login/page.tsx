@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { MapPin, Mail, CheckCircle2, FlaskConical, KeyRound } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Mail, CheckCircle2, KeyRound } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/client";
-import { disableDemoMode, enableDemoMode, readDemoMode } from "@/lib/demo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +11,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function LoginPage() {
   const [mode, setMode] = useState<"password" | "magic">("password");
-
-  // デモ表示モード（DB の参照先を demo スキーマに切り替える）
-  const [useDemo, setUseDemo] = useState(false);
 
   // パスワードログイン
   const [email, setEmail] = useState("");
@@ -26,20 +22,6 @@ export default function LoginPage() {
   const [magicEmail, setMagicEmail] = useState("");
   const [magicStatus, setMagicStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [magicMessage, setMagicMessage] = useState("");
-
-  // 実際の cookie に初期状態を合わせる。
-  // マウント後に読むのは、サーバー描画と初期 state を一致させて hydration のズレを避けるため。
-  useEffect(() => {
-    setUseDemo(readDemoMode());
-  }, []);
-
-  function handleDemoToggle(checked: boolean) {
-    setUseDemo(checked);
-    // 押した時点で cookie に反映しておく。ログイン後のリダイレクト先を
-    // サーバーが描画する時点で、すでに参照スキーマが決まっている必要があるため。
-    if (checked) enableDemoMode();
-    else disableDemoMode();
-  }
 
   async function handlePasswordLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -208,25 +190,6 @@ export default function LoginPage() {
           )}
         </CardContent>
       </Card>
-
-      {/* デモ表示モード: DB の参照先を demo スキーマに切り替える（本番データは表示されない） */}
-      <label className="mt-4 flex w-full cursor-pointer items-start gap-3 rounded-lg border border-amber-500/40 bg-amber-500/5 px-4 py-3">
-        <input
-          type="checkbox"
-          checked={useDemo}
-          onChange={(e) => handleDemoToggle(e.target.checked)}
-          className="mt-0.5 size-4 shrink-0 accent-amber-500"
-        />
-        <span className="flex flex-col gap-0.5">
-          <span className="flex items-center gap-1.5 text-sm font-bold">
-            <FlaskConical className="size-4 text-amber-600" />
-            デモデータを参照する
-          </span>
-          <span className="text-xs text-muted-foreground">
-            架空のダミーデータに切り替えて表示します。本番データは表示されません。
-          </span>
-        </span>
-      </label>
     </div>
   );
 }

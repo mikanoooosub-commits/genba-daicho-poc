@@ -200,13 +200,16 @@ export async function getClientOptions(): Promise<{ id: string; name: string }[]
  * 台帳画面から新規請求を作るときの現場プルダウン用、簡易一覧(id・建物名・発注元idのみ)。
  * sites テーブルの作成・編集は実装A担当だが、参照のみここで行う(理由は getClientOptions と同じ)。
  */
-export async function getSiteOptions(): Promise<{ id: string; building_name: string; client_id: string }[]> {
+export async function getSiteOptions(): Promise<
+  { id: string; building_name: string; room_no: string | null; client_id: string }[]
+> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("sites")
-    .select("id, building_name, client_id")
+    .select("id, building_name, room_no, client_id")
     .eq("is_deleted", false)
-    .order("building_name");
+    .order("building_name")
+    .order("room_no");
   if (error) throw error;
-  return parseOrThrow(z.array(siteOptionRowSchema), data ?? [], "sites(id,building_name,client_id)");
+  return parseOrThrow(z.array(siteOptionRowSchema), data ?? [], "sites(id,building_name,room_no,client_id)");
 }

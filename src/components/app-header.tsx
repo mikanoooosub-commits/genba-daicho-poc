@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronLeft, MapPin } from "lucide-react";
+import { ChevronLeft, Building2 } from "lucide-react";
 
 import { AccountMenu } from "@/components/account-menu";
 
@@ -25,7 +25,7 @@ export function AppHeader({ title, subtitle, backHref, action }: Props) {
           </Link>
         ) : (
           <span className="flex size-9 items-center justify-center rounded-full bg-primary/15 text-primary">
-            <MapPin className="size-5" />
+            <Building2 className="size-5" />
           </span>
         )}
         <div className="min-w-0 flex-1">

@@ -1,4 +1,4 @@
-# poc-app 実装規約(P-A″ 現場を軸にした台帳・地図つき)
+# poc-app 実装規約(現場台帳 v2。P-A″ の組み直し)
 
 **ルールには必ず理由を併記する**(根拠のない規約は守られないため)。共通規約
 (`~\.claude\CLAUDE.md`)・プロジェクト規約(`restoration-reform-research\CLAUDE.md`)を
@@ -12,13 +12,13 @@
 
 ## 1. このアプリの位置づけ
 
-`poc-app/` は本番運用中の `flyer-tracker`(チラシ配布実績管理アプリ)のコピー。
-**本番のflyer-tracker(別リポジトリ・別デプロイ)は一切触らない**。既存のテーブル
-(`schools`/`locations`/`visits`/`visit_logs`/`profiles`/`map_notes`/
-`location_pin_status`)・画面(`/`・`/list`・`/schools`)は削除・改名しない。
-新しいテーブル・画面を追加する形で「現場を軸にした台帳」に改造する。
-**理由**: db-changeスキルのappend-only原則。コピーとはいえ、既存機能を壊すと
-チラトラ自身の実績としての価値(自己紹介・PoCの実装土台)も損なう。
+本番の flyer-tracker(別リポジトリ)は一切触らない。poc-app は v2 で独立した台帳アプリになる。
+v1 のテーブル6本(clients・sites・jobs・invoices・payments・audit_logs)と、
+監査・RLS の仕組みは残し、足すだけで変える。
+**理由(D79-3)**: 以前は「チラトラの実績としての価値」を守るために既存の画面・テーブルを
+消さないとしていたが、本番のチラトラが別リポジトリにあることでその価値は保たれる。この DB に
+チラトラの表は無い(段階1 の確認で `information_schema.tables` を見て確かめる)。
+`rebuild` ブランチでは、チラシ配布の画面・コードと地図(Leaflet)を外す(D80)。
 
 ## 2. データ取扱い方針(このPoC固有)
 
@@ -27,9 +27,9 @@
   **理由**: 物件住所・入居者に関わる情報は管理会社側のデータであり、これを職人側の
   ツールに持つことの是非は未検証(`poc-design.html` §7)。持たない項目は漏れない、
   という最小化で先に防ぐ。
-- **地図タイルはOpenStreetMapのみ**(APIキー不要・無料。既存flyer-trackerの構成を踏襲)。
-  **理由**: 有料の地図APIを増やすとPoCのコスト構造が変わる。既存の実装をそのまま使える
-  利点を活かす。
+- **地図は使わない**(D80)。物件の位置(lat/lng)の列は持つが、入力欄は作らない。
+  **理由**: 地図は日々の業務の入口にならない(D75・メンター指摘)。住所からの位置の自動化は、
+  利用条件が明確な提供元を確認できてから「その次」で検討する(D79-9)。
 - **生成AI(LLM)は初手のスコープ外**。導入する場合も、物件の住所・部屋番号・入居者名・
   発注元担当者名はAPIに送らない(`docs/SPEC.md` §8)。**理由**: `poc-candidates.md`
   (D34)で確定した線引き。台帳側で結合すれば、外部APIには工事内容・部位・写真の説明文・
@@ -64,6 +64,12 @@ RLS・ビューを契約に・`select *` 禁止 等)。
   `audit_logs`への自動記録)。**理由**: 「AIは間違えます。だから直す前提で作りました」
   という本PoCの差別化の核は、訂正履歴を必ず追えることで成り立つ。物理削除・記録漏れは
   この前提を壊す。
+- **新しい表・ビューを作る SQL には、必ず「anon から `revoke all`」「authenticated から
+  DELETE・TRUNCATE・REFERENCES・TRIGGER を `revoke`」を入れ、確認クエリで権限の一覧
+  (`information_schema.role_table_grants`)を見る**(D84)。**理由**: Supabase は public に作った
+  新しい表・ビューへ anon・authenticated に全権限を自動で付ける。`grant select, insert, update`
+  を書くだけでは、自動で付いた DELETE が残る(ISSUE-006 と D84 の予行演習で2回起きた)。
+- 予行演習用(`begin; … 確認の表 … rollback;`)と本番用(`begin; … commit;`)は別のスクリプトに分ける(D82)。
 - スキーマ変更(テーブル追加・列追加)をしたら、`supabase/schema_poc.sql`(冪等なDDL)と
   `supabase/rollback_poc.sql`(戻しSQL)の両方を更新する。
 
@@ -77,7 +83,7 @@ RLS・ビューを契約に・`select *` 禁止 等)。
   不具合は `docs/issue-log.md` に記録する。理由は共通CLAUDE.mdと同じ(変更管理表・
   バグ管理表)。
 - 既存のチラシ配布ドメインの管理表(`docs/変更管理表.md`・`docs/バグ管理表.md`・
-  `docs/テスト仕様書.md`)はそのまま残し、本PoC分と混在させない(ドメインが違うため
+  `docs/テスト仕様書.md`)は過去の記録としてそのまま残し、本PoC分と混在させない(ドメインが違うため
   混ぜると追跡しにくくなる)。
 
 ## 6. 想定利用者・NG表現
@@ -92,13 +98,13 @@ RLS・ビューを契約に・`select *` 禁止 等)。
 
 `docs/SPEC.md` §11に詳細。要点だけ再掲する。
 
-- **実装A**: 発注元・現場・施工・地図。新規ファイルは `actions-sites.ts`・
+- **実装A**: 発注元・現場・施工・物件・部屋。新規ファイルは `actions-sites.ts`・
   `queries-sites.ts`・`validation/site.ts`・`sites/**`。
 - **実装B**: 請求・入金・台帳・集計。新規ファイルは `actions-ledger.ts`・
   `queries-ledger.ts`・`validation/invoice.ts`・`ledger/**`。
 - `src/lib/types.ts` は共有。末尾の `// ── P-A″ 現場台帳 ──` セクション内に、
   自分が定義した型だけを追記する(相手の型は書き換えない)。
-- 既存の `src/lib/data/actions.ts`・`queries.ts`(チラシ配布ドメイン)は変更しない。
+- チラシ配布ドメインの `actions.ts`・`queries.ts` は `rebuild` ブランチで外した(D79-3)。
 
 ## 追記(2026-09-24・実機テスト中の事故から)
 - **dev サーバー(`next dev`)が起動している間は `npm run build` を実行しない**。理由: 両者が `.next` を取り合い、`routes-manifest.json` が失われてサーバー全体が 500 になった(ISSUE 補足)。検証は `npx tsc --noEmit` と `npm run lint` まで。本番ビルドは dev を止めてから、または CI で行う。

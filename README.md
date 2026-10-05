@@ -1,3 +1,5 @@
+> **rebuild ブランチの注記(2026-10-05・D85)**: このファイルはチラシ配布アプリ(flyer-tracker)だった頃の説明で、以下の `schema.sql`・`schema_demo.sql`・`seed_demo.sql` と地図・チラシ配布の画面・デモ表示モードは、このブランチから外した。現在の構成は `docs/architecture.md`、仕様は `docs/SPEC-v2.md`、規約は `CLAUDE.md` を見る。
+
 # チラトラ｜チラシ配布実績管理アプリ（flyer-tracker）
 
 **地図上のピンでチラシ配布の実績を記録・共有・分析する、モバイルファーストの業務Webアプリ。**

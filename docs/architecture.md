@@ -1,6 +1,6 @@
-# システム構成図(P-A″ 現場を軸にした台帳・地図つき)
+# システム構成図(現場台帳 v2: 物件・部屋の基盤。WO-011 段階1)
 
-生成日: 2026-09-24(初版・アーキテクト作成) / 対象: `poc-app/`(flyer-trackerのコピーを改造中)
+生成日: 2026-09-24(初版・アーキテクト作成) / 対象: `poc-app/`(`rebuild` ブランチ。flyer-tracker 由来の画面と地図は外した=D79・D80)
 関連: `docs/SPEC.md`(データモデル・画面・API一覧)、`supabase/schema_poc.sql`(DDL)
 
 **実装を変更したら、同じコミットでこの図も更新すること**(`CLAUDE.md`参照)。
@@ -11,7 +11,6 @@
 flowchart LR
   subgraph Browser["ユーザー端末(ブラウザ・スマホ主体)"]
     Client["Next.jsクライアント\nReact / Tailwind / shadcn-ui"]
-    Leaflet["Leaflet 地図"]
   end
 
   subgraph VercelBox["Vercel(ホスティング)"]
@@ -31,10 +30,8 @@ flowchart LR
   end
 
   Client -->|"① HTTPS / SSR・Server Actions"| Server
-  Leaflet -->|"地図タイル取得"| OSM
-  Leaflet -->|"住所・施設名検索"| Nominatim
   Server -->|"② 認証・セッション"| Auth
-  Server -->|"③ 現場/施工/請求/入金 CRUD(RLS適用)"| PG
+  Server -->|"③ 物件/部屋/現場/施工/請求/入金 CRUD(RLS適用)"| PG
   Server -.->|"④ 完了報告下書き・現場メモ整理(次段)"| LLM
 
   style Future stroke-dasharray: 5 5
@@ -45,11 +42,18 @@ flowchart LR
 
 | コンポーネント | 役割 | 実行場所 |
 |---|---|---|
-| `src/app/(main)/page.tsx` | ①地図画面。現場ピンを`site_status`ビューの状態で色分け表示。ピンクリックで現場詳細へ、地図クリックで現場を新規登録。上部に現場検索(`?q=`。建物名・住所メモ・部屋番号の部分一致をサーバー側の `searchSites` で実行し、入力は zod 検証)、吹き出しに前回施工の日付・工種・内容先頭(`getLatestJobsBySite`)。CHANGE-A-017・018。**同じ建物・近い位置(30m以内)の現場は `src/lib/map-grouping.ts` の `groupByBuilding` で1本のピンにまとめる**(ブラウザ側の集計。DB・ビューは変えない。色の判定は現場ごとのまま `mostUrgentStatus` でまとめピンの色を借りる。CHANGE-P-001) | クライアント(ブラウザ)+サーバー(Server Components) |
+| `src/app/(main)/page.tsx` | `/buildings` へ転送(入口は一覧。段階2 で `/cases` に替える) | サーバー |
+| `src/app/(main)/buildings/page.tsx`(段階1) | 物件の一覧+フィルター(`?q=`・`?kind=`・`?client=`・`?sort=`)。`building_overview` ビューだけを読む(`select *` なし)。語句は物件名・住所・メモ・部屋番号の部分一致(`queries-buildings.ts` の `findBuildingIdsByText`。列ごとに `.ilike`、入力は zod で検証・エスケープ)。絞り込みは URL のクエリ、サーバー側で実行。表は `components/buildings/buildings-table.tsx`(TanStack Table。スマホ幅でカードに切り替わる) | サーバー(Server Components)+クライアント(表) |
+| `src/app/(main)/buildings/new/page.tsx`・`[id]/page.tsx`・`[id]/edit/page.tsx`(段階1) | 物件の登録(名前が似ている物件を先に出す・部屋なし可・位置の入力欄は無い=D80)/ 詳細(部屋ごとに、v1 から移した施工と請求を新しい順に。`getUnitHistories` が `units.legacy_site_id` 経由で jobs と `invoice_ledger` を読む)/ 編集 | サーバー+クライアント(フォーム) |
 | `src/app/(main)/sites/[id]/page.tsx`(新設) | ②現場詳細。施工履歴・前回施工日の照会・同じ建物(建物名完全一致・削除済み除く)の他の部屋の一覧(`getSiblingSites`。CHANGE-A-019)・施工の登録編集・その現場の請求一覧・現場自体の論理削除/復元(ISSUE-008対応・CHANGE-A-015)。`getSiteById`は`is_deleted`で絞っていないため、削除済み現場も404にせず取得でき、画面上部に削除済みバナー+復元ボタンを出す。削除時は`setSiteDeletedAction`内の`redirect("/")`で地図へ遷移(CHANGE-A-011と同じ理由)、復元時は同じページに留まり`router.refresh()`で反映 | サーバー(Server Components)+クライアント(削除/復元ボタン) |
 | `src/app/(main)/ledger/page.tsx`(新設) | ③台帳。`invoice_ledger`ビューを発注元別・集客経路別・月次で集計。未入金候補の一覧。請求・入金の登録編集 | サーバー(Server Components) |
 | `src/app/(main)/clients/page.tsx`(新設) | ④発注元マスタ。追加・編集 | サーバー(Server Components) |
 | `src/app/login/page.tsx` | ⑤ログイン。既存のSupabase Auth(メール+パスワード)をそのまま流用、変更なし | クライアント(ブラウザ) |
+| `src/lib/data/actions-buildings.ts` / `queries-buildings.ts` / `validation/building.ts`(段階1) | 物件・部屋の Server Actions(登録は物件→部屋の順に insert。部屋の insert に失敗したら物件を論理削除して戻す)と読み取り。入力は zod で検証。`lat`/`lng`/`geo_source` は書かない(D80) | サーバー |
+| `src/app/(main)/cases/page.tsx` / `new/page.tsx` / `[id]/page.tsx`(段階2) | 案件の一覧+フィルター(`?q=`・`?status=`・`?client=`・`?attention=`。`case_overview` ビューだけを読む)/ 案件の登録(スマホ1分。`CaseQuickForm`)/ 案件の詳細(状態・施工・請求・入金。施工と請求は案件の `sites` 行(`case.site_id`)に付く v1 の部品をそのまま使う) | サーバー+クライアント |
+| `src/lib/data/actions-cases.ts` / `queries-cases.ts` / `validation/case.ts`(段階2) | 案件の Server Actions(登録は物件・部屋を同時に作れる。失敗したら作った物件・部屋を論理削除で戻す。状態の変更。取り消し/元に戻す。DB のトリガーが出した理由を画面に返す)と読み取り。`findCaseIdBySite` は、v1 の施工・請求の登録が案件に結びつけるために使う。入力は zod で検証 | サーバー |
+| `src/app/(main)/cases/[id]/jobs/new/page.tsx` / `cases/[id]/edit/page.tsx`(段階2・D89) | 施工の記録(スマホ1分。`CaseJobQuickForm` → `createJobAction`)/ 案件の編集(`CaseEditForm` → `updateCaseAction`。物件・部屋は変えない) | サーバー+クライアント |
+| `src/components/app-nav.tsx`・`src/app/v2.css`(段階1) | 画面の骨組み(PC は左の深緑のメニュー、スマホは上の帯と下のナビ)とデザインのトークン・部品の CSS。正は `docs/DESIGN.md`。フォーカスの輪の色などはデジタル庁デザインシステムのトークン(`@digital-go-jp/design-tokens` 2.0.1・MIT)の値 | クライアント(ナビ)/ CSS |
 | `src/lib/data/actions-sites.ts`(新設・実装A) | 発注元・現場・施工のServer Actions。zodで入力検証してからSupabaseへ | サーバー |
 | `src/lib/data/actions-ledger.ts`(新設・実装B) | 請求・入金のServer Actions。zodで入力検証してからSupabaseへ | サーバー |
 | `src/lib/data/queries-sites.ts` / `queries-ledger.ts`(新設) | 現場一覧・現場検索・同じ建物の現場・現場ごとの前回施工・`site_status`・`invoice_ledger`の取得(`select *`は使わない。前回施工は jobs 全件取得でPoC規模前提) | サーバー(Server Components) |
@@ -57,6 +61,9 @@ flowchart LR
 | `src/lib/types.ts` | 既存の型定義に、本PoCの型(`Client`/`Site`/`Job`/`Invoice`/`Payment`等)を追記して集約 | 共有 |
 | `src/lib/supabase/client.ts` / `server.ts` | 既存のSupabaseクライアント(anon keyのみ使用)をそのまま流用 | クライアント/サーバー |
 | `src/middleware.ts` | 既存の認証チェック(未ログインは`/login`へリダイレクト)をそのまま流用、変更なし | サーバー(リクエストの前段) |
+| `supabase/migration_005_buildings_units.sql` / `migration_005_dryrun.sql` / `rollback_005.sql`(段階1) | 物件(`buildings`)・部屋(`units`)・`building_overview` ビュー、監査トリガー、RLS(DELETE なし)、sites からの移行。予行演習用(最後に rollback)と本番用(commit)を分けた。**DBには未適用** | Supabase(Postgres) |
+| `supabase/migration_006_cases.sql` / `migration_006_dryrun.sql` / `rollback_006.sql`(段階2・D87 案A) | 案件(`cases`)・採番(`doc_counters`・`next_doc_no()`)・`case_overview` ビュー、`jobs.case_id`・`invoices.case_id`。案件を作るとトリガーが `sites` 行を1つ作り(`cases.site_id`)、施工・請求の `site_id` は案件のものに揃う。物件・部屋・案件を直すと `sites` に写る。v1 のビューと NOT NULL は変えない。予行演習は確認用の案件でトリガーも試す。**DBには未適用**。段階4 で `sites` への依存を外す(SPEC-v2 §12) | Supabase(Postgres) |
+| `supabase/migration_007_building_overview_cases.sql` / `migration_007_dryrun.sql` / `rollback_007.sql`(段階2) | `building_overview` の `job_count`・`last_job_date` を案件から数える。`case_count` 列を足す。**DBには未適用** | Supabase(Postgres) |
 | `supabase/schema_poc.sql` / `rollback_poc.sql` | `clients`/`sites`/`jobs`/`invoices`/`payments`/`audit_logs`テーブル、`site_status`/`invoice_ledger`ビュー、RLSポリシー、監査トリガーを定義する冪等なDDL。db-changeスキルの方針に従う | Supabase(Postgres) |
 | `supabase/seed_poc.sql`(新設・実装B) | 想定利用者(仮想)の架空デモデータ(発注元4・現場12・施工30・請求20・入金15)。PM決定(D38-5)によりデモスキーマの代わりにこれを使う | Supabase(Postgres)。DBには未適用(未確認) |
 | `src/components/ledger/site-invoices-panel.tsx`(新設・実装B) | ②現場詳細に差し込む「請求・入金」パネル。`siteId`/`buildingName`だけを受け取り、`invoice_ledger`の取得を自前で行う自己完結の非同期Server Component。実装Aの`src/app/(main)/sites/[id]/page.tsx`から`children`として呼ばれる(CHANGE-A-008) | サーバー(Server Components)。内部の`InvoiceItem`/`PaymentList`等はクライアントコンポーネント |
@@ -105,13 +112,7 @@ flowchart LR
 2. **請求の粒度(1請求=1現場か、複数現場をまとめた月次請求か)**が未確定
    (`docs/SPEC.md` §12-1)。現在のスキーマは前者を前提にしている。
 3. **チラシ配布ドメイン(既存画面)とのUI共存**が未確定(`docs/SPEC.md` §12-2)。
-4. **`/`(地図タブ)の置き換えにより、既存のチラシ配布向け地図(schools/locations/visits/
-   map_notesのピン表示)がどのルートからも到達できなくなった**(実装A・2026-09-24)。
-   SPEC.md §5は「①地図 `/`(既存の地図タブを差し替え)」と明記しているため文字どおり
-   実装したが、PM決定(D38-2)が明示的にルートを残すとしたのは`/list`・`/schools`のみで、
-   `/`(旧地図)には言及がない。コード自体(`map-view.tsx`/`flyer-map.tsx`等)は削除して
-   いないため再配線は容易だが、チラトラの実績を地図込みで見せたい場合は別ルート
-   (例: `/flyer-map`)への退避が必要。PMに判断を求める点として報告済み。
+4. **(解消)地図とチラシ配布の画面は `rebuild` ブランチで外した**(D79-3・D80)。Leaflet と react-leaflet は依存から外し、`/list`・`/schools`・デモ表示モードも撤去した。本番(`main`)は受入まで変わらない。
 5. **発注元(clients)の論理削除アクション(`setClientDeletedAction`)は実装Aが追加した**。
    SPEC.md §7の一覧には存在しないが、§10④の受入条件(発注元に紐づく現場がある場合は
    削除できない)を満たすために必要と判断した。物理DELETEは行わず、紐づく現場が

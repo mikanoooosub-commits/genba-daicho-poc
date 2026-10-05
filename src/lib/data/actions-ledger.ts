@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { findCaseIdBySite } from "@/lib/data/queries-cases";
 import { getDeletedInvoices, getInvoiceById, getPaymentsForInvoice } from "@/lib/data/queries-ledger";
 import type { ActionResult, AuditLogWithUser, Invoice, Payment } from "@/lib/types";
 import {
@@ -31,8 +32,11 @@ export async function createInvoiceAction(input: unknown): Promise<ActionResult>
 
   try {
     const supabase = await createClient();
+    // 現場に案件が結びついていれば、請求を案件につなぐ(D87。site_id は DB のトリガーが案件のものに揃える)
+    const caseId = await findCaseIdBySite(parsed.data.siteId);
     const { error } = await supabase.from("invoices").insert({
       site_id: parsed.data.siteId,
+      case_id: caseId,
       amount: parsed.data.amount,
       format_pattern: parsed.data.formatPattern,
       issue_date: parsed.data.issueDate || null,
@@ -42,6 +46,8 @@ export async function createInvoiceAction(input: unknown): Promise<ActionResult>
 
     revalidatePath("/ledger");
     revalidatePath(`/sites/${parsed.data.siteId}`);
+    revalidatePath("/cases");
+    if (caseId) revalidatePath(`/cases/${caseId}`);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "請求の登録に失敗しました" };

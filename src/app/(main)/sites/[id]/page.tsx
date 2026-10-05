@@ -1,7 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { AppHeader } from "@/components/app-header";
 import { SiteDetailView } from "@/components/sites/site-detail-view";
+import { findCaseIdBySite } from "@/lib/data/queries-cases";
 import {
   getClients,
   getJobsBySite,
@@ -28,6 +29,12 @@ export default async function SiteDetailPage({
   searchParams: SearchParams;
 }) {
   const { id } = await params;
+
+  // 段階2(D87 案A): 全部の現場は案件に結びついている。v1 の現場詳細は、その案件の画面に移る
+  // (台帳のリンクなど、古い入口から来ても案件の画面に着く。v1 の画面は案件に結びつかない現場のためだけに残す)
+  const caseId = await findCaseIdBySite(id);
+  if (caseId) redirect(`/cases/${caseId}`);
+
   const sp = await searchParams;
   const includeDeleted = sp.deleted === "1";
 
@@ -49,7 +56,7 @@ export default async function SiteDetailPage({
       <AppHeader
         title={site.building_name}
         subtitle={site.client?.name ?? "発注元未設定"}
-        backHref="/"
+        backHref="/buildings"
       />
       <main className="px-4 py-4">
         <SiteDetailView

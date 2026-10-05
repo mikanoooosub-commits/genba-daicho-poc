@@ -16,7 +16,12 @@ import {
 import type { ActionResult } from "@/lib/types";
 import { todayISO } from "@/lib/format";
 
-export type SiteOption = { id: string; building_name: string; client_id: string };
+export type SiteOption = { id: string; building_name: string; room_no: string | null; client_id: string };
+
+/** 請求の登録で現場を選ぶときの表示。同じ建物の別の部屋を区別できるよう、部屋番号をつける(D86-3) */
+export function siteOptionLabel(s: Pick<SiteOption, "building_name" | "room_no">): string {
+  return s.room_no ? `${s.building_name} ${s.room_no}` : s.building_name;
+}
 
 type InvoiceFormValues = {
   id?: string;
@@ -109,7 +114,7 @@ export function InvoiceForm({
               ) : (
                 siteOptions?.map((s) => (
                   <SelectItem key={s.id} value={s.id}>
-                    {s.building_name}
+                    {siteOptionLabel(s)}
                   </SelectItem>
                 ))
               )}

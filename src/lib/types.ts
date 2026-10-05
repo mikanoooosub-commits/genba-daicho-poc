@@ -1,4 +1,18 @@
 import {
+  BUILDING_KINDS,
+  GEO_SOURCES,
+  type BuildingRow,
+  type UnitRow,
+  type BuildingOverviewRow,
+} from "@/lib/validation/building";
+import {
+  CASE_DISPLAY_STATUSES,
+  CASE_STATUSES,
+  WORK_KINDS,
+  type CaseOverviewRow,
+  type CaseRow,
+} from "@/lib/validation/case";
+import {
   CLIENT_TYPES,
   LEAD_SOURCES,
   type ClientRow,
@@ -21,114 +35,7 @@ export const RATING_META: Record<
 
 export const RATING_ORDER: Rating[] = ["good", "normal", "bad"];
 
-// ── DB テーブルに対応する型 ─────────────────────────────────────────────────
-export type School = {
-  id: string;
-  name: string;
-  url: string | null;
-  lat: number | null;
-  lng: number | null;
-  created_at: string;
-};
-
-export type Location = {
-  id: string;
-  school_id: string | null;
-  spot: string | null;
-  label: string | null;
-  lat: number | null;
-  lng: number | null;
-  created_at: string;
-};
-
-export type Visit = {
-  id: string;
-  location_id: string;
-  user_id: string | null;
-  date: string; // YYYY-MM-DD
-  start_time: string | null; // HH:MM[:SS]
-  end_time: string | null;
-  count: number | null;
-  rating: Rating;
-  memo: string | null;
-  is_deleted: boolean;
-  created_at: string;
-  updated_at: string;
-};
-
-export type VisitAction = "create" | "update" | "delete";
-
-export type VisitLog = {
-  id: string;
-  visit_id: string;
-  user_id: string | null;
-  action: VisitAction;
-  before_data: Visit | null;
-  after_data: Visit | null;
-  created_at: string;
-};
-
-export type VisitLogWithUser = VisitLog & { userName: string | null };
-
-export type LocationPinStatus = {
-  location_id: string;
-  latest_visit_id: string | null;
-  latest_rating: Rating | null;
-  latest_date: string | null;
-  latest_start_time: string | null;
-};
-
-// ── 画面表示用に join した型 ─────────────────────────────────────────────────
-export type VisitWithRelations = Visit & {
-  location: (Location & { school: School | null }) | null;
-};
-
-// ── マップメモ ───────────────────────────────────────────────────────────────
-export type MapNote = {
-  id: string;
-  lat: number;
-  lng: number;
-  color: string;
-  label: string | null;
-  memo: string | null;
-  user_id: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-/** メモの色プリセット（色自体に意味は持たせない。用途は見出し・メモで自由に） */
-export const NOTE_PRESETS: { value: string; label: string; color: string }[] = [
-  { value: "yellow", label: "黄", color: "#eab308" },
-  { value: "purple", label: "紫", color: "#8b5cf6" },
-  { value: "red", label: "赤", color: "#ef4444" },
-  { value: "blue", label: "青", color: "#3b82f6" },
-  { value: "green", label: "緑", color: "#22c55e" },
-];
-
-export const NOTE_COLOR_MAP: Record<string, string> = Object.fromEntries(
-  NOTE_PRESETS.map((p) => [p.value, p.color])
-);
-
-export function noteColor(token: string): string {
-  return NOTE_COLOR_MAP[token] ?? "#eab308";
-}
-
 // ── フォーム入力・アクション結果 ─────────────────────────────────────────────
-export type VisitInput = {
-  /** 既存の配布場所を選んだ場合はその id。新規作成なら null（schoolId+spot から解決） */
-  locationId: string | null;
-  schoolId: string;
-  spot: string;
-  date: string;
-  startTime: string | null;
-  endTime: string | null;
-  count: number | null;
-  rating: Rating;
-  memo: string | null;
-  lat: number | null;
-  lng: number | null;
-};
-
 export type ActionResult = { ok: true } | { ok: false; error: string };
 
 // ── P-A″ 現場を軸にした台帳(地図つき) ─────────────────────────────────────────
@@ -218,7 +125,15 @@ export type LedgerSummary = {
 // audit_logs は3エンティティ共通のテーブルのため、実装A(jobs)からも参照されうる。
 // 型自体は汎用なのでここに置くが、書き換えるときは実装Aに一声かける(SPEC.md §11方針)。
 
-export type AuditLogEntityType = "jobs" | "invoices" | "payments";
+export type AuditLogEntityType =
+  | "jobs"
+  | "invoices"
+  | "payments"
+  | "sites"
+  | "clients"
+  | "buildings"
+  | "units"
+  | "cases";
 export type AuditLogAction = "create" | "update" | "delete";
 
 export type AuditLog = {
@@ -275,3 +190,31 @@ export const SITE_STATUS_META: Record<SiteStatusValue, { label: string; color: s
 };
 
 export type SiteStatus = SiteStatusRow;
+
+// ── v2: 物件と部屋(WO-011 段階1・docs/SPEC-v2.md §3.1・§3.2) ─────────────────────
+// 型の実体は DB 行の形をそのまま zod で検証した結果(src/lib/validation/building.ts)。
+
+export type BuildingKind = (typeof BUILDING_KINDS)[number];
+export const BUILDING_KIND_ORDER: BuildingKind[] = [...BUILDING_KINDS];
+
+export type GeoSource = (typeof GEO_SOURCES)[number];
+
+export type Building = BuildingRow;
+export type Unit = UnitRow;
+/** building_overview ビュー(物件の一覧の契約)の1行 */
+export type BuildingOverview = BuildingOverviewRow;
+
+// ── v2: 案件(WO-011 段階2・docs/SPEC-v2.md §3.3・§3.9) ─────────────────────────
+// 型の実体は DB 行の形をそのまま zod で検証した結果(src/lib/validation/case.ts)。
+
+export type CaseStatus = (typeof CASE_STATUSES)[number];
+export const CASE_STATUS_ORDER: CaseStatus[] = [...CASE_STATUSES];
+/** 一覧に出す8つ(人が動かす6つ+請求済・入金済)。流れの順 */
+export type CaseDisplayStatus = (typeof CASE_DISPLAY_STATUSES)[number];
+export const CASE_DISPLAY_STATUS_ORDER: CaseDisplayStatus[] = [...CASE_DISPLAY_STATUSES];
+export type WorkKind = (typeof WORK_KINDS)[number];
+export const WORK_KIND_ORDER: WorkKind[] = [...WORK_KINDS];
+
+export type Case = CaseRow;
+/** case_overview ビュー(案件の一覧の契約)の1行 */
+export type CaseOverview = CaseOverviewRow;

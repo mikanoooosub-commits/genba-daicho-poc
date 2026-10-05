@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
+import { findCaseIdBySite } from "@/lib/data/queries-cases";
 import { countActiveSitesForClient } from "@/lib/data/queries-sites";
 import type { ActionResult } from "@/lib/types";
 import {
@@ -247,8 +248,11 @@ export async function createJobAction(input: JobInput): Promise<ActionResult> {
 
   try {
     const supabase = await createClient();
+    // 現場に案件が結びついていれば、施工を案件につなぐ(D87。site_id は DB のトリガーが案件のものに揃える)
+    const caseId = await findCaseIdBySite(parsed.data.siteId);
     const { error } = await supabase.from("jobs").insert({
       site_id: parsed.data.siteId,
+      case_id: caseId,
       job_date: parsed.data.jobDate,
       work_type: toNullableText(parsed.data.workType),
       content: toNullableText(parsed.data.content),
@@ -261,6 +265,8 @@ export async function createJobAction(input: JobInput): Promise<ActionResult> {
 
     revalidatePath(`/sites/${parsed.data.siteId}`);
     revalidatePath("/");
+    revalidatePath("/cases");
+    if (caseId) revalidatePath(`/cases/${caseId}`);
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "施工の登録に失敗しました" };

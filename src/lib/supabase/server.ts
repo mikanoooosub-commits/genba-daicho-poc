@@ -2,13 +2,6 @@ import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 
-import { DEMO_COOKIE } from "@/lib/demo";
-
-/** 現在のリクエストがデモ表示モードか */
-export async function isDemoMode(): Promise<boolean> {
-  const cookieStore = await cookies();
-  return cookieStore.get(DEMO_COOKIE)?.value === "1";
-}
 
 /** レスポンスがPostgRESTの `PGRST303`(JWT issued in future)エラーかどうかを判定する */
 async function isPgrst303(response: Response): Promise<boolean> {
@@ -65,15 +58,10 @@ function createPgrst303RetryingFetch(getClient: () => SupabaseClient | null): ty
 /**
  * サーバー（Server Component / Route Handler / Server Action）用 Supabase クライアント。
  *
- * デモ表示モードのときは参照スキーマを demo に切り替える。
- * ここが唯一の切替点なので、queries.ts / actions.ts 側は変更不要
- * （`.from("visits")` はそのまま demo.visits を指すようになる）。
+ * 参照スキーマは public 固定(デモ表示モードは D79-3 で外した)。
  */
 export async function createClient() {
   const cookieStore = await cookies();
-  // 参照スキーマの切替はここだけ。queries.ts / actions.ts は変更不要。
-  const schema = cookieStore.get(DEMO_COOKIE)?.value === "1" ? "demo" : "public";
-
   // PGRST303リトライ用フェッチがクライアント自身(auth.refreshSession)を参照できるよう、
   // 生成後にこの変数へ差し込む(クライアント生成の時点ではまだ実体が無いため)。
   let client: SupabaseClient | null = null;
@@ -82,7 +70,7 @@ export async function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
-      db: { schema },
+      db: { schema: "public" },
       global: { fetch: createPgrst303RetryingFetch(() => client) },
       cookies: {
         getAll() {

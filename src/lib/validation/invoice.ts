@@ -89,7 +89,7 @@ export type SetPaymentDeletedInput = z.infer<typeof setPaymentDeletedSchema>;
 
 // ── 監査ログ照会 ─────────────────────────────────────────────────────────────
 
-export const auditLogEntityTypeSchema = z.enum(["jobs", "invoices", "payments"]);
+export const auditLogEntityTypeSchema = z.enum(["jobs", "invoices", "payments", "cases"]);
 
 export const auditLogQuerySchema = z.object({
   entityType: auditLogEntityTypeSchema,
@@ -180,6 +180,7 @@ export const clientOptionRowSchema = z.object({
 export const siteOptionRowSchema = z.object({
   id: z.string().uuid(),
   building_name: z.string(),
+  room_no: z.string().nullable(),
   client_id: z.string().uuid(),
 });
 

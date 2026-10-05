@@ -13,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LocationPicker } from "@/components/map/location-picker";
 import {
   LEAD_SOURCE_LABEL,
   LEAD_SOURCE_ORDER,
@@ -22,8 +21,6 @@ import {
   type LeadSource,
 } from "@/lib/types";
 import type { SiteInput } from "@/lib/validation/site";
-
-const DEFAULT_CENTER = { lat: 35.6812, lng: 139.7671 }; // 東京駅
 
 export type SiteFormValue = SiteInput;
 
@@ -47,9 +44,9 @@ export function SiteForm({ clients, initial, submitLabel, onSubmit, onSuccess, o
   const [roomNo, setRoomNo] = useState(initial?.roomNo ?? "");
   const [addressMemo, setAddressMemo] = useState(initial?.addressMemo ?? "");
   const [leadSource, setLeadSource] = useState<LeadSource>(initial?.leadSource ?? "その他");
-  const [pos, setPos] = useState<{ lat: number; lng: number } | null>(
-    initial?.lat != null && initial?.lng != null ? { lat: initial.lat, lng: initial.lng } : null
-  );
+  // 位置の入力欄は無い(D80)。編集で値が消えないよう、元の値をそのまま送り返す
+  const lat = initial?.lat ?? null;
+  const lng = initial?.lng ?? null;
   const [error, setError] = useState("");
   const [pending, startTransition] = useTransition();
 
@@ -70,8 +67,8 @@ export function SiteForm({ clients, initial, submitLabel, onSubmit, onSuccess, o
       buildingName,
       roomNo: roomNo || undefined,
       addressMemo: addressMemo || undefined,
-      lat: pos?.lat ?? null,
-      lng: pos?.lng ?? null,
+      lat,
+      lng,
       leadSource,
     };
 
@@ -130,15 +127,6 @@ export function SiteForm({ clients, initial, submitLabel, onSubmit, onSuccess, o
           value={addressMemo}
           onChange={(e) => setAddressMemo(e.target.value)}
         />
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>位置（現在地・検索・タップ・ドラッグで指定）</Label>
-        <LocationPicker value={pos} center={pos ?? DEFAULT_CENTER} onChange={(lat, lng) => setPos({ lat, lng })} />
-        {pos && (
-          <p className="text-xs text-muted-foreground">
-            緯度 {pos.lat.toFixed(5)} / 経度 {pos.lng.toFixed(5)}
-          </p>
-        )}
       </div>
       {error && <p className="text-sm text-destructive">{error}</p>}
       <div className="flex gap-2">
