@@ -12,7 +12,7 @@
 --   デモを賄う。
 --
 -- 実行順序:
---   1. supabase/schema.sql(本体。未適用なら先に)
+--   1. (schema.sql はチラシ配布の定義で、rebuild ブランチから外した。不要)
 --   2. supabase/schema_poc.sql
 --   3. このファイル(supabase/seed_poc.sql)
 --

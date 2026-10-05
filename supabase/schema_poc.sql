@@ -4,6 +4,10 @@
 --   参照設計: research\shutoken-2026-09\poc\poc-design.html §3,§4 /
 --             research\shutoken-2026-09\poc-candidates.md P-A″
 --
+-- 【rebuild ブランチの注記(D85)】チラシ配布の定義 schema.sql・schema_demo.sql・seed_demo.sql は
+--   このブランチから外した(この DB にチラシ配布の表は無いことを確認済み)。以下の「schema.sql」
+--   への言及は、外す前の経緯。このファイルは単独で流せる(set_updated_at と pgcrypto を自前で用意している)。
+--
 -- 位置づけ(db-change スキル準拠・append-only):
 --   このファイルは supabase/schema.sql(チラシ配布実績管理アプリ本体)に
 --   「追記」するものであり、schema.sql の内容は一切変更しない。
