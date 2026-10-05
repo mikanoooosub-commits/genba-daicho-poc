@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>現場でスマホ1分の入力(見本)— 現場台帳</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  body { background: var(--bg); }
+  .stage { max-width: 1100px; margin: 0 auto; padding: var(--sp-6) var(--sp-5) var(--sp-7); }
+  .stage > header { margin-bottom: var(--sp-5); }
+  .stage > header p { color: var(--ink-muted); margin-top: var(--sp-2); }
+  .phones { display: flex; gap: var(--sp-6); flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+  .phone-col { width: 390px; }
+  .phone-col > h2 { font-size: var(--fs-lead); margin-bottom: var(--sp-3); }
+  .phone-col > .caption { margin-bottom: var(--sp-3); }
+
+  /* スマホの画面(PC では枠で囲んで2台並べる) */
+  .phone { width: 390px; background: var(--bg); border-radius: 28px; box-shadow: var(--shadow-2), 0 0 0 10px #1f2a2c; overflow: hidden; position: relative; }
+  .ph-bar { background: var(--primary); color: #fff; display: flex; align-items: center; gap: var(--sp-3); padding: 0 var(--sp-4); min-height: 56px; }
+  .ph-bar .back { color: #fff; text-decoration: none; font-size: 22px; line-height: 1; min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; }
+  .ph-bar b { font-size: var(--fs-lead); }
+  .ph-body { padding: var(--sp-4) var(--sp-4) 104px; display: grid; gap: var(--sp-5); }
+  .ph-foot { position: absolute; left: 0; right: 0; bottom: 0; padding: var(--sp-3) var(--sp-4) var(--sp-4); background: var(--surface); border-top: 1px solid var(--line); }
+  .ph-foot .btn { width: 100%; min-height: var(--tap-field); font-size: var(--fs-lead); border-radius: var(--r-lg); }
+
+  .q { display: grid; gap: var(--sp-2); }
+  .q-label { display: flex; align-items: baseline; gap: var(--sp-2); font-weight: 700; }
+  .q-label .no { display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 999px; background: var(--primary); color: #fff; font-size: 13px; flex: none; }
+  .q-label .opt, .q-label .req { margin-left: 0; }
+
+  /* 大きな選択ボタン(選ばれたものは、色に加えて ✓ と太い枠で示す) */
+  .picks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2); }
+  .picks.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .pick {
+    position: relative; display: flex; flex-direction: column; justify-content: center; gap: 2px;
+    min-height: var(--tap-field); padding: var(--sp-2) var(--sp-3); text-align: left;
+    background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r-md);
+    font: inherit; color: var(--ink); cursor: pointer;
+  }
+  .pick small { font-size: 12px; color: var(--ink-muted); line-height: 1.3; }
+  .pick[aria-pressed="true"] { border: 3px solid var(--primary); background: var(--primary-soft); font-weight: 700; padding: calc(var(--sp-2) - 2px) calc(var(--sp-3) - 2px); }
+  .pick[aria-pressed="true"]::after {
+    content: "✓"; position: absolute; top: -9px; right: -9px; box-shadow: 0 0 0 2px var(--bg); width: 22px; height: 22px; border-radius: 999px;
+    background: var(--primary); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center;
+  }
+  .pick.center { align-items: center; text-align: center; }
+  .pick.add { border-style: dashed; color: var(--link); font-weight: 700; align-items: center; }
+  .prefill { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-3); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); min-height: var(--tap-field); }
+  .prefill small { display: block; font-size: 12px; color: var(--ink-muted); }
+  .seg { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+  .seg .pick { min-height: 48px; flex: 1 0 auto; flex-direction: row; align-items: center; justify-content: center; padding: 0 var(--sp-3); }
+  .seg .pick[aria-pressed="true"] { padding: 0 calc(var(--sp-3) - 2px); }
+  .seg .pick[aria-pressed="true"]::after { content: none; }
+  .seg .pick[aria-pressed="true"]::before { content: "✓ "; }
+  .ph-body .input { min-height: var(--tap-field); }
+  .case-chip { background: var(--surface); border-radius: var(--r-md); padding: var(--sp-3); border: 1px solid var(--line); }
+  .case-chip b { display: block; }
+  .suggest { display: grid; gap: var(--sp-2); }
+  .suggest .row { display: flex; gap: var(--sp-2); }
+  .suggest .row .btn { flex: 1; }
+  .after { margin-top: var(--sp-4); }
+
+  @media (max-width: 767px) {
+    .stage { padding: 0; }
+    .stage > header { padding: var(--sp-4) var(--sp-4) 0; }
+    .phones { gap: var(--sp-7); }
+    .phone-col { width: 100%; }
+    .phone-col > h2, .phone-col > .caption { padding: 0 var(--sp-4); }
+    .phone { width: 100%; border-radius: 0; box-shadow: none; }
+    .after { padding: 0 var(--sp-4); }
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <header>
+    <p class="sample-note">見本の画面です。データはすべて架空、基準日は 2026-10-03。PC では、スマホの画面を2つ並べて見せています。</p>
+    <h1>現場でスマホ1分の入力</h1>
+    <p>選ぶだけで済む形にし、文字を打つのは1行だけにしました。押す場所は 56px 以上です。</p>
+  </header>
+
+  <div class="phones">
+    <!-- ============ 案件の登録 ============ -->
+    <div class="phone-col">
+      <h2>A. 案件の登録</h2>
+      <p class="caption">必須は物件と発注元だけ。発注元は物件のふだんの発注元が初めから入ります。</p>
+      <div class="phone">
+        <div class="ph-bar"><a class="back" href="list-cases.html" aria-label="戻る">‹</a><b>案件を登録</b></div>
+        <form class="ph-body" onsubmit="return false">
+          <div class="q">
+            <div class="q-label"><span class="no">1</span>物件<span class="req">必須</span></div>
+            <input class="input" type="search" placeholder="物件名で探す" aria-label="物件名で探す">
+            <div class="picks" role="group" aria-label="最近の物件">
+              <button class="pick" type="button" aria-pressed="true">さくらマンション<small>最近・管理会社A</small></button>
+              <button class="pick" type="button" aria-pressed="false">グリーンコーポ板橋<small>最近・管理会社A</small></button>
+              <button class="pick" type="button" aria-pressed="false">パークサイド高島平<small>最近・管理会社B</small></button>
+              <button class="pick add" type="button">＋ 新しい物件</button>
+            </div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">2</span>部屋<span class="opt">任意</span></div>
+            <div class="picks three" role="group" aria-label="部屋">
+              <button class="pick center" type="button" aria-pressed="true">203</button>
+              <button class="pick center" type="button" aria-pressed="false">305</button>
+              <button class="pick add" type="button">＋ 番号</button>
+            </div>
+            <p class="hint">選ばないときは「物件全体・共用部」になります。</p>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">3</span>発注元<span class="req">必須</span></div>
+            <div class="prefill"><span>管理会社A(架空)<small>この物件のふだんの発注元</small></span><a href="#" class="btn btn-ghost btn-sm">変える</a></div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">4</span>種類</div>
+            <div class="seg" role="group" aria-label="種類">
+              <button class="pick" type="button" aria-pressed="true">原状回復</button>
+              <button class="pick" type="button" aria-pressed="false">リフォーム</button>
+              <button class="pick" type="button" aria-pressed="false">クリーニング</button>
+              <button class="pick" type="button" aria-pressed="false">修繕</button>
+              <button class="pick" type="button" aria-pressed="false">その他</button>
+            </div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">5</span>依頼の内容<span class="opt">任意・1行</span></div>
+            <input class="input" type="text" value="退去後の原状回復。立会いは 10/6" aria-label="依頼の内容">
+            <p class="hint">入居者のお名前は入れません。受付日は今日(10/3)で入ります。</p>
+          </div>
+
+          <div class="ph-foot"><button class="btn btn-primary" type="submit">登録する</button></div>
+        </form>
+      </div>
+      <div class="after">
+        <p class="caption" style="margin-bottom: var(--sp-2)">登録したあとの知らせ(画面の下に数秒出る)</p>
+        <div class="toast" role="status">K2026-0049 を登録しました。<a href="form-estimate.html">見積を作る ›</a></div>
+      </div>
+    </div>
+
+    <!-- ============ 施工の記録 ============ -->
+    <div class="phone-col">
+      <h2>B. 施工の記録</h2>
+      <p class="caption">案件の画面から開くので、物件・部屋・発注元はもう入っています。</p>
+      <div class="phone">
+        <div class="ph-bar"><a class="back" href="#" aria-label="戻る">‹</a><b>施工を記録</b></div>
+        <form class="ph-body" onsubmit="return false">
+          <div class="case-chip">
+            <b>クリーンハイム西台 204</b>
+            <span class="caption">K2026-0045・FC本部C(架空)・</span><span class="status status-progress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>施工中</span>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">1</span>日付</div>
+            <div class="seg" role="group" aria-label="日付">
+              <button class="pick" type="button" aria-pressed="true">今日 10/3</button>
+              <button class="pick" type="button" aria-pressed="false">昨日</button>
+              <button class="pick" type="button" aria-pressed="false">日付を選ぶ</button>
+            </div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">2</span>工種<span class="req">必須</span></div>
+            <div class="picks three" role="group" aria-label="工種">
+              <button class="pick center" type="button" aria-pressed="false">クロス</button>
+              <button class="pick center" type="button" aria-pressed="true">クリーニング</button>
+              <button class="pick center" type="button" aria-pressed="false">床の補修</button>
+              <button class="pick center" type="button" aria-pressed="false">水回り</button>
+              <button class="pick center" type="button" aria-pressed="false">設備の交換</button>
+              <button class="pick center" type="button" aria-pressed="false">その他</button>
+            </div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">3</span>内容<span class="opt">任意・1行</span></div>
+            <input class="input" type="text" value="退去後クリーニング一式。換気扇の油汚れが強め" aria-label="内容">
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">4</span>担当</div>
+            <div class="seg" role="group" aria-label="担当">
+              <button class="pick" type="button" aria-pressed="true">本人</button>
+              <button class="pick" type="button" aria-pressed="false">従業員</button>
+              <button class="pick" type="button" aria-pressed="false">外注</button>
+            </div>
+          </div>
+
+          <div class="q">
+            <div class="q-label"><span class="no">5</span>手応え</div>
+            <div class="seg" role="group" aria-label="手応え">
+              <button class="pick" type="button" aria-pressed="true">良い</button>
+              <button class="pick" type="button" aria-pressed="false">ふつう</button>
+              <button class="pick" type="button" aria-pressed="false">気になる点あり</button>
+            </div>
+          </div>
+
+          <div class="ph-foot"><button class="btn btn-primary" type="submit">記録する</button></div>
+        </form>
+      </div>
+      <div class="after">
+        <p class="caption" style="margin-bottom: var(--sp-2)">記録したあとの提案(状態は勝手に変えない)</p>
+        <div class="card card-pad suggest">
+          <p><b>この案件を「完了」にしますか?</b></p>
+          <p class="caption">完了にすると、請求を作るまで一覧に「請求が未作成」と出ます。施工が続くなら「このまま」を選びます。</p>
+          <div class="row"><button class="btn btn-primary" type="button">完了にする</button><button class="btn btn-secondary" type="button">このまま</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

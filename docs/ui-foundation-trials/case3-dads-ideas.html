@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案件の一覧(見本)— 現場台帳</title>
+<link rel="stylesheet" href="../design-samples/tokens.css">
+<style>
+  /* タブの切り替え(見本だけ CSS で行う。実装では URL の ?tab= で切り替える) */
+  #tab-recv:checked ~ .main .p-cases { display: none; }
+  #tab-cases:checked ~ .main .p-recv { display: none; }
+  #tab-cases:checked ~ .main label[for="tab-cases"],
+  #tab-recv:checked ~ .main label[for="tab-recv"] { color: var(--primary); border-bottom-color: var(--primary); }
+  #tab-cases:checked ~ .main label[for="tab-cases"] .badge,
+  #tab-recv:checked ~ .main label[for="tab-recv"] .badge { background: var(--primary); color: #fff; }
+  #tab-cases:focus-visible ~ .main label[for="tab-cases"],
+  #tab-recv:focus-visible ~ .main label[for="tab-recv"] { outline: 3px solid var(--accent); }
+
+  .group-row td { background: var(--surface-sunken); font-weight: 700; font-size: var(--fs-caption); color: var(--ink); padding: var(--sp-2) var(--sp-3); }
+  .group-row.danger td { background: var(--st-danger-bg); color: var(--st-danger-fg); }
+  .sum-strip { display: flex; flex-wrap: wrap; gap: var(--sp-5); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line); }
+  .sum-strip .k { font-size: var(--fs-caption); color: var(--ink-muted); }
+  .sum-strip .v { font-size: 22px; font-weight: 700; }
+  .sum-strip .v.danger { color: var(--st-danger-fg); }
+  .head-actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+  @media (max-width: 767px) {
+    .table-cards tr.group-row { background: transparent; box-shadow: none; padding: var(--sp-2) 0 0; margin: var(--sp-4) 0 var(--sp-2); }
+    .table-cards tr.group-row td { display: block; background: transparent; padding: 0; font-size: var(--fs-body); }
+    .table-cards tr.group-row td::before { content: none; }
+    .table-cards tr.group-row.danger td { color: var(--st-danger-fg); }
+    .head-actions { display: none; }
+    .fab { position: fixed; right: var(--sp-4); bottom: calc(72px + var(--sp-3)); z-index: 11; border-radius: 999px; min-height: 56px; padding: 0 var(--sp-5); box-shadow: var(--shadow-2); }
+    .sum-strip { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); margin-bottom: var(--sp-3); border: 0; padding: var(--sp-3) var(--sp-4); }
+    .filters .field:not(.search) { flex: 1 1 calc(50% - var(--sp-3)); min-width: 0; }
+  }
+  @media (min-width: 768px) { .fab { display: none; } }
+</style>
+<style>
+/* 案3: デジタル庁デザインシステムの「考え方」だけを取り込む(部品は案1)。
+   取り込むもの: フォーカスは黄+黒の二重の輪(変更しない)/本文 16px・行の高さ 1.7/リンクは下線つき/コントラスト 4.5:1 以上(部品の境界は 3:1)/
+   エラーは色だけでなくアイコンと文字。ブランド色(深緑×橙)は変えない。 */
+:focus-visible { outline: 4px solid #ffd43d; outline-offset: 0; box-shadow: 0 0 0 2px #1a1a1a; border-radius: var(--r-sm); }
+.table .title-cell a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.table th { font-size: 14px; color: #1a1a1a; }
+.caption, .table .title-cell .meta { font-size: 14px; }
+.chip[aria-pressed="false"] { border-width: 2px; }
+.input, .select { border-color: #4d4d4d; border-width: 1px; }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-case" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></symbol>
+  <symbol id="i-yen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 7l3.5 5 3.5-5M12 12v5.5M9 13h6M9 15.5h6"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3L22 20H2z" fill="currentColor"/><path d="M12 9.5v4.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="#fff"/></symbol>
+  <symbol id="i-overdue" viewBox="0 0 24 24"><path d="M8 2.5h8l5.5 5.5v8L16 21.5H8L2.5 16V8z" fill="currentColor"/><path d="M12 7v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/></symbol>
+  <symbol id="i-half" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+  <symbol id="i-dash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 12h12"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></symbol>
+</svg>
+
+<div class="app">
+  <!-- タブの状態(見本用) -->
+  <input type="radio" name="tab" id="tab-cases" class="tab-radio" checked>
+  <input type="radio" name="tab" id="tab-recv" class="tab-radio">
+
+  <nav class="sidenav" aria-label="メニュー">
+    <div class="brand">現場台帳<small>サンプル内装(架空)</small></div>
+    <a href="#" aria-current="page"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="#"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="count">3 件超過</span></a>
+    <a href="#"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <div class="sep" role="separator"></div>
+    <a href="#">発注元</a>
+    <a href="#">集計</a>
+    <a href="#">CSV の書き出し</a>
+    <a href="#">地図</a>
+  </nav>
+
+  <header class="topbar"><span class="brand">現場台帳</span></header>
+
+  <main class="main">
+    <div class="main-inner">
+      <p class="sample-note">案3の試作: デジタル庁デザインシステムの考え方(フォーカスの二重の輪・下線つきリンク・コントラスト基準)を、案1の部品に取り込んだ形。トークンの値は @digital-go-jp/design-tokens 2.0.1 の yellow-300 / neutral-solid-gray-900 を使用。データは架空。</p>
+
+      <div class="page-head">
+        <div>
+          <h1>案件</h1>
+          <p class="sub">依頼から入金まで。上の数字を押すと、その条件で絞り込みます。</p>
+        </div>
+        <div class="head-actions">
+          <a class="btn btn-secondary" href="#"><svg class="icon"><use href="#i-download"/></svg>CSV</a>
+          <a class="btn btn-primary" href="#"><svg class="icon"><use href="#i-plus"/></svg>案件を登録</a>
+        </div>
+      </div>
+
+      <!-- 要対応のまとめ -->
+      <div class="attention">
+        <a class="danger" href="#"><span class="big num">3</span><span><svg class="icon flag-danger" style="width:18px;height:18px;color:var(--st-danger-fg)"><use href="#i-overdue"/></svg> <b>期日超過</b><br><span class="lbl">残り ¥92,000</span></span></a>
+        <a class="warn" href="#"><span class="big num">1</span><span><svg class="icon" style="width:18px;height:18px;color:var(--st-warn-fg)"><use href="#i-warn"/></svg> <b>請求が未作成</b><br><span class="lbl">完了したのに請求が無い</span></span></a>
+        <a class="info" href="#"><span class="big num">3</span><span><svg class="icon" style="width:18px;height:18px;color:var(--st-info-fg)"><use href="#i-clock"/></svg> <b>入金待ち(期日前)</b><br><span class="lbl">今月の期日 ¥185,000</span></span></a>
+      </div>
+
+      <div class="tabs" role="tablist">
+        <label for="tab-cases" role="tab">案件<span class="badge">10</span></label>
+        <label for="tab-recv" role="tab">未入金(期日順)<span class="badge">6</span></label>
+      </div>
+
+      <!-- ===================== 案件の一覧 ===================== -->
+      <section class="card has-cards p-cases" aria-label="案件の一覧">
+        <form class="filters" onsubmit="return false">
+          <div class="field search">
+            <label for="q">探す</label>
+            <input id="q" class="input" type="search" placeholder="物件名・部屋番号・依頼の内容">
+          </div>
+          <div class="field">
+            <label for="f-client">発注元</label>
+            <select id="f-client" class="select"><option>すべて</option><option>管理会社A(架空)</option><option>管理会社B(架空)</option><option>FC本部C(架空)</option><option>FC本部D(架空)</option></select>
+          </div>
+          <div class="field">
+            <label for="f-month">受付月</label>
+            <select id="f-month" class="select"><option>すべて</option><option>2026年10月</option><option>2026年9月</option><option>2026年8月</option></select>
+          </div>
+        </form>
+        <div class="chips" aria-label="状態で絞り込む">
+          <span class="caption">状態</span>
+          <button class="chip" aria-pressed="true" type="button">進行中</button>
+          <button class="chip" aria-pressed="true" type="button">請求済</button>
+          <button class="chip" aria-pressed="false" type="button">入金済</button>
+          <button class="chip" aria-pressed="false" type="button">失注</button>
+          <span class="result-count">10 件 / 全 48 件</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table table-cards">
+            <thead>
+              <tr>
+                <th scope="col">物件・部屋 / 案件番号</th>
+                <th scope="col">発注元</th>
+                <th scope="col"><a class="th-sort" href="#">受付日</a></th>
+                <th scope="col">状態</th>
+                <th scope="col" class="r">金額(税込)</th>
+                <th scope="col">気づき</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="is-urgent">
+                <td class="title-cell"><a href="#">リノベテラス坂上 110</a><span class="meta">K2026-0031・リフォーム</span></td>
+                <td data-label="発注元">FC本部D(架空)</td>
+                <td data-label="受付日" class="num">2026-07-02</td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>請求済</span></td>
+                <td data-label="金額" class="r num">¥26,000</td>
+                <td data-label="気づき" class="flag-cell"><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>期日超過 23日</span></td>
+              </tr>
+              <tr class="is-urgent">
+                <td class="title-cell"><a href="#">さくらマンション 203</a><span class="meta">K2026-0003・原状回復・v1 からの移行分</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="受付日" class="num">2026-06-18</td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>請求済</span></td>
+                <td data-label="金額" class="r num">¥128,000</td>
+                <td data-label="気づき" class="flag-cell"><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>期日超過 23日</span></td>
+              </tr>
+              <tr class="is-urgent">
+                <td class="title-cell"><a href="#">ひまわりマンション成増 502</a><span class="meta">K2026-0038・原状回復</span></td>
+                <td data-label="発注元">管理会社B(架空)</td>
+                <td data-label="受付日" class="num">2026-08-18</td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>請求済</span></td>
+                <td data-label="金額" class="r num">¥36,000</td>
+                <td data-label="気づき" class="flag-cell"><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>期日超過 3日</span></td>
+              </tr>
+              <tr class="is-warn">
+                <td class="title-cell"><a href="#">さくらマンション 305</a><span class="meta">K2026-0044・原状回復</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="受付日" class="num">2026-08-14</td>
+                <td class="status-cell"><span class="status status-progress"><svg class="icon"><use href="#i-half"/></svg>完了</span></td>
+                <td data-label="金額" class="r num">¥41,800</td>
+                <td data-label="気づき" class="flag-cell"><span class="flag flag-warn"><svg class="icon"><use href="#i-warn"/></svg>請求が未作成</span></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">さくらマンション 203</a><span class="meta">K2026-0048・原状回復</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="受付日" class="num">2026-10-02</td>
+                <td class="status-cell"><span class="status status-neutral"><svg class="icon"><use href="#i-open"/></svg>依頼</span></td>
+                <td data-label="金額" class="r num muted">—</td>
+                <td data-label="気づき" class="flag-cell"></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">パークサイド高島平 712</a><span class="meta">K2026-0047・クリーニング</span></td>
+                <td data-label="発注元">管理会社B(架空)</td>
+                <td data-label="受付日" class="num">2026-10-01</td>
+                <td class="status-cell"><span class="status status-neutral"><svg class="icon"><use href="#i-open"/></svg>見積中</span></td>
+                <td data-label="金額" class="r num"><span>¥96,800<span class="caption"> 見積</span></span></td>
+                <td data-label="気づき" class="flag-cell"></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">クリーンハイム西台 204</a><span class="meta">K2026-0045・クリーニング</span></td>
+                <td data-label="発注元">FC本部C(架空)</td>
+                <td data-label="受付日" class="num">2026-09-26</td>
+                <td class="status-cell"><span class="status status-progress"><svg class="icon"><use href="#i-half"/></svg>施工中</span></td>
+                <td data-label="金額" class="r num">¥63,800</td>
+                <td data-label="気づき" class="flag-cell"></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">グリーンコーポ板橋 305</a><span class="meta">K2026-0041・原状回復</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="受付日" class="num">2026-09-12</td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>請求済</span></td>
+                <td data-label="金額" class="r num">¥158,000</td>
+                <td data-label="気づき" class="flag-cell"><span class="flag flag-info"><svg class="icon"><use href="#i-clock"/></svg>期日まで 7日</span></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">リノベコート常盤台 206</a><span class="meta">K2026-0036・リフォーム</span></td>
+                <td data-label="発注元">FC本部D(架空)</td>
+                <td data-label="受付日" class="num">2026-09-05</td>
+                <td class="status-cell"><span class="status status-good"><svg class="icon"><use href="#i-check"/></svg>入金済</span></td>
+                <td data-label="金額" class="r num">¥21,000</td>
+                <td data-label="気づき" class="flag-cell"></td>
+              </tr>
+              <tr>
+                <td class="title-cell"><a href="#">徳丸コーポ 108</a><span class="meta">K2026-0033・リフォーム</span></td>
+                <td data-label="発注元">管理会社B(架空)</td>
+                <td data-label="受付日" class="num">2026-07-28</td>
+                <td class="status-cell"><span class="status status-lost"><svg class="icon"><use href="#i-dash"/></svg>失注</span></td>
+                <td data-label="金額" class="r num muted"><span>¥54,000<span class="caption"> 見積</span></span></td>
+                <td data-label="気づき" class="flag-cell"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-foot"><span>並び: 要対応を上に、その中は受付日の新しい順。金額は請求があれば請求、無ければ見積(どちらも税込)</span><span>1 / 1 ページ</span></div>
+      </section>
+
+      <!-- ===================== 未入金の一覧(期日順) ===================== -->
+      <section class="card has-cards p-recv" aria-label="未入金の一覧">
+        <div class="sum-strip">
+          <div><div class="k">未入金の合計</div><div class="v num">¥286,000</div></div>
+          <div><div class="k">うち期日超過</div><div class="v num danger"><svg class="icon" style="width:20px;height:20px"><use href="#i-overdue"/></svg> ¥92,000</div></div>
+          <div><div class="k">基準日</div><div class="v num" style="font-size:18px;padding-top:4px">2026-10-03</div></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table table-cards">
+            <thead>
+              <tr>
+                <th scope="col">期日</th>
+                <th scope="col">物件・部屋 / 請求番号</th>
+                <th scope="col">発注元</th>
+                <th scope="col" class="r">請求(税込)</th>
+                <th scope="col" class="r">入金済み</th>
+                <th scope="col" class="r">残り</th>
+                <th scope="col">状態</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="group-row danger"><td colspan="7"><svg class="icon"><use href="#i-overdue"/></svg> 期日超過(3件)</td></tr>
+              <tr class="is-urgent">
+                <td data-label="期日"><span class="num">2026-09-10</span><br><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>23日 超過</span></td>
+                <td class="title-cell"><a href="#">リノベテラス坂上 110</a><span class="meta">S2026-0011・K2026-0031</span></td>
+                <td data-label="発注元">FC本部D(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥26,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥0</td>
+                <td data-label="残り" class="r num"><b>¥26,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>未入金</span></td>
+              </tr>
+              <tr class="is-urgent">
+                <td data-label="期日"><span class="num">2026-09-10</span><br><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>23日 超過</span></td>
+                <td class="title-cell"><a href="#">さくらマンション 203</a><span class="meta">S2026-0004・K2026-0003</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥30,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥0</td>
+                <td data-label="残り" class="r num"><b>¥30,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>未入金</span></td>
+              </tr>
+              <tr class="is-urgent">
+                <td data-label="期日"><span class="num">2026-09-30</span><br><span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>3日 超過</span></td>
+                <td class="title-cell"><a href="#">ひまわりマンション成増 502</a><span class="meta">S2026-0014・K2026-0038</span></td>
+                <td data-label="発注元">管理会社B(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥36,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥0</td>
+                <td data-label="残り" class="r num"><b>¥36,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>未入金</span></td>
+              </tr>
+              <tr class="group-row"><td colspan="7">今月(2件)</td></tr>
+              <tr>
+                <td data-label="期日"><span class="num">2026-10-10</span><br><span class="flag flag-info"><svg class="icon"><use href="#i-clock"/></svg>あと 7日</span></td>
+                <td class="title-cell"><a href="#">グリーンコーポ板橋 305</a><span class="meta">S2026-0018・K2026-0041</span></td>
+                <td data-label="発注元">管理会社A(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥158,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥0</td>
+                <td data-label="残り" class="r num"><b>¥158,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>未入金</span></td>
+              </tr>
+              <tr>
+                <td data-label="期日"><span class="num">2026-10-31</span><br><span class="flag flag-info"><svg class="icon"><use href="#i-clock"/></svg>あと 28日</span></td>
+                <td class="title-cell"><a href="#">クリーンステージ前野町 303</a><span class="meta">S2026-0016・K2026-0039</span></td>
+                <td data-label="発注元">FC本部C(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥47,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥20,000</td>
+                <td data-label="残り" class="r num"><b>¥27,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-half"/></svg>一部入金</span></td>
+              </tr>
+              <tr class="group-row"><td colspan="7">期日未設定(1件)</td></tr>
+              <tr>
+                <td data-label="期日"><span class="muted">未設定</span><br><a class="caption" href="#">発注元の支払条件を入れる</a></td>
+                <td class="title-cell"><a href="#">リノベガーデン大塚 509</a><span class="meta">S2026-0006・K2026-0024</span></td>
+                <td data-label="発注元">FC本部D(架空)</td>
+                <td data-label="請求" class="r num hide-sm">¥39,000</td>
+                <td data-label="入金済み" class="r num hide-sm">¥30,000</td>
+                <td data-label="残り" class="r num"><b>¥9,000</b></td>
+                <td class="status-cell"><span class="status status-info"><svg class="icon"><use href="#i-half"/></svg>一部入金</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-foot"><span>入金を記録するときは、行を開いて「入金を記録」。消し込みはご自身で確かめてから。</span></div>
+      </section>
+    </div>
+  </main>
+
+  <a class="btn btn-primary fab" href="#"><svg class="icon"><use href="#i-plus"/></svg>案件を登録</a>
+
+  <nav class="bottomnav" aria-label="メニュー">
+    <a href="#" aria-current="page"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="#"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="dot">3</span></a>
+    <a href="#"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <a href="#"><svg class="icon"><use href="#i-more"/></svg>その他</a>
+  </nav>
+</div>
+<script>
+  // 見本用: URL の末尾が #recv なら「未入金」のタブを開く(スクリーンショット用)
+  if (location.hash === "#recv") document.getElementById("tab-recv").checked = true;
+</script>
+</body>
+</html>

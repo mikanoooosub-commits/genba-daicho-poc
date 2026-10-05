@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>物件の詳細(見本)— 現場台帳</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .b-head { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: var(--sp-5); margin-bottom: var(--sp-5); }
+  .b-title { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-4); }
+  .kind { font-size: var(--fs-caption); color: var(--ink-muted); border: 1px solid var(--line-strong); border-radius: var(--r-sm); padding: 0 8px; }
+  .loc { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .loc-box {
+    /* 地図の代わりの枠。実装では地図の部品(OpenStreetMap)を小さく出すか、リンクだけにする */
+    flex: 1; min-height: 140px; border-radius: var(--r-md); background:
+      repeating-linear-gradient(0deg, transparent 0 27px, #DCE5E3 27px 28px),
+      repeating-linear-gradient(90deg, transparent 0 27px, #DCE5E3 27px 28px), #EEF3F2;
+    display: flex; align-items: center; justify-content: center; position: relative; color: var(--primary);
+  }
+  .loc-box .icon { width: 36px; height: 36px; }
+  .loc-box span { position: absolute; bottom: 8px; left: 10px; font-size: 12px; color: var(--ink-muted); background: rgba(255,255,255,.9); padding: 0 6px; border-radius: 4px; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-3); margin-bottom: var(--sp-5); }
+  .stat { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: var(--sp-3) var(--sp-4); }
+  .stat .k { font-size: var(--fs-caption); color: var(--ink-muted); }
+  .stat .v { font-size: 22px; font-weight: 700; }
+  .unit-jump { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-4); align-items: center; }
+
+  .unit { margin-bottom: var(--sp-5); }
+  .unit-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .unit-head h2 { display: flex; align-items: baseline; gap: var(--sp-3); }
+  .unit-head h2 small { font-size: var(--fs-caption); font-weight: 400; color: var(--ink-muted); }
+  .history { list-style: none; margin: 0; padding: var(--sp-2) var(--sp-5) var(--sp-4); }
+  .case-block { padding: var(--sp-4) 0; border-bottom: 1px solid var(--line); }
+  .case-block:last-child { border-bottom: 0; }
+  .case-line { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-bottom: var(--sp-2); }
+  .case-line a.ttl { font-weight: 700; color: var(--ink); text-decoration: none; }
+  .case-line a.ttl:hover { color: var(--link); text-decoration: underline; }
+  .case-line .date { font-size: var(--fs-caption); color: var(--ink-muted); }
+  .items { list-style: none; margin: 0; padding: 0 0 0 var(--sp-4); border-left: 2px solid var(--line); display: grid; gap: var(--sp-2); }
+  .items li { display: grid; grid-template-columns: 64px 96px minmax(0, 1fr) auto; gap: var(--sp-3); align-items: baseline; font-size: var(--fs-dense); line-height: var(--lh-dense); }
+  .items .kind-tag { font-size: 12px; font-weight: 700; color: var(--ink-muted); }
+  .items .kind-tag.est { color: var(--accent-strong); }
+  .items .kind-tag.job { color: var(--primary); }
+  .items .kind-tag.inv { color: var(--st-info-fg); }
+  .items .d { font-size: var(--fs-caption); color: var(--ink-muted); }
+  .legacy { font-size: 12px; color: var(--ink-muted); border: 1px dashed var(--line-strong); border-radius: var(--r-sm); padding: 0 6px; }
+
+  @media (max-width: 1023px) { .b-head { grid-template-columns: 1fr; } .loc { flex-direction: row; } .loc-box { min-height: 96px; } }
+  @media (max-width: 767px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .loc { flex-direction: column; }
+    .unit-head, .history { padding-left: var(--sp-4); padding-right: var(--sp-4); }
+    .items li { grid-template-columns: 48px minmax(0, 1fr) auto; row-gap: 0; }
+    .items li .d { grid-column: 2; grid-row: 1; }
+    .items li > :last-child { grid-column: 3; grid-row: 1; }
+    .items li .what { grid-column: 2 / -1; grid-row: 2; }
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-case" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></symbol>
+  <symbol id="i-yen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 7l3.5 5 3.5-5M12 12v5.5M9 13h6M9 15.5h6"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 3L22 20H2z" fill="currentColor"/><path d="M12 9.5v4.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17" r="1.3" fill="#fff"/></symbol>
+  <symbol id="i-overdue" viewBox="0 0 24 24"><path d="M8 2.5h8l5.5 5.5v8L16 21.5H8L2.5 16V8z" fill="currentColor"/><path d="M12 7v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1.4" fill="#fff"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M7.5 12.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/></symbol>
+  <symbol id="i-half" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 22s7-6.6 7-12a7 7 0 0 0-14 0c0 5.4 7 12 7 12z" fill="currentColor"/><circle cx="12" cy="10" r="2.6" fill="#fff"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 11v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.4" fill="#fff"/></symbol>
+</svg>
+
+<div class="app">
+  <nav class="sidenav" aria-label="メニュー">
+    <div class="brand">現場台帳<small>サンプル内装(架空)</small></div>
+    <a href="list-cases.html"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="list-cases.html"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="count">3 件超過</span></a>
+    <a href="#" aria-current="page"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <div class="sep" role="separator"></div>
+    <a href="#">発注元</a>
+    <a href="#">集計</a>
+    <a href="#">CSV の書き出し</a>
+    <a href="#">地図</a>
+  </nav>
+
+  <header class="topbar"><span class="brand">現場台帳</span></header>
+
+  <main class="main">
+    <div class="main-inner">
+      <p class="sample-note">見本の画面です。データはすべて架空、基準日は 2026-10-03。v1 から移した案件には「v1 からの移行分」と付けています。</p>
+      <p class="breadcrumb"><a href="#">物件</a> › さくらマンション</p>
+
+      <div class="b-head">
+        <section class="card card-pad" aria-labelledby="bname">
+          <div class="b-title">
+            <h1 id="bname">さくらマンション</h1>
+            <span class="kind">集合住宅</span>
+          </div>
+          <dl class="dl">
+            <dt>住所</dt><dd><span class="muted">未登録</span> <a href="#" class="caption">住所を入れる</a></dd>
+            <dt>ふだんの発注元</dt><dd>管理会社A(架空)</dd>
+            <dt>メモ</dt><dd>板橋区大山町 交差点近く(★架空)。駐車は向かいのコインパーキング</dd>
+            <dt>部屋</dt><dd>203・305(2部屋を登録)</dd>
+          </dl>
+        </section>
+        <aside class="loc" aria-label="位置">
+          <div class="loc-box" role="img" aria-label="物件の位置(見本では図を省略)"><svg class="icon"><use href="#i-pin"/></svg><span>位置: 旧データから</span></div>
+          <a class="btn btn-secondary" href="#">地図で見る</a>
+        </aside>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="k">案件</div><div class="v num">3</div></div>
+        <div class="stat"><div class="k">進行中</div><div class="v num">2</div></div>
+        <div class="stat"><div class="k">未入金</div><div class="v num" style="color:var(--st-danger-fg)">¥30,000</div></div>
+        <div class="stat"><div class="k">最後の施工</div><div class="v num" style="font-size:18px;padding-top:4px">2026-09-20</div></div>
+      </div>
+
+      <div class="unit-jump">
+        <span class="caption">部屋へ移動</span>
+        <a class="chip" href="#u203">203 <span class="flag flag-danger" style="font-size:12px"><svg class="icon"><use href="#i-overdue"/></svg>期日超過</span></a>
+        <a class="chip" href="#u305">305 <span class="flag flag-warn" style="font-size:12px"><svg class="icon"><use href="#i-warn"/></svg>要対応</span></a>
+        <a class="chip" href="#ucommon">物件全体・共用部</a>
+        <a class="btn btn-ghost btn-sm" href="#"><svg class="icon"><use href="#i-plus"/></svg>部屋を足す</a>
+      </div>
+
+      <!-- 203 -->
+      <section class="card unit" id="u203" aria-labelledby="h203">
+        <div class="unit-head">
+          <h2 id="h203">203<small>案件 2件</small></h2>
+          <a class="btn btn-primary btn-sm" href="quick-entry.html"><svg class="icon"><use href="#i-plus"/></svg>この部屋で案件を登録</a>
+        </div>
+        <ul class="history">
+          <li class="case-block">
+            <div class="case-line">
+              <a class="ttl" href="#">K2026-0048 退去後の原状回復</a>
+              <span class="status status-neutral"><svg class="icon"><use href="#i-open"/></svg>依頼</span>
+              <span class="date">受付 2026-10-02</span>
+            </div>
+            <ul class="items">
+              <li><span class="kind-tag est">見積</span><span class="d num">—</span><span class="what">まだ作っていません。<a href="form-estimate.html">前回を見ながら見積を作る</a></span><span></span></li>
+            </ul>
+          </li>
+          <li class="case-block">
+            <div class="case-line">
+              <a class="ttl" href="#">K2026-0003 原状回復・補修・クリーニング</a>
+              <span class="status status-info"><svg class="icon"><use href="#i-clock"/></svg>請求済</span>
+              <span class="flag flag-danger"><svg class="icon"><use href="#i-overdue"/></svg>期日超過 23日</span>
+              <span class="legacy">v1 からの移行分</span>
+            </div>
+            <ul class="items">
+              <li><span class="kind-tag job">施工</span><span class="d num">2026-09-20</span><span class="what">水回りクリーニング(退去前)</span><span class="caption">手応え 良い</span></li>
+              <li><span class="kind-tag inv">請求</span><span class="d num">2026-08-31</span><span class="what">¥30,000(税込・内訳なし)・期日 2026-09-10</span><span class="flag flag-danger">未入金</span></li>
+              <li><span class="kind-tag job">施工</span><span class="d num">2026-08-02</span><span class="what">フローリングのキズの部分補修(外注)</span><span class="caption">手応え ふつう</span></li>
+              <li><span class="kind-tag inv">請求</span><span class="d num">2026-07-05</span><span class="what">¥98,000(税込・内訳なし)</span><span class="caption">入金済</span></li>
+              <li><span class="kind-tag job">施工</span><span class="d num">2026-06-18</span><span class="what">全室クロス張替え。経過年数6年、通常損耗の範囲(★架空)</span><span class="caption">手応え 良い</span></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 305 -->
+      <section class="card unit" id="u305" aria-labelledby="h305">
+        <div class="unit-head">
+          <h2 id="h305">305<small>案件 1件</small></h2>
+          <a class="btn btn-secondary btn-sm" href="quick-entry.html"><svg class="icon"><use href="#i-plus"/></svg>この部屋で案件を登録</a>
+        </div>
+        <ul class="history">
+          <li class="case-block">
+            <div class="case-line">
+              <a class="ttl" href="#">K2026-0044 洗面台の交換</a>
+              <span class="status status-progress"><svg class="icon"><use href="#i-half"/></svg>完了</span>
+              <span class="flag flag-warn"><svg class="icon"><use href="#i-warn"/></svg>請求が未作成</span>
+              <span class="legacy">v1 からの移行分</span>
+            </div>
+            <ul class="items">
+              <li><span class="kind-tag job">施工</span><span class="d num">2026-08-18</span><span class="what">洗面化粧台の交換(型番 ABC-750・架空)</span><span class="caption">手応え ふつう</span></li>
+              <li><span class="kind-tag inv">請求</span><span class="d num">—</span><span class="what">まだありません。<a href="#">請求を作る</a></span><span></span></li>
+            </ul>
+          </li>
+        </ul>
+      </section>
+
+      <!-- 物件全体 -->
+      <section class="card unit" id="ucommon" aria-labelledby="hcommon">
+        <div class="unit-head">
+          <h2 id="hcommon">物件全体・共用部<small>案件 0件</small></h2>
+        </div>
+        <div class="empty" style="padding: var(--sp-5)">
+          <p>共用部や建物全体の仕事は、まだありません。</p>
+          <a class="btn btn-secondary btn-sm" href="quick-entry.html"><svg class="icon"><use href="#i-plus"/></svg>部屋を選ばずに案件を登録</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottomnav" aria-label="メニュー">
+    <a href="list-cases.html"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="list-cases.html"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="dot">3</span></a>
+    <a href="#" aria-current="page"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <a href="#"><svg class="icon"><use href="#i-more"/></svg>その他</a>
+  </nav>
+</div>
+</body>
+</html>

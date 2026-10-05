@@ -1,0 +1,21 @@
+各見本の HTML の先頭に同じ SVG の symbol 一式を埋め込んでいる(外部ファイルを読まずに file:// で開けるようにするため)。
+アイコンは見本のために描いた単純な図形で、外部の素材は使っていない。実装では lucide-react(既存・ISC ライセンス)の同等のアイコンに置き換える。
+
+i-case      案件(クリップボード)
+i-yen       未入金(円)
+i-building  物件
+i-more      その他
+i-warn      請求が未作成(三角に !)
+i-overdue   期日超過(八角形に !)
+i-clock     期日まで(時計)
+i-check     入金済(チェック)
+i-open      依頼・見積中(白丸)
+i-half      受注・施工中・完了(半分の丸)
+i-dash      失注(横線)
+i-search    検索
+i-plus      追加
+i-download  書き出し
+i-copy      写す
+i-print     印刷
+i-pin       位置
+i-info      お知らせ

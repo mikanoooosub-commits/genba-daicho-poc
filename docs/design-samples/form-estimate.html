@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>見積の入力(見本)— 現場台帳</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .est-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-4); }
+  .est-head h1 { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+  .est-head h1 small { font-size: var(--fs-lead); font-weight: 400; color: var(--ink-muted); }
+  .est-head .actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+  .case-ref { color: var(--ink-muted); font-size: var(--fs-caption); margin-top: var(--sp-1); }
+  .flow-wrap { margin-bottom: var(--sp-5); }
+
+  .est-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--sp-5); align-items: start; }
+  .meta-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line); }
+
+  /* 明細の表 */
+  .items-table { width: 100%; border-collapse: collapse; }
+  .items-table th { font-size: var(--fs-caption); color: var(--ink-muted); text-align: left; padding: var(--sp-2) var(--sp-2); background: var(--surface-sunken); white-space: nowrap; }
+  .items-table th.r { text-align: right; }
+  .items-table td { padding: var(--sp-2) var(--sp-2); border-bottom: 1px solid var(--line); vertical-align: middle; }
+  .items-table td:first-child, .items-table th:first-child { padding-left: var(--sp-5); }
+  .items-table td:last-child, .items-table th:last-child { padding-right: var(--sp-4); }
+  .items-table .input, .items-table .select { min-height: 40px; font-size: var(--fs-dense); padding: 0 var(--sp-2); }
+  .items-table .select { padding-right: 28px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%; }
+  .items-table .amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .items-table .copied { display: block; font-size: 12px; color: var(--accent-strong); margin-top: 2px; }
+  .items-table .discount .amount { color: var(--st-danger-fg); }
+  .row-del { border: 0; background: none; color: var(--ink-muted); cursor: pointer; min-width: 36px; min-height: 36px; border-radius: var(--r-md); font-size: 18px; }
+  .row-del:hover { background: var(--surface-sunken); color: var(--st-danger-fg); }
+  .add-row { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+
+  .totals { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--sp-5); padding: var(--sp-5); }
+  .totals dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: var(--sp-2) var(--sp-4); align-items: baseline; }
+  .totals dt { color: var(--ink-muted); font-size: var(--fs-caption); }
+  .totals dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .totals dt.grand { color: var(--ink); font-weight: 700; font-size: var(--fs-body); }
+  .totals dd.grand { font-size: var(--fs-num-xl); font-weight: 700; color: var(--primary); }
+  .totals .grand { border-top: 1px solid var(--line); padding-top: var(--sp-2); }
+
+  /* 前回の見積と施工 */
+  .ref { position: sticky; top: var(--sp-4); }
+  .ref .tabs { margin: 0; padding: 0 var(--sp-3); }
+  .ref .tabs a { padding: 0 var(--sp-3); font-size: var(--fs-caption); min-height: 40px; }
+  .ref .tabs a[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+  .ref-list { list-style: none; margin: 0; padding: var(--sp-3) var(--sp-4) var(--sp-4); display: grid; gap: var(--sp-3); }
+  .ref-item { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); }
+  .ref-item header { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); margin-bottom: var(--sp-1); }
+  .ref-item .t { font-weight: 700; font-size: var(--fs-dense); }
+  .ref-item .when { font-size: var(--fs-caption); color: var(--ink-muted); white-space: nowrap; }
+  .ref-item p { font-size: var(--fs-dense); line-height: 1.6; }
+  .ref-lines { list-style: none; padding: 0; margin: var(--sp-2) 0; font-size: var(--fs-caption); }
+  .ref-lines li { display: flex; justify-content: space-between; gap: var(--sp-2); padding: 4px 0; border-top: 1px dashed var(--line); align-items: center; }
+  .ref-lines .p { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-muted); }
+  .tag { font-size: 12px; font-weight: 700; padding: 0 6px; border-radius: var(--r-sm); }
+  .tag-job { background: var(--st-progress-bg); color: var(--st-progress-fg); }
+  .tag-est { background: var(--accent-soft); color: var(--accent-strong); }
+
+  /* 見積書(A4)。画面では下に「印刷の見え方」として出し、印刷では見積書だけを出す */
+  .paper-wrap { margin-top: var(--sp-7); }
+  .paper-wrap > h2 { margin-bottom: var(--sp-3); }
+  .paper {
+    width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; color: #111;
+    padding: 15mm 15mm 18mm; box-shadow: var(--shadow-2); font-size: 10.5pt; line-height: 1.55;
+  }
+  .paper h1 { text-align: center; font-size: 20pt; letter-spacing: .5em; font-weight: 700; margin: 0 0 8mm; padding-left: .5em; }
+  .paper .top { display: grid; grid-template-columns: 1fr 72mm; gap: 8mm; margin-bottom: 6mm; }
+  .paper .to { font-size: 13pt; border-bottom: 1px solid #111; padding-bottom: 1mm; margin-bottom: 3mm; }
+  .paper .to small { font-size: 10.5pt; margin-left: 2mm; }
+  .paper .from { font-size: 9.5pt; line-height: 1.6; }
+  .paper .from b { font-size: 11pt; }
+  .paper .meta { font-size: 9.5pt; text-align: right; margin-bottom: 3mm; }
+  .paper .sum-box { display: flex; justify-content: space-between; align-items: baseline; border: 1.5px solid #111; padding: 2mm 4mm; margin: 4mm 0 6mm; }
+  .paper .sum-box b { font-size: 16pt; font-variant-numeric: tabular-nums; }
+  .paper table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+  .paper th, .paper td { border: 1px solid #555; padding: 1.5mm 2mm; }
+  .paper th { background: #EEF2F1; font-weight: 700; text-align: center; }
+  .paper td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .paper thead { display: table-header-group; }
+  .paper tr { break-inside: avoid; }
+  .paper .tot { width: 70mm; margin: 3mm 0 0 auto; }
+  .paper .tot td { border: 0; border-bottom: 1px solid #999; }
+  .paper .tot tr:last-child td { border-bottom: 2px solid #111; font-weight: 700; }
+  .paper .note { margin-top: 6mm; border: 1px solid #999; padding: 2mm 3mm; min-height: 20mm; font-size: 9.5pt; }
+
+  /* 1440px 未満(右に前回の見積を出すと幅が足りない)は、明細の1行を2段にする */
+  @media (min-width: 768px) and (max-width: 1439px) {
+    .items-table thead { display: none; }
+    .items-table, .items-table tbody { display: block; width: 100%; }
+    .items-table tr { display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)) 36px; gap: var(--sp-2) var(--sp-2); padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); align-items: end; }
+    .items-table td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+    .items-table td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); font-weight: 700; }
+    .items-table td.c-cat { grid-column: 1; grid-row: 1; }
+    .items-table td.c-desc { grid-column: 2 / 6; grid-row: 1; }
+    .items-table td.c-del { grid-column: 6; grid-row: 1; }
+    .items-table td.c-del::before { content: none; }
+    .items-table td.c-amt { grid-column: 5; grid-row: 2; text-align: right; align-items: flex-end; justify-content: flex-end; min-height: 40px; }
+    .items-table td.c-amt::before { align-self: flex-end; }
+    .items-table .copied { order: 3; }
+  }
+  @media (max-width: 1023px) {
+    .est-grid { grid-template-columns: minmax(0, 1fr); }
+    .ref { position: static; }
+    .paper-wrap { overflow-x: auto; }
+  }
+  @media (max-width: 767px) {
+    .meta-row { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: var(--sp-3) var(--sp-4); }
+    .meta-row .field:first-child { grid-column: 1 / -1; }
+    .totals { grid-template-columns: 1fr; padding: var(--sp-4); }
+    .est-head .actions { width: 100%; }
+    .est-head .actions .btn { flex: 1; }
+    /* 明細はスマホで1行=1枚に */
+    .items-table thead { display: none; }
+    .items-table, .items-table tbody, .items-table tr { display: block; width: 100%; }
+    .items-table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--line); }
+    .items-table td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+    .items-table td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); font-weight: 700; }
+    .items-table td.c-desc { grid-column: 1 / -1; order: -1; }
+    .items-table td.c-cat { grid-column: 1 / 3; order: -2; }
+    .items-table td.c-del { grid-column: 3; order: -2; align-items: flex-end; }
+    .items-table td.c-del::before { content: none; }
+    .items-table td.c-amt { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: baseline; }
+    .paper-wrap { display: none; }
+  }
+
+  @media print {
+    @page { size: A4; margin: 0; }
+    body { background: #fff; }
+    .sidenav, .topbar, .bottomnav, .main-inner > :not(.paper-wrap), .paper-wrap > :not(.paper) { display: none !important; }
+    .main { margin: 0; padding: 0; }
+    .paper-wrap { margin: 0; display: block !important; }
+    .paper { box-shadow: none; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+  <symbol id="i-case" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/></symbol>
+  <symbol id="i-yen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 7l3.5 5 3.5-5M12 12v5.5M9 13h6M9 15.5h6"/></symbol>
+  <symbol id="i-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2M10 21v-3h4v3"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="8"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></symbol>
+  <symbol id="i-print" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 9V3h10v6M7 17H4v-7h16v7h-3"/><rect x="7" y="14" width="10" height="7"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 11v6" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="7.5" r="1.4" fill="#fff"/></symbol>
+</svg>
+
+<div class="app">
+  <nav class="sidenav" aria-label="メニュー">
+    <div class="brand">現場台帳<small>サンプル内装(架空)</small></div>
+    <a href="list-cases.html" aria-current="page"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="list-cases.html"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="count">3 件超過</span></a>
+    <a href="detail-building.html"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <div class="sep" role="separator"></div>
+    <a href="#">発注元</a>
+    <a href="#">集計</a>
+    <a href="#">CSV の書き出し</a>
+    <a href="#">地図</a>
+  </nav>
+
+  <header class="topbar"><span class="brand">現場台帳</span></header>
+
+  <main class="main">
+    <div class="main-inner">
+      <p class="sample-note">見本の画面です。データはすべて架空。金額は保存のたびにサーバーで計算した値を出す想定です。消費税の端数は「切り捨て」で表示しています(方針は PM が決めます)。</p>
+      <p class="breadcrumb"><a href="list-cases.html">案件</a> › <a href="#">K2026-0048 さくらマンション 203</a> › 見積</p>
+
+      <div class="est-head">
+        <div>
+          <h1>見積 M2026-0052 <small>第1版</small> <span class="status status-neutral"><svg class="icon"><use href="#i-open"/></svg>下書き</span></h1>
+          <p class="case-ref">さくらマンション 203・管理会社A(架空)・退去後の原状回復</p>
+        </div>
+        <div class="actions">
+          <a class="btn btn-ghost" href="#paper"><svg class="icon"><use href="#i-print"/></svg>見積書を見る</a>
+          <button class="btn btn-secondary" type="button">下書きを保存</button>
+          <button class="btn btn-primary" type="button">提出済にする</button>
+        </div>
+      </div>
+
+      <div class="flow-wrap">
+        <ol class="flow" aria-label="案件の流れ">
+          <li class="done">依頼</li><li class="now">見積中</li><li>受注</li><li>施工中</li><li>完了</li><li>請求済</li><li>入金済</li>
+        </ol>
+      </div>
+
+      <div class="est-grid">
+        <!-- 左: 見積の本体 -->
+        <section class="card" aria-label="見積の明細">
+          <div class="meta-row">
+            <div class="field">
+              <label for="to">宛先</label>
+              <select id="to" class="select"><option>管理会社A(架空)</option></select>
+            </div>
+            <div class="field">
+              <label for="valid">有効期限</label>
+              <input id="valid" class="input" type="date" value="2026-11-02">
+            </div>
+            <div class="field">
+              <label for="tax">税率</label>
+              <select id="tax" class="select"><option>10%</option></select>
+            </div>
+          </div>
+
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width:110px">区分</th>
+                <th scope="col">内容</th>
+                <th scope="col" class="r" style="width:84px">数量</th>
+                <th scope="col" style="width:76px">単位</th>
+                <th scope="col" class="r" style="width:110px">単価(税抜)</th>
+                <th scope="col" class="r" style="width:104px">金額</th>
+                <th scope="col" style="width:40px"><span class="visually-hidden">行の削除</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>施工費</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="クロス張替え 量産品(壁・天井)" aria-label="内容"><span class="copied">↳ 前回(2026-06-18 の施工)から写した</span></td>
+                <td data-label="数量"><input class="input input-num" value="32.5" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="㎡" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="1,000" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">¥32,500</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+              <tr>
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>施工費</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="クッションフロア張替え" aria-label="内容"></td>
+                <td data-label="数量"><input class="input input-num" value="8.2" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="㎡" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="2,800" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">¥22,960</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+              <tr>
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>施工費</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="ハウスクリーニング(1K)" aria-label="内容"><span class="copied">↳ サンライズハイツ 101 の見積から写した</span></td>
+                <td data-label="数量"><input class="input input-num" value="1" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="式" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="25,000" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">¥25,000</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+              <tr>
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>商品代</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="洗面化粧台 ABC-750(架空)" aria-label="内容"></td>
+                <td data-label="数量"><input class="input input-num" value="1" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="台" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="38,000" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">¥38,000</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+              <tr>
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>経費</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="廃材処分費" aria-label="内容"></td>
+                <td data-label="数量"><input class="input input-num" value="1" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="式" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="5,000" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">¥5,000</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+              <tr class="discount">
+                <td class="c-cat" data-label="区分"><select class="select" aria-label="区分"><option>値引き</option></select></td>
+                <td class="c-desc" data-label="内容"><input class="input" value="端数値引き" aria-label="内容"></td>
+                <td data-label="数量"><input class="input input-num" value="1" aria-label="数量"></td>
+                <td data-label="単位"><input class="input" value="式" aria-label="単位"></td>
+                <td data-label="単価"><input class="input input-num" value="-460" aria-label="単価"></td>
+                <td class="c-amt amount" data-label="金額">−¥460</td>
+                <td class="c-del"><button class="row-del" type="button" aria-label="この行を外す">×</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="add-row">
+            <button class="btn btn-secondary btn-sm" type="button"><svg class="icon"><use href="#i-plus"/></svg>行を足す</button>
+            <button class="btn btn-ghost btn-sm" type="button">よく使う明細から選ぶ</button>
+          </div>
+
+          <div class="totals">
+            <div class="field">
+              <label for="note">備考(見積書に載ります)<span class="opt">任意</span></label>
+              <textarea id="note" class="textarea">退去立会い時の状態にもとづく見積です。負担区分は管理会社さまのご判断に従います。</textarea>
+              <p class="hint">入居者のお名前は入れません(預かる情報を減らすため)。</p>
+            </div>
+            <dl aria-label="合計">
+              <dt>小計(税抜)</dt><dd>¥123,000</dd>
+              <dt>消費税(10%・1円未満切り捨て)</dt><dd>¥12,300</dd>
+              <dt class="grand">合計(税込)</dt><dd class="grand">¥135,300</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- 右: 前回の見積と施工 -->
+        <aside class="card ref" aria-labelledby="ref-h">
+          <div class="card-head"><h2 id="ref-h" style="font-size:var(--fs-h3)">前回の見積と施工</h2></div>
+          <div class="tabs" role="tablist">
+            <a href="#" role="tab" aria-selected="true">同じ部屋 <span class="badge">3</span></a>
+            <a href="#" role="tab" aria-selected="false">同じ物件 <span class="badge">1</span></a>
+            <a href="#" role="tab" aria-selected="false">同じ発注元 <span class="badge">4</span></a>
+          </div>
+          <ul class="ref-list">
+            <li class="ref-item">
+              <header><span><span class="tag tag-job">施工</span> <span class="t">水回りクリーニング</span></span><span class="when num">2026-09-20</span></header>
+              <p class="muted">退去前クリーニング。手応え 良い</p>
+            </li>
+            <li class="ref-item">
+              <header><span><span class="tag tag-job">施工</span> <span class="t">フローリング補修</span></span><span class="when num">2026-08-02</span></header>
+              <p class="muted">キズ部分の部分補修(外注)</p>
+            </li>
+            <li class="ref-item">
+              <header><span><span class="tag tag-job">施工</span> <span class="t">クロス張替え</span></span><span class="when num">2026-06-18</span></header>
+              <p class="muted">全室クロス張替え。経過年数6年、通常損耗の範囲(★架空)</p>
+              <button class="btn btn-secondary btn-sm" type="button" style="margin-top:var(--sp-2)"><svg class="icon"><use href="#i-copy"/></svg>この内容で明細を1行つくる</button>
+            </li>
+            <li class="notice notice-info"><svg class="icon"><use href="#i-info"/></svg><span>この部屋の以前の仕事は v1 から移したもので、見積の明細がありません。「同じ発注元」に明細つきの見積があります。</span></li>
+          </ul>
+          <div class="card-head" style="border-top:1px solid var(--line)"><span class="caption">同じ発注元から1件だけ表示(見本)</span></div>
+          <ul class="ref-list">
+            <li class="ref-item">
+              <header><span><span class="tag tag-est">見積</span> <span class="t">M2026-0050 第1版</span></span><span class="when num">2026-09-28</span></header>
+              <p class="muted">サンライズハイツ 101・提出済・税抜 ¥34,000</p>
+              <ul class="ref-lines">
+                <li><span>クロス張替え 量産品 12㎡</span><span class="p">@1,000</span></li>
+                <li><span>ハウスクリーニング(1K) 1式</span><span class="p">@22,000</span></li>
+              </ul>
+              <button class="btn btn-secondary btn-sm" type="button"><svg class="icon"><use href="#i-copy"/></svg>明細を写す(2行)</button>
+            </li>
+          </ul>
+          <p class="caption" style="padding: 0 var(--sp-4) var(--sp-4)">写した単価は下書きに入るだけです。金額はご自身で確かめてから提出します。</p>
+        </aside>
+      </div>
+
+      <!-- 見積書(A4) -->
+      <section class="paper-wrap" id="paper" aria-labelledby="paper-h">
+        <h2 id="paper-h">見積書の印刷の見え方(A4 縦)</h2>
+        <p class="caption" style="margin-bottom: var(--sp-4)">ブラウザの印刷で、この1枚だけが出ます。PDF にするときは印刷の画面で「PDF に保存」を選びます。</p>
+        <article class="paper">
+          <h1>御見積書</h1>
+          <div class="top">
+            <div>
+              <div class="to">管理会社A(架空)<small>御中</small></div>
+              <p>件名: さくらマンション 203 退去後の原状回復</p>
+              <p>有効期限: 2026年11月2日</p>
+              <div class="sum-box"><span>御見積金額(税込)</span><b>¥135,300</b></div>
+            </div>
+            <div>
+              <p class="meta">見積番号 M2026-0052(第1版)<br>発行日 2026年10月3日</p>
+              <div class="from">
+                <b>サンプル内装 合同会社(架空)</b><br>
+                東京都板橋区〇〇 0-0-0(架空)<br>
+                電話 00-0000-0000(架空)<br>
+                登録番号 T0000000000000(架空)
+              </div>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th style="width:16mm">区分</th><th>内容</th><th style="width:16mm">数量</th><th style="width:12mm">単位</th><th style="width:22mm">単価</th><th style="width:24mm">金額</th></tr></thead>
+            <tbody>
+              <tr><td>施工費</td><td>クロス張替え 量産品(壁・天井)</td><td class="n">32.5</td><td>㎡</td><td class="n">1,000</td><td class="n">32,500</td></tr>
+              <tr><td>施工費</td><td>クッションフロア張替え</td><td class="n">8.2</td><td>㎡</td><td class="n">2,800</td><td class="n">22,960</td></tr>
+              <tr><td>施工費</td><td>ハウスクリーニング(1K)</td><td class="n">1</td><td>式</td><td class="n">25,000</td><td class="n">25,000</td></tr>
+              <tr><td>商品代</td><td>洗面化粧台 ABC-750(架空)</td><td class="n">1</td><td>台</td><td class="n">38,000</td><td class="n">38,000</td></tr>
+              <tr><td>経費</td><td>廃材処分費</td><td class="n">1</td><td>式</td><td class="n">5,000</td><td class="n">5,000</td></tr>
+              <tr><td>値引き</td><td>端数値引き</td><td class="n">1</td><td>式</td><td class="n">−460</td><td class="n">−460</td></tr>
+            </tbody>
+          </table>
+          <table class="tot">
+            <tr><td>小計(税抜)</td><td class="n">123,000</td></tr>
+            <tr><td>消費税(10%)</td><td class="n">12,300</td></tr>
+            <tr><td>合計(税込)</td><td class="n">¥135,300</td></tr>
+          </table>
+          <div class="note">備考: 退去立会い時の状態にもとづく見積です。負担区分は管理会社さまのご判断に従います。</div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <nav class="bottomnav" aria-label="メニュー">
+    <a href="list-cases.html" aria-current="page"><svg class="icon"><use href="#i-case"/></svg>案件</a>
+    <a href="list-cases.html"><svg class="icon"><use href="#i-yen"/></svg>未入金<span class="dot">3</span></a>
+    <a href="detail-building.html"><svg class="icon"><use href="#i-building"/></svg>物件</a>
+    <a href="#"><svg class="icon"><use href="#i-more"/></svg>その他</a>
+  </nav>
+</div>
+</body>
+</html>
