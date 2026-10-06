@@ -1,0 +1,44 @@
+/* 見積書(A4)。画面では用紙の見え方を出し、ブラウザの印刷では見積書だけを出す(PDF のライブラリは使わない・D94-8)。
+   見本 docs/design-samples/form-estimate.html の見積書の写し。複数ページになるときのため、印刷では @page で余白を取る。 */
+
+.paper-scroll { overflow-x: auto; padding-bottom: var(--sp-4); }
+.paper {
+  width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; color: #111;
+  padding: 15mm 15mm 18mm; box-shadow: var(--shadow-2); font-size: 10.5pt; line-height: 1.55;
+}
+.paper h1 { text-align: center; font-size: 20pt; letter-spacing: .5em; font-weight: 700; margin: 0 0 8mm; padding-left: .5em; color: #111; }
+.paper .draft-stamp { text-align: center; font-weight: 700; border: 1.5px solid #111; width: 40mm; margin: -4mm auto 6mm; padding: 0 2mm; font-size: 10.5pt; }
+.paper .top { display: grid; grid-template-columns: 1fr 72mm; gap: 8mm; margin-bottom: 6mm; }
+.paper .to { font-size: 13pt; border-bottom: 1px solid #111; padding-bottom: 1mm; margin-bottom: 3mm; }
+.paper .to small { font-size: 10.5pt; margin-left: 2mm; }
+.paper .from { font-size: 9.5pt; line-height: 1.6; }
+.paper .from b { font-size: 11pt; }
+.paper .meta { font-size: 9.5pt; text-align: right; margin-bottom: 3mm; }
+.paper .sum-box { display: flex; justify-content: space-between; align-items: baseline; border: 1.5px solid #111; padding: 2mm 4mm; margin: 4mm 0 6mm; }
+.paper .sum-box b { font-size: 16pt; font-variant-numeric: tabular-nums; }
+.paper table { width: 100%; border-collapse: collapse; font-size: 9.5pt; }
+.paper th, .paper td { border: 1px solid #555; padding: 1.5mm 2mm; vertical-align: top; }
+.paper th { background: #EEF2F1; font-weight: 700; text-align: center; }
+.paper td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.paper thead { display: table-header-group; }
+.paper tr { break-inside: avoid; }
+.paper .tot { width: 70mm; margin: 3mm 0 0 auto; break-inside: avoid; }
+.paper .tot td { border: 0; border-bottom: 1px solid #999; }
+.paper .tot tr:last-child td { border-bottom: 2px solid #111; font-weight: 700; }
+.paper .note { margin-top: 6mm; border: 1px solid #999; padding: 2mm 3mm; min-height: 20mm; font-size: 9.5pt; white-space: pre-wrap; break-inside: avoid; }
+.paper .bank { margin-top: 4mm; font-size: 9.5pt; white-space: pre-wrap; break-inside: avoid; }
+
+@media (max-width: 767px) {
+  /* スマホでは用紙の見え方を、横にスクロールして見る(印刷は PC のブラウザでする想定) */
+  .paper { margin: 0; }
+}
+
+@media print {
+  @page { size: A4; margin: 15mm 15mm 18mm; }
+  html, body { background: #fff !important; }
+  .sidenav, .topbar, .bottomnav, .print-hide { display: none !important; }
+  .app, .main { display: block !important; margin: 0 !important; padding: 0 !important; background: #fff !important; }
+  .main-inner { max-width: none !important; }
+  .paper-scroll { overflow: visible; padding: 0; }
+  .paper { box-shadow: none; margin: 0; width: auto; min-height: 0; padding: 0; }
+}
