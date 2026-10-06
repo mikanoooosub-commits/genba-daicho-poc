@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, BookOpen, Briefcase, ClipboardList } from "lucide-react";
+import { Building2, BookOpen, Briefcase, ClipboardList, Settings } from "lucide-react";
 
 import { AccountMenu } from "@/components/account-menu";
 
@@ -20,6 +20,7 @@ const ITEMS = [
     match: (p: string) => p.startsWith("/ledger"),
   },
   { href: "/clients", label: "発注元", icon: Briefcase, match: (p: string) => p.startsWith("/clients") },
+  { href: "/settings/business-profile", label: "設定", icon: Settings, match: (p: string) => p.startsWith("/settings") },
 ] as const;
 
 export function AppNav() {

@@ -4,13 +4,14 @@ import { notFound } from "next/navigation";
 
 import { CaseAuditLog } from "@/components/cases/case-audit";
 import { SiteInvoicesPanel } from "@/components/ledger/site-invoices-panel";
+import { CaseCostsSection } from "@/components/estimates/case-costs-section";
 import { CaseEstimatesSection } from "@/components/estimates/case-estimates-section";
 import { CaseJobsSection } from "@/components/cases/case-jobs-section";
 import { CaseStatusControls, DeleteCaseButton, RestoreCaseButton } from "@/components/cases/case-controls";
 import { StatusLabel, caseStatusTone } from "@/components/status-label";
 import { getBuildingById } from "@/lib/data/queries-buildings";
 import { getCaseById, getCaseOverviewById } from "@/lib/data/queries-cases";
-import { getEstimatesByCase } from "@/lib/data/queries-estimates";
+import { getCaseFinancials, getCostsByCase, getEstimatesByCase } from "@/lib/data/queries-estimates";
 import { getClients, getJobsBySite } from "@/lib/data/queries-sites";
 import { formatDate, formatYen } from "@/lib/format";
 import { CASE_DISPLAY_STATUS_ORDER } from "@/lib/types";
@@ -34,12 +35,14 @@ export default async function CaseDetailPage({
   const kase = await getCaseById(id);
   if (!kase) notFound();
 
-  const [overview, building, clients, jobs, estimates] = await Promise.all([
+  const [overview, building, clients, jobs, estimates, costs, financials] = await Promise.all([
     getCaseOverviewById(kase.id),
     getBuildingById(kase.building_id),
     getClients(true),
     getJobsBySite(kase.site_id),
     getEstimatesByCase(kase.id),
+    getCostsByCase(kase.id),
+    getCaseFinancials(kase.id),
   ]);
 
   const client = clients.find((c) => c.id === kase.client_id);
@@ -168,6 +171,14 @@ export default async function CaseDetailPage({
       )}
 
       <CaseEstimatesSection caseId={kase.id} estimates={estimates} disabled={isDeleted} />
+
+      <CaseCostsSection
+        caseId={kase.id}
+        costs={costs}
+        financials={financials}
+        today={new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date())}
+        disabled={isDeleted}
+      />
 
       <CaseJobsSection caseId={kase.id} jobs={jobs} disabled={isDeleted} />
 
