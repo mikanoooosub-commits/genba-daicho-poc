@@ -76,7 +76,9 @@ export async function updateInvoiceAction(input: unknown): Promise<ActionResult>
     revalidatePath(`/sites/${parsed.data.siteId}`);
     return { ok: true };
   } catch (e) {
-    return { ok: false, error: e instanceof Error ? e.message : "請求の更新に失敗しました" };
+    // DB のトリガーの理由(見積から作った請求の金額は直せない、など)を画面に出す。Supabase のエラーは Error ではなく message を持つ普通のオブジェクト
+    const dbMessage = z.object({ message: z.string().min(1) }).safeParse(e);
+    return { ok: false, error: e instanceof Error ? e.message : dbMessage.success ? dbMessage.data.message : "請求の更新に失敗しました" };
   }
 }
 

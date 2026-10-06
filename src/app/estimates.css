@@ -39,7 +39,7 @@
 /* 前回の見積と施工 */
 .ref { position: sticky; top: var(--sp-4); }
 .ref .tabs { margin: 0; padding: 0 var(--sp-3); }
-.ref .tabs button { padding: 0 var(--sp-3); font-size: var(--fs-caption); min-height: 40px; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--ink-muted); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ref .tabs button { flex: 1 1 auto; justify-content: center; padding: 0 var(--sp-2); font-size: var(--fs-caption); min-height: 40px; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--ink-muted); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .ref .tabs button[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
 .ref-list { list-style: none; margin: 0; padding: var(--sp-3) var(--sp-4) var(--sp-4); display: grid; gap: var(--sp-3); }
 .ref-item { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); }

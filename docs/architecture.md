@@ -130,3 +130,8 @@ flowchart LR
 7. **`supabase/seed_poc.sql`(架空データ)はDB未接続のため未検証**。カラム名・CHECK制約・
    NOT NULL制約は`schema_poc.sql`と目視で突き合わせたが、実際にSupabaseへ流して
    エラーが出ないかは未確認(実装B)。
+
+### 段階3: 見積・原価・粗利の画面(WO-011-3)
+- `/estimates/[id]`(編集・提出・採用・出し直し)・`/estimates/[id]/invoice`(見積から請求)・`/estimates/[id]/print`(見積書 A4)・`/settings/business-profile`(事業者情報)。案件の画面に 見積・原価と粗利 の欄。
+- 読み取りは `lib/data/queries-estimates.ts`、書き込みは `lib/data/actions-estimates.ts`(Server Actions。zod で検証してから DB に渡す)。**合計は DB のトリガーが計算して保存**し、クライアントからは受け取らない。明細の一括保存・写し・出し直しは DB 関数(`save_estimate_items`・`copy_estimate_items`・`reissue_estimate`)を `supabase.rpc` で呼ぶ。粗利は `case_financials` ビュー(税抜)。
+- 信頼境界: 提出済の保護・採用は1案件1つ・見積由来の請求の金額固定は、画面ではなく DB のトリガーが守る。印刷はブラウザの印刷(PDF のライブラリなし)。
