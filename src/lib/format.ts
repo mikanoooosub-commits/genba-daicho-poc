@@ -64,3 +64,9 @@ export function formatYearMonth(ym: string | null | undefined): string {
   if (!y || !m) return ym;
   return `${y}年${m}月`;
 }
+
+/** 符号つきの金額。マイナスは "−¥460"(値引きの表示用) */
+export function formatSignedYen(amount: number): string {
+  const v = Math.round(amount);
+  return v < 0 ? `−¥${Math.abs(v).toLocaleString("ja-JP")}` : `¥${v.toLocaleString("ja-JP")}`;
+}

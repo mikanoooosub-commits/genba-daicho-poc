@@ -1,0 +1,105 @@
+/* 見積の画面(WO-011 段階3)。見本 docs/design-samples/form-estimate.html の写し(トークンは v2.css)。
+   状態の色は文字・アイコンと一緒に使う(色だけに頼らない・DESIGN.md §2.2)。 */
+
+.est-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-4); flex-wrap: wrap; margin-bottom: var(--sp-4); }
+.est-head h1 { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.est-head h1 small { font-size: var(--fs-lead); font-weight: 400; color: var(--ink-muted); }
+.est-head .actions { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
+.case-ref { color: var(--ink-muted); font-size: var(--fs-caption); margin-top: var(--sp-1); }
+.flow-wrap { margin-bottom: var(--sp-5); }
+
+.est-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--sp-5); align-items: start; }
+.meta-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-4); padding: var(--sp-4) var(--sp-5); border-bottom: 1px solid var(--line); }
+
+/* 明細の表 */
+.items-table { width: 100%; border-collapse: collapse; }
+.items-table th { font-size: var(--fs-caption); color: var(--ink-muted); text-align: left; padding: var(--sp-2) var(--sp-2); background: var(--surface-sunken); white-space: nowrap; }
+.items-table th.r { text-align: right; }
+.items-table td { padding: var(--sp-2) var(--sp-2); border-bottom: 1px solid var(--line); vertical-align: middle; }
+.items-table td:first-child, .items-table th:first-child { padding-left: var(--sp-5); }
+.items-table td:last-child, .items-table th:last-child { padding-right: var(--sp-4); }
+.items-table .input, .items-table .select { min-height: 40px; font-size: var(--fs-dense); padding: 0 var(--sp-2); }
+.items-table .select { padding-right: 28px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%; }
+.items-table .amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.items-table .copied { display: block; font-size: 12px; color: var(--accent-strong); margin-top: 2px; }
+.items-table .discount .amount { color: var(--st-danger-fg); }
+.items-table .readonly-cell { font-size: var(--fs-dense); }
+.row-del { border: 0; background: none; color: var(--ink-muted); cursor: pointer; min-width: 36px; min-height: 36px; border-radius: var(--r-md); font-size: 18px; }
+.row-del:hover { background: var(--surface-sunken); color: var(--st-danger-fg); }
+.add-row { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
+
+.totals { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: var(--sp-5); padding: var(--sp-5); }
+.totals dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: var(--sp-2) var(--sp-4); align-items: baseline; }
+.totals dt { color: var(--ink-muted); font-size: var(--fs-caption); }
+.totals dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+.totals dt.grand { color: var(--ink); font-weight: 700; font-size: var(--fs-body); }
+.totals dd.grand { font-size: var(--fs-num-xl); font-weight: 700; color: var(--primary); }
+.totals .grand { border-top: 1px solid var(--line); padding-top: var(--sp-2); }
+
+/* 前回の見積と施工 */
+.ref { position: sticky; top: var(--sp-4); }
+.ref .tabs { margin: 0; padding: 0 var(--sp-3); }
+.ref .tabs button { padding: 0 var(--sp-3); font-size: var(--fs-caption); min-height: 40px; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--ink-muted); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ref .tabs button[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
+.ref-list { list-style: none; margin: 0; padding: var(--sp-3) var(--sp-4) var(--sp-4); display: grid; gap: var(--sp-3); }
+.ref-item { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); }
+.ref-item header { display: flex; justify-content: space-between; align-items: baseline; gap: var(--sp-2); margin-bottom: var(--sp-1); }
+.ref-item .t { font-weight: 700; font-size: var(--fs-dense); }
+.ref-item .when { font-size: var(--fs-caption); color: var(--ink-muted); white-space: nowrap; }
+.ref-item p { font-size: var(--fs-dense); line-height: 1.6; }
+.ref-lines { list-style: none; padding: 0; margin: var(--sp-2) 0; font-size: var(--fs-caption); }
+.ref-lines li { display: flex; justify-content: space-between; gap: var(--sp-2); padding: 4px 0; border-top: 1px dashed var(--line); align-items: center; }
+.ref-lines .p { font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--ink-muted); }
+.ref-lines .l { flex: 1; min-width: 0; }
+.tag { font-size: 12px; font-weight: 700; padding: 0 6px; border-radius: var(--r-sm); }
+.tag-job { background: var(--st-progress-bg); color: var(--st-progress-fg); }
+.tag-est { background: var(--accent-soft); color: var(--accent-strong); }
+
+/* 案件の画面の「見積」「原価」「粗利」 */
+.est-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2); }
+.est-list li { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; padding: var(--sp-3) 0; border-top: 1px solid var(--line); }
+.est-list li:first-child { border-top: 0; }
+.est-list .grow { flex: 1; min-width: 160px; }
+.profit-box { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-3); margin-top: var(--sp-3); }
+.profit-box > div { background: var(--surface-sunken); border-radius: var(--r-md); padding: var(--sp-3); }
+.profit-box dt { font-size: var(--fs-caption); color: var(--ink-muted); }
+.profit-box dd { margin: 0; font-size: var(--fs-lead); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* 1440px 未満(右に前回の見積を出すと幅が足りない)は、明細の1行を2段にする */
+@media (min-width: 768px) and (max-width: 1439px) {
+  .items-table thead { display: none; }
+  .items-table, .items-table tbody { display: block; width: 100%; }
+  .items-table tr { display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)) 36px; gap: var(--sp-2) var(--sp-2); padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); align-items: end; }
+  .items-table td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+  .items-table td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); font-weight: 700; }
+  .items-table td.c-cat { grid-column: 1; grid-row: 1; }
+  .items-table td.c-desc { grid-column: 2 / 6; grid-row: 1; }
+  .items-table td.c-del { grid-column: 6; grid-row: 1; }
+  .items-table td.c-del::before { content: none; }
+  .items-table td.c-amt { grid-column: 5; grid-row: 2; text-align: right; align-items: flex-end; justify-content: flex-end; min-height: 40px; }
+  .items-table td.c-amt::before { align-self: flex-end; }
+  .items-table .copied { order: 3; }
+}
+@media (max-width: 1023px) {
+  .est-grid { grid-template-columns: minmax(0, 1fr); }
+  .ref { position: static; }
+}
+@media (max-width: 767px) {
+  .meta-row { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: var(--sp-3) var(--sp-4); }
+  .meta-row .field:first-child { grid-column: 1 / -1; }
+  .totals { grid-template-columns: 1fr; padding: var(--sp-4); }
+  .est-head .actions { width: 100%; }
+  .est-head .actions .btn { flex: 1; }
+  .profit-box { grid-template-columns: 1fr; }
+  /* 明細はスマホで1行=1枚に */
+  .items-table thead { display: none; }
+  .items-table, .items-table tbody, .items-table tr { display: block; width: 100%; }
+  .items-table tr { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--sp-2); padding: var(--sp-3) var(--sp-4); border-bottom: 1px solid var(--line); }
+  .items-table td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+  .items-table td::before { content: attr(data-label); font-size: 12px; color: var(--ink-muted); font-weight: 700; }
+  .items-table td.c-desc { grid-column: 1 / -1; order: -1; }
+  .items-table td.c-cat { grid-column: 1 / 3; order: -2; }
+  .items-table td.c-del { grid-column: 3; order: -2; align-items: flex-end; }
+  .items-table td.c-del::before { content: none; }
+  .items-table td.c-amt { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: baseline; }
+}

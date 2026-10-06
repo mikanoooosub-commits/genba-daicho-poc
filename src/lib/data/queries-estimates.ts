@@ -141,49 +141,50 @@ export type ReferenceGroupKey = "room" | "building" | "client";
 
 export type ReferenceJob = { job_date: string; work_type: string | null; content: string | null };
 
-export type ReferenceEstimate = {
+/** 前回の案件1件。見積があれば見積と明細を、無ければ(v1 から移した案件など)施工だけを持つ */
+export type ReferenceCase = {
   group: ReferenceGroupKey;
-  estimate: Estimate;
+  caseId: string;
   caseNo: string;
   caseStatus: string;
   receivedOn: string;
   buildingName: string;
   roomNo: string | null;
   clientName: string;
+  estimate: Estimate | null;
   items: EstimateItem[];
   jobs: ReferenceJob[];
 };
 
 const REFERENCE_PER_GROUP = 5;
-const REFERENCE_FETCH_LIMIT = 150;
+const REFERENCE_FETCH_LIMIT = 200;
 const JOBS_PER_CASE = 3;
 
-const referenceRowSchema = estimateRowSchema.extend({
-  case: z.object({
-    id: uuid,
-    case_no: z.string(),
-    building_id: uuid,
-    unit_id: uuid.nullable(),
-    client_id: uuid,
-    status: z.string(),
-    received_on: z.string(),
-    building: z.object({ name: z.string() }).nullable(),
-    unit: z.object({ room_no: z.string().nullable() }).nullable(),
-    client: z.object({ name: z.string() }).nullable(),
-  }),
+const referenceCaseSchema = z.object({
+  id: uuid,
+  case_no: z.string(),
+  building_id: uuid,
+  unit_id: uuid.nullable(),
+  client_id: uuid,
+  status: z.string(),
+  received_on: z.string(),
+  building: z.object({ name: z.string() }).nullable(),
+  unit: z.object({ room_no: z.string().nullable() }).nullable(),
+  client: z.object({ name: z.string() }).nullable(),
 });
 
 /**
  * 見積に添える「前回の見積と施工」。出す順は 同じ部屋 → 同じ物件の他の部屋 → 同じ発注元の他の物件(D94-4)。
- * - 取り消した案件・見積は出さない。失注した案件の見積は、includeLost のときだけ出す(既定は出さない)。
- * - 提出済・採用・不採用の見積だけ(下書きは出さない)。同じ見積番号は、いちばん新しい版だけ。
- * - 同じ案件の見積は出さない(同じ案件の前の版は「出し直し」で写す)。
+ * - 取り消した案件・見積は出さない。失注した案件は、includeLost のときだけ出す(既定は出さない)。
+ * - 見積は提出済・採用・不採用だけ(下書きは出さない)。1つの案件につき、いちばん新しい見積を1つ。
+ * - v1 から移した案件のように見積が無くても、施工があれば出す(施工だけ)。見積も施工も無い案件は出さない。
+ * - 同じ案件(いまの案件)は出さない。同じ案件の前の版は「出し直し」で写す。
  * 点数づけはしない。どれを写すかは人が決める(昇格順ガード)。
  */
 export async function getEstimateReferences(
   estimate: Estimate,
   options: { includeLost?: boolean } = {}
-): Promise<ReferenceEstimate[]> {
+): Promise<ReferenceCase[]> {
   const supabase = await createClient();
 
   const { data: caseData, error: caseError } = await supabase
@@ -197,58 +198,35 @@ export async function getEstimateReferences(
     .object({ id: uuid, building_id: uuid, unit_id: uuid.nullable(), client_id: uuid })
     .parse(caseData);
 
-  // 部屋・物件・発注元のどれかが同じ案件の見積を、まとめて取って分ける
+  // 部屋・物件・発注元のどれかが同じ案件を、まとめて取って分ける
   const conditions = [`building_id.eq.${target.building_id}`, `client_id.eq.${target.client_id}`];
   if (target.unit_id) conditions.push(`unit_id.eq.${target.unit_id}`);
 
-  let query = supabase
-    .from("estimates")
+  let casesQuery = supabase
+    .from("cases")
     .select(
-      `${ESTIMATE_COLUMNS}, case:cases!inner(id, case_no, building_id, unit_id, client_id, status, received_on, building:buildings(name), unit:units(room_no), client:clients(name))`
+      "id, case_no, building_id, unit_id, client_id, status, received_on, building:buildings(name), unit:units(room_no), client:clients(name)"
     )
-    .in("status", ["提出済", "採用", "不採用"])
     .eq("is_deleted", false)
-    .eq("cases.is_deleted", false)
-    .neq("case_id", target.id)
-    .or(conditions.join(","), { referencedTable: "cases" })
-    .order("created_at", { ascending: false })
+    .neq("id", target.id)
+    .or(conditions.join(","))
+    .order("received_on", { ascending: false })
     .limit(REFERENCE_FETCH_LIMIT);
-  if (!options.includeLost) query = query.neq("cases.status", "失注");
-  const { data, error } = await query;
-  if (error) throw error;
+  if (!options.includeLost) casesQuery = casesQuery.neq("status", "失注");
+  const casesRes = await casesQuery;
+  if (casesRes.error) throw casesRes.error;
+  const cases = (casesRes.data ?? []).map((r) => referenceCaseSchema.parse(r));
+  if (cases.length === 0) return [];
+  const caseIds = cases.map((c) => c.id);
 
-  // 同じ見積番号は、いちばん新しい版だけ
-  const latestByNo = new Map<string, z.infer<typeof referenceRowSchema>>();
-  for (const raw of data ?? []) {
-    const row = referenceRowSchema.parse(raw);
-    const current = latestByNo.get(row.estimate_no);
-    if (!current || row.version > current.version) latestByNo.set(row.estimate_no, row);
-  }
-
-  const grouped: Record<ReferenceGroupKey, z.infer<typeof referenceRowSchema>[]> = { room: [], building: [], client: [] };
-  for (const row of latestByNo.values()) {
-    if (target.unit_id && row.case.unit_id === target.unit_id) grouped.room.push(row);
-    else if (row.case.building_id === target.building_id) grouped.building.push(row);
-    else if (row.case.client_id === target.client_id) grouped.client.push(row);
-  }
-  const chosen: { group: ReferenceGroupKey; row: z.infer<typeof referenceRowSchema> }[] = [];
-  for (const group of ["room", "building", "client"] as const) {
-    grouped[group]
-      .sort((a, b) => b.case.received_on.localeCompare(a.case.received_on) || b.created_at.localeCompare(a.created_at))
-      .slice(0, REFERENCE_PER_GROUP)
-      .forEach((row) => chosen.push({ group, row }));
-  }
-  if (chosen.length === 0) return [];
-
-  const estimateIds = chosen.map((c) => c.row.id);
-  const caseIds = [...new Set(chosen.map((c) => c.row.case.id))];
-  const [itemsRes, jobsRes] = await Promise.all([
+  const [estimatesRes, jobsRes] = await Promise.all([
     supabase
-      .from("estimate_items")
-      .select(ITEM_COLUMNS)
-      .in("estimate_id", estimateIds)
+      .from("estimates")
+      .select(ESTIMATE_COLUMNS)
+      .in("case_id", caseIds)
+      .in("status", ["提出済", "採用", "不採用"])
       .eq("is_deleted", false)
-      .order("sort_order", { ascending: true }),
+      .order("created_at", { ascending: false }),
     supabase
       .from("jobs")
       .select("case_id, job_date, work_type, content")
@@ -256,13 +234,13 @@ export async function getEstimateReferences(
       .eq("is_deleted", false)
       .order("job_date", { ascending: false }),
   ]);
-  if (itemsRes.error) throw itemsRes.error;
+  if (estimatesRes.error) throw estimatesRes.error;
   if (jobsRes.error) throw jobsRes.error;
 
-  const itemsByEstimate = new Map<string, EstimateItem[]>();
-  for (const raw of itemsRes.data ?? []) {
-    const item = estimateItemRowSchema.parse(raw);
-    itemsByEstimate.set(item.estimate_id, [...(itemsByEstimate.get(item.estimate_id) ?? []), item]);
+  const estimateByCase = new Map<string, Estimate>();
+  for (const raw of estimatesRes.data ?? []) {
+    const e = estimateRowSchema.parse(raw);
+    if (!estimateByCase.has(e.case_id)) estimateByCase.set(e.case_id, e); // 新しい順なので、最初の1件が最新
   }
   const jobRow = z.object({ case_id: uuid, job_date: z.string(), work_type: z.string().nullable(), content: z.string().nullable() });
   const jobsByCase = new Map<string, ReferenceJob[]>();
@@ -273,19 +251,58 @@ export async function getEstimateReferences(
     jobsByCase.set(j.case_id, list);
   }
 
-  return chosen.map(({ group, row }) => {
-    const { case: c, ...estimateFields } = row;
-    return {
-      group,
-      estimate: estimateRowSchema.parse(estimateFields),
-      caseNo: c.case_no,
-      caseStatus: c.status,
-      receivedOn: c.received_on,
-      buildingName: c.building?.name ?? "(物件不明)",
-      roomNo: c.unit?.room_no ?? null,
-      clientName: c.client?.name ?? "(発注元不明)",
-      items: itemsByEstimate.get(row.id) ?? [],
-      jobs: jobsByCase.get(c.id) ?? [],
-    };
-  });
+  // 見積も施工も無い案件は出さない。出す順に、グループごとに5件まで
+  const counts: Record<ReferenceGroupKey, number> = { room: 0, building: 0, client: 0 };
+  const chosen: { group: ReferenceGroupKey; c: z.infer<typeof referenceCaseSchema> }[] = [];
+  for (const c of cases) {
+    if (!estimateByCase.has(c.id) && !jobsByCase.has(c.id)) continue;
+    const group: ReferenceGroupKey | null =
+      target.unit_id && c.unit_id === target.unit_id
+        ? "room"
+        : c.building_id === target.building_id
+          ? "building"
+          : c.client_id === target.client_id
+            ? "client"
+            : null;
+    if (!group || counts[group] >= REFERENCE_PER_GROUP) continue;
+    counts[group] += 1;
+    chosen.push({ group, c });
+  }
+  if (chosen.length === 0) return [];
+
+  const estimateIds = chosen.map(({ c }) => estimateByCase.get(c.id)?.id).filter((id): id is string => Boolean(id));
+  const itemsByEstimate = new Map<string, EstimateItem[]>();
+  if (estimateIds.length > 0) {
+    const itemsRes = await supabase
+      .from("estimate_items")
+      .select(ITEM_COLUMNS)
+      .in("estimate_id", estimateIds)
+      .eq("is_deleted", false)
+      .order("sort_order", { ascending: true });
+    if (itemsRes.error) throw itemsRes.error;
+    for (const raw of itemsRes.data ?? []) {
+      const item = estimateItemRowSchema.parse(raw);
+      itemsByEstimate.set(item.estimate_id, [...(itemsByEstimate.get(item.estimate_id) ?? []), item]);
+    }
+  }
+
+  const order: ReferenceGroupKey[] = ["room", "building", "client"];
+  return chosen
+    .sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group))
+    .map(({ group, c }) => {
+      const est = estimateByCase.get(c.id) ?? null;
+      return {
+        group,
+        caseId: c.id,
+        caseNo: c.case_no,
+        caseStatus: c.status,
+        receivedOn: c.received_on,
+        buildingName: c.building?.name ?? "(物件不明)",
+        roomNo: c.unit?.room_no ?? null,
+        clientName: c.client?.name ?? "(発注元不明)",
+        estimate: est,
+        items: est ? (itemsByEstimate.get(est.id) ?? []) : [],
+        jobs: jobsByCase.get(c.id) ?? [],
+      };
+    });
 }
