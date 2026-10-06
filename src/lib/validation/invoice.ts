@@ -115,6 +115,8 @@ export type LedgerFilterInput = z.infer<typeof ledgerFilterSchema>;
 export const invoiceRowSchema = z.object({
   id: z.string().uuid(),
   site_id: z.string().uuid(),
+  /** 見積から作った請求のとき、その見積。金額・税率は DB が固定する(migration_008) */
+  estimate_id: z.string().uuid().nullable(),
   amount: z.coerce.number(),
   format_pattern: z.string().nullable(),
   issue_date: z.string().nullable(),

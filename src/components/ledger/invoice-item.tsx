@@ -124,6 +124,7 @@ export function InvoiceItem({
                     issueDate: editInvoice.issue_date,
                     memo: editInvoice.memo,
                   }}
+                  amountLocked={editInvoice.estimate_id !== null}
                   submitLabel="保存する"
                   onSubmit={updateInvoiceAction}
                   onSuccess={() => {

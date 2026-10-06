@@ -39,6 +39,8 @@ type Props = {
   fixedSiteId?: string;
   fixedSiteLabel?: string;
   initial?: Partial<InvoiceFormValues>;
+  /** 見積から作った請求は、金額を直せない(DB が固定する)。欄を無効にして理由を出す */
+  amountLocked?: boolean;
   submitLabel: string;
   onSubmit: (input: unknown) => Promise<ActionResult>;
   onSuccess?: () => void;
@@ -50,6 +52,7 @@ export function InvoiceForm({
   fixedSiteId,
   fixedSiteLabel,
   initial,
+  amountLocked = false,
   submitLabel,
   onSubmit,
   onSuccess,
@@ -134,7 +137,14 @@ export function InvoiceForm({
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
+          disabled={amountLocked}
+          aria-describedby={amountLocked ? "if-amount-locked" : undefined}
         />
+        {amountLocked && (
+          <p id="if-amount-locked" className="text-xs text-muted-foreground">
+            見積から作った請求の金額・税率は直せません。直すときは、見積を出し直します。
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-2">

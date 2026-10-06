@@ -17,7 +17,7 @@ const INVOICE_LEDGER_COLUMNS =
   "invoice_id, site_id, building_name, client_id, client_name, client_type, lead_source, amount, format_pattern, issue_date, issue_month, paid_amount, payment_status";
 
 const INVOICE_COLUMNS =
-  "id, site_id, amount, format_pattern, issue_date, memo, is_deleted, created_at, updated_at";
+  "id, site_id, estimate_id, amount, format_pattern, issue_date, memo, is_deleted, created_at, updated_at";
 
 const PAYMENT_COLUMNS =
   "id, invoice_id, payment_date, amount, reconciliation_status, memo, is_deleted, created_at, updated_at";

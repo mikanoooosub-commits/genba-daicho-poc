@@ -69,6 +69,8 @@ export const RECONCILIATION_STATUS_META: Record<ReconciliationStatus, { label: s
 export type Invoice = {
   id: string;
   site_id: string;
+  /** 見積から作った請求のとき、その見積(金額・税率は DB が固定する) */
+  estimate_id: string | null;
   amount: number;
   format_pattern: string | null;
   issue_date: string | null; // YYYY-MM-DD

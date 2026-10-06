@@ -81,3 +81,4 @@
 | CHANGE-R-025 | 2026-10-06 | WO-011 段階3: 見積書の印刷(`/estimates/[id]/print`・`estimate-paper.css`)。ブラウザの印刷・A4 縦・表の見出しを各ページに繰り返し・行の途中で改ページしない。PDF のライブラリは足していない | 受入条件⑤ | `src/**` |
 | CHANGE-R-026 | 2026-10-06 | WO-011 段階3: 原価と粗利(税抜)の欄(`case-costs-section.tsx`・税込から税抜を出す補助)、事業者情報の設定(`/settings/business-profile`・メニューに「設定」を追加)。`docs/SPEC-v2.md` §13・`docs/test-scenarios.md` S3-1〜14 を追記 | 受入条件⑥・D94-4・6 | `src/**`、`docs/**` |
 | CHANGE-R-027 | 2026-10-06 | WO-011 段階3: `supabase/migration_008_estimates.sql`・`migration_009_costs_profile.sql` を本番 DB に適用(ユーザーが実行。予行演習 71 行・31 行 true、適用後の確認 8 行・8 行 true、台帳の合計は不変) | D94・D96 | DB |
+| CHANGE-R-028 | 2026-10-06 | WO-011 段階3(D98・本番の前の直し): 見積から作った請求の編集ダイアログで、金額の欄を無効にして理由を出す(`InvoiceForm` の `amountLocked`・`invoiceRowSchema`・`Invoice` に `estimate_id` を追加)。見積の画面の Tab の順とフォーカスの輪を実地で確認(S3-15〜18) | DB は金額の変更を断る(入れてから断られるのは分かりにくい) | `src/**`、`docs/test-scenarios.md`。スキーマ変更なし |
