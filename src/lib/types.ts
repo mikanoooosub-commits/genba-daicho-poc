@@ -13,6 +13,17 @@ import {
   type CaseRow,
 } from "@/lib/validation/case";
 import {
+  COST_CATEGORIES,
+  ESTIMATE_CATEGORIES,
+  ESTIMATE_STATUSES,
+  REVENUE_BASES,
+  type BusinessProfileRow,
+  type CaseFinancialsRow,
+  type CostRow,
+  type EstimateItemRow,
+  type EstimateRow,
+} from "@/lib/validation/estimate";
+import {
   CLIENT_TYPES,
   LEAD_SOURCES,
   type ClientRow,
@@ -218,3 +229,21 @@ export const WORK_KIND_ORDER: WorkKind[] = [...WORK_KINDS];
 export type Case = CaseRow;
 /** case_overview ビュー(案件の一覧の契約)の1行 */
 export type CaseOverview = CaseOverviewRow;
+
+// ── v2: 見積・明細・原価・事業者情報・粗利(WO-011 段階3・docs/SPEC-v2.md §3.4・§3.5・§3.11) ──
+// 型の実体は DB 行の形をそのまま zod で検証した結果(src/lib/validation/estimate.ts)。
+// 金額はすべて整数の円。見積の小計(税抜)・税・合計(税込)は DB が明細から計算して保存する。
+
+export type EstimateStatus = (typeof ESTIMATE_STATUSES)[number];
+export type EstimateCategory = (typeof ESTIMATE_CATEGORIES)[number];
+export type CostCategory = (typeof COST_CATEGORIES)[number];
+/** 粗利の売上の根拠: 請求 / 見込み(採用した見積)/ 内訳なし(見積に結びつかない請求がある)/ 未定 */
+export type RevenueBasis = (typeof REVENUE_BASES)[number];
+
+export type Estimate = EstimateRow;
+export type EstimateItem = EstimateItemRow;
+export type Cost = CostRow;
+export type BusinessProfile = BusinessProfileRow;
+/** case_financials ビュー(案件ごとの粗利。税抜)の1行 */
+export type CaseFinancials = CaseFinancialsRow;
+
