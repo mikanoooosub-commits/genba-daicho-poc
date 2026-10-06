@@ -280,13 +280,6 @@ export function EstimateWorkspace({
             </tr>
           </thead>
           <tbody>
-            {rows.length === 0 && (
-              <tr>
-                <td colSpan={editable ? 7 : 6} className="muted" style={{ padding: "var(--sp-5)" }}>
-                  明細がまだありません。{editable ? "「行を足す」か、右の前回の見積から写してください。" : ""}
-                </td>
-              </tr>
-            )}
             {rows.map((r, idx) => {
               const amount = rowAmount(r);
               const label = `${idx + 1}行目`;
@@ -382,6 +375,11 @@ export function EstimateWorkspace({
             })}
           </tbody>
         </table>
+        {rows.length === 0 && (
+          <p className="muted" style={{ padding: "var(--sp-5)", borderBottom: "1px solid var(--line)" }}>
+            明細がまだありません。{editable ? "「行を足す」か、右の前回の見積から写してください。" : ""}
+          </p>
+        )}
         <datalist id={`${uid}-units`}>
           {UNIT_SUGGESTIONS.map((u) => (
             <option key={u} value={u} />
