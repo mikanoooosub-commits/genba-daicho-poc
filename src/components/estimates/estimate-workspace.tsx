@@ -210,7 +210,15 @@ export function EstimateWorkspace({
   return (
     <>
       <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "var(--sp-4)" }}>
-        <EstimateStatusActions estimate={estimate} isLatest={isLatest} invoiceId={invoiceId} dirty={dirty} />
+        <EstimateStatusActions
+          estimate={estimate}
+          isLatest={isLatest}
+          invoiceId={invoiceId}
+          dirty={dirty}
+          onSave={editable ? save : undefined}
+          saving={pending}
+          totalText={totals ? formatSignedYen(totals.total) : undefined}
+        />
       </div>
     <div className="est-grid">
       {/* 左: 見積の本体 */}
@@ -445,11 +453,6 @@ export function EstimateWorkspace({
                 <div>{error}</div>
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button className={dirty ? "btn btn-primary" : "btn btn-secondary"} type="button" disabled={pending || !dirty} onClick={save}>
-                {pending ? "保存しています…" : "下書きを保存"}
-              </button>
-            </div>
           </div>
         )}
         {!editable && error && (

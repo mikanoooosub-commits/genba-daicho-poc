@@ -22,6 +22,9 @@ export function EstimateStatusActions({
   isLatest,
   invoiceId,
   dirty = false,
+  onSave,
+  saving = false,
+  totalText,
 }: {
   estimate: Estimate;
   /** 同じ番号で、これがいちばん新しい版か */
@@ -29,6 +32,11 @@ export function EstimateStatusActions({
   /** この見積から作った請求(取り消していないもの)の id */
   invoiceId: string | null;
   dirty?: boolean;
+  /** 下書きの保存(見積の画面が渡す)。下書きのときだけ、提出の隣に「下書きを保存」を出す */
+  onSave?: () => void;
+  saving?: boolean;
+  /** スマホで、固定の帯に出す合計(税込)の文字 */
+  totalText?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -75,20 +83,39 @@ export function EstimateStatusActions({
             <button className="btn btn-danger" type="button" disabled={pending} onClick={discard}>
               下書きを取り消す
             </button>
-            <button
-              className={dirty ? "btn btn-secondary" : "btn btn-primary"}
-              type="button"
-              disabled={pending || dirty}
-              title={dirty ? "先に「下書きを保存」してください" : undefined}
-              onClick={() =>
-                changeStatus(
-                  "提出済",
-                  "提出済にします。提出済の見積は書き換えられません(直すときは出し直しで版を増やします)。よろしいですか。"
-                )
-              }
-            >
-              提出済にする
-            </button>
+            {/* 保存と提出は同じ場所に並べる。PC は見出しの右、スマホは下に固定(合計つき)。主は1つ: 保存が要るあいだは保存、保存したら提出 */}
+            <div className="est-dock">
+              {totalText && (
+                <span className="dock-total">
+                  合計(税込)
+                  <b className="num">{totalText}</b>
+                </span>
+              )}
+              {onSave && (
+                <button
+                  className={dirty ? "btn btn-primary" : "btn btn-secondary"}
+                  type="button"
+                  disabled={saving || pending || !dirty}
+                  onClick={onSave}
+                >
+                  {saving ? "保存しています…" : "下書きを保存"}
+                </button>
+              )}
+              <button
+                className={dirty ? "btn btn-secondary" : "btn btn-primary"}
+                type="button"
+                disabled={pending || dirty}
+                title={dirty ? "先に「下書きを保存」してください" : undefined}
+                onClick={() =>
+                  changeStatus(
+                    "提出済",
+                    "提出済にします。提出済の見積は書き換えられません(直すときは出し直しで版を増やします)。よろしいですか。"
+                  )
+                }
+              >
+                提出済にする
+              </button>
+            </div>
           </>
         )}
 

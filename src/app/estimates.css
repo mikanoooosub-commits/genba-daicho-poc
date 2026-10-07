@@ -130,3 +130,17 @@
 /* 合計の帯: ラベルと金額の間の隙間をなくして1つの帯に見せる */
 .totals dl { column-gap: 0; }
 .totals dt:not(.grand) { padding-right: var(--sp-4); }
+
+/* 保存と提出の置き場所(下書き)。PC は見出しの右に並べ、スマホは合計つきで下に固定する */
+.est-dock { display: flex; gap: var(--sp-2); align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.est-dock .dock-total { display: none; }
+@media (max-width: 767px) {
+  .est-dock {
+    position: fixed; left: 0; right: 0; bottom: calc(60px + env(safe-area-inset-bottom)); z-index: 11;
+    background: var(--surface); border-top: 1px solid var(--line); box-shadow: var(--shadow-2);
+    padding: var(--sp-3) var(--sp-4); flex-wrap: nowrap;
+  }
+  .est-dock .dock-total { display: block; margin-right: auto; line-height: 1.3; color: var(--ink-muted); font-size: var(--fs-caption); }
+  .est-dock .dock-total b { display: block; color: var(--ink); font-size: var(--fs-h3); }
+  .est-dock .btn { padding: 0 var(--sp-3); }
+}
