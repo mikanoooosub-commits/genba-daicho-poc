@@ -84,7 +84,7 @@
   .items-table:not(.items-readonly) td.c-amt::before { align-self: flex-end; }
   .items-table:not(.items-readonly) .copied { order: 3; }
 }
-@media (max-width: 1023px) {
+@media (max-width: 1279px) {
   .est-grid { grid-template-columns: minmax(0, 1fr); }
   .ref { position: static; }
 }
@@ -171,3 +171,9 @@
 .est-bar .actions .btn { white-space: nowrap; }
 @media (max-width: 1279px) { .est-bar { flex-wrap: wrap; } .est-bar .actions, .est-bar .est-dock { flex-wrap: wrap; } }
 @media (max-width: 767px) { .est-bar { flex-direction: column; align-items: stretch; gap: 0; } .est-msg { min-height: 0; } }
+
+/* 入力中の表(PC の通常の表): 区分の列を少し広げ、選択欄の文字が切れないようにする */
+@media (min-width: 1440px) {
+  .items-table:not(.items-readonly) th:nth-child(1) { width: 128px !important; }
+  .items-table:not(.items-readonly) .select { padding-right: 28px; }
+}
