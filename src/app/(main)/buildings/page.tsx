@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus, Search } from "lucide-react";
+import { ChevronDown, Plus, Search } from "lucide-react";
 
 import { RestoreBuildingButton } from "@/components/buildings/delete-controls";
 import { BuildingsTable } from "@/components/buildings/buildings-table";
@@ -107,7 +107,7 @@ export default async function BuildingsPage({ searchParams }: { searchParams: Se
             </select>
           </div>
           {sort !== "name" && <input type="hidden" name="sort" value={sort} />}
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-secondary">
             <Search className="icon" aria-hidden="true" />
             絞り込む
           </button>
@@ -159,12 +159,15 @@ export default async function BuildingsPage({ searchParams }: { searchParams: Se
       </section>
 
       {deletedBuildings.length > 0 && (
-        <details className="card card-pad" style={{ marginTop: "var(--sp-5)" }}>
-          <summary style={{ cursor: "pointer", fontWeight: 700 }}>取り消した物件({deletedBuildings.length}件)</summary>
-          <p className="hint" style={{ margin: "var(--sp-2) 0 var(--sp-3)" }}>
+        <details className="card disclosure" style={{ marginTop: "var(--sp-5)" }}>
+          <summary>
+            <ChevronDown className="icon" aria-hidden="true" />
+            取り消した物件({deletedBuildings.length}件)
+          </summary>
+          <p className="hint" style={{ margin: "0 var(--sp-5) var(--sp-3)" }}>
             誤って取り消したときは、ここから元に戻せます。部屋や施工の記録は残っています。
           </p>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "var(--sp-2)" }}>
+          <ul style={{ listStyle: "none", margin: 0, padding: "0 var(--sp-5) var(--sp-5)", display: "grid", gap: "var(--sp-2)" }}>
             {deletedBuildings.map((b) => (
               <li key={b.id} style={{ display: "flex", gap: "var(--sp-3)", alignItems: "center", flexWrap: "wrap" }}>
                 <span>

@@ -576,3 +576,6 @@ a { color: var(--link); text-underline-offset: 3px; }
 @media (max-width: 767px) {
   .card-sec > .sec-action .btn.btn-float { display: inline-flex; width: auto; }
 }
+
+/* 一覧・詳細の中のリンクも押す場所を 44px にする(段階A の F-04) */
+.th-sort-link, .est-list a, .items a, .case-line a, .dl dd a, .caption a { display: inline-flex; align-items: center; min-height: var(--tap); }

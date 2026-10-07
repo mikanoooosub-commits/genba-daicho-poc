@@ -222,7 +222,7 @@ export default function DesignPage() {
             </button>
           </div>
           <p className="sg-note">
-            主=.btn-primary(深緑)/ 副=.btn-secondary(白地+深緑の枠)/ 文字だけ=.btn-ghost / 取り消し=.btn-danger(白地+赤茶の枠。押すと理由つきの確認を出す)。小さい版は .btn-sm(段階C で 44px にそろえる)。
+            主=.btn-primary(深緑)/ 副=.btn-secondary(白地+深緑の枠)/ 文字だけ=.btn-ghost / 取り消し=.btn-danger(白地+赤茶の枠。押すと理由つきの確認を出す)。小さい版(.btn-sm)は廃止した(押す場所は 44px 以上)。
           </p>
         </div>
       </section>
@@ -475,7 +475,7 @@ export default function DesignPage() {
 
       <section id="flow" className="sg-section">
         <h2>案件の流れ</h2>
-        <p className="lead">8つの状態を1本で見せる。済んだ段には ✓、今の段は深緑の地。失注は流れの外に、点線の枠のラベルで出す。スマホでは折り返す(段階C で反映)。</p>
+        <p className="lead">8つの状態を1本で見せる。済んだ段には ✓、今の段は深緑の地。失注は流れの外に、点線の枠のラベルで出す。スマホでは 4 列×2 行に折り返す。</p>
         <div className="card card-pad">
           <ol className="flow">
             <li className="done">依頼</li>

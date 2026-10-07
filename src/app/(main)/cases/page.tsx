@@ -124,7 +124,7 @@ export default async function CasesPage({ searchParams }: { searchParams: Search
           </div>
           {filter.status && <input type="hidden" name="status" value={filter.status} />}
           {filter.attention && <input type="hidden" name="attention" value={filter.attention} />}
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-secondary">
             <Search className="icon" aria-hidden="true" />
             絞り込む
           </button>
