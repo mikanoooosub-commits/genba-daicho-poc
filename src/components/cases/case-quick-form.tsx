@@ -111,8 +111,31 @@ export function CaseQuickForm({ buildings, units, clients, recentBuildingIds, in
     });
   }
 
+  // 必須の2つ(物件・発注元)の進みと、いま選んでいる内容の要約(登録する前に目で確かめるため)
+  const hasBuilding = selected !== null || (newBuilding && newBuildingName.trim() !== "");
+  const hasClient = effectiveClient !== null;
+  const doneCount = (hasBuilding ? 1 : 0) + (hasClient ? 1 : 0);
+  const roomText = addingRoom ? newRoomNo.trim() : (buildingUnits.find((u) => u.id === unitId)?.room_no ?? "");
+  const summaryText = [
+    hasBuilding ? `${selected?.name ?? newBuildingName.trim()}${roomText ? ` ${roomText}` : ""}` : "物件は未選択",
+    hasClient ? effectiveClient?.name : "発注元は未選択",
+    workKind,
+  ]
+    .filter(Boolean)
+    .join("・");
+
   return (
     <form className="quick" onSubmit={handleSubmit} noValidate>
+      <div className="q-progress" role="status">
+        <span className="bars" aria-hidden="true">
+          <i className={doneCount >= 1 ? "on" : undefined} />
+          <i className={doneCount >= 2 ? "on" : undefined} />
+        </span>
+        <span>
+          {doneCount >= 2 ? "必須の2つ(物件・発注元)は入りました。登録できます。" : `必須の2つ(物件・発注元)のうち、あと ${2 - doneCount} つです。`}
+        </span>
+      </div>
+
       <div className="q">
         <div className="q-label">
           <span className="no">1</span>物件<span className="req">必須</span>
@@ -295,6 +318,7 @@ export function CaseQuickForm({ buildings, units, clients, recentBuildingIds, in
       )}
 
       <div className="quick-foot">
+        <p className="quick-summary">{summaryText}・受付日は今日</p>
         <button className="btn btn-primary" type="submit" disabled={pending}>
           {pending ? "登録中…" : "登録する"}
         </button>

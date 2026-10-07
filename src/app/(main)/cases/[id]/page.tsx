@@ -165,6 +165,14 @@ export default async function CaseDetailPage({
         </a>
       )}
 
+      <CaseCostsSection
+        caseId={kase.id}
+        costs={costs}
+        financials={financials}
+        today={new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date())}
+        disabled={isDeleted}
+      />
+
       {!isDeleted ? (
         <CaseStatusControls
           caseId={kase.id}
@@ -182,14 +190,6 @@ export default async function CaseDetailPage({
           <div className="sec-body">{flow}</div>
         </section>
       )}
-
-      <CaseCostsSection
-        caseId={kase.id}
-        costs={costs}
-        financials={financials}
-        today={new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Tokyo" }).format(new Date())}
-        disabled={isDeleted}
-      />
 
       <CaseEstimatesSection
         caseId={kase.id}

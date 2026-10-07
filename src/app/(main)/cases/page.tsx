@@ -11,6 +11,7 @@ import {
   parseCaseFilter,
 } from "@/lib/data/queries-cases";
 import { getClients } from "@/lib/data/queries-sites";
+import { formatYen } from "@/lib/format";
 import { CASE_DISPLAY_STATUS_ORDER } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -73,30 +74,43 @@ export default async function CasesPage({ searchParams }: { searchParams: Search
           <p className="sub">依頼から入金まで、1件の仕事を1行で見ます。</p>
         </div>
         <div className="head-actions">
-          <Link className="btn btn-primary btn-float" href="/cases/new">
+          <Link className="btn btn-secondary btn-float" href="/cases/new">
             <Plus className="icon" aria-hidden="true" />
             案件を登録
           </Link>
         </div>
       </div>
 
-      <div className="attention attention-row" aria-label="要対応">
-        <Link
-          href={filter.attention ? hrefWith(filter, { attention: null }) : hrefWith(filter, { attention: "needs_invoice" })}
-          className="warn"
-          aria-current={filter.attention ? "true" : undefined}
-        >
-          <span className="big num">{counts.needsInvoice}</span>
-          <span className="txt">
-            <span className="ttl">
-              <FileWarning className="icon" aria-hidden="true" />
-              請求が未作成
-            </span>
-            <span className="lbl">完了したのに請求がありません{filter.attention ? "(押すと解除)" : ""}</span>
+      <section className="hero" aria-label="お金の状況と次にやること">
+        <div className="hero-money">
+          <span className="hero-label">入金待ち(請求済・税込)</span>
+          <span className="hero-num num">{formatYen(counts.receivable.amount)}</span>
+          <span className="hero-sub">
+            請求済 {counts.receivable.count} 件・請求した合計 {formatYen(counts.invoicedAmount)}・入金済み {formatYen(counts.paidAmount)}
           </span>
-          <ChevronRight className="icon go" aria-hidden="true" />
-        </Link>
-      </div>
+        </div>
+        <div className="hero-next">
+          {counts.needsInvoice > 0 ? (
+            <Link
+              href={filter.attention ? hrefWith(filter, { attention: null }) : hrefWith(filter, { attention: "needs_invoice" })}
+              aria-current={filter.attention ? "true" : undefined}
+            >
+              <span className="lbl">次にやること {counts.needsInvoice} 件</span>
+              <strong>
+                <FileWarning className="icon" aria-hidden="true" />
+                請求が未作成
+              </strong>
+              <span className="txt">完了したのに請求がありません{filter.attention ? "(押すと解除)" : ""}</span>
+              <span className="go">
+                案件を開く
+                <ChevronRight className="icon" aria-hidden="true" />
+              </span>
+            </Link>
+          ) : (
+            <p className="hero-none">いま、次にやることはありません。</p>
+          )}
+        </div>
+      </section>
 
       <section className="card has-cards" aria-label="案件の一覧">
         <form className="filters" method="get" action="/cases">

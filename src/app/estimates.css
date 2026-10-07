@@ -144,3 +144,9 @@
   .est-dock .dock-total b { display: block; color: var(--ink); font-size: var(--fs-h3); }
   .est-dock .btn { padding: 0 var(--sp-3); }
 }
+
+/* 粗利は深緑の面に大きな数字(案B。estimates.css の帯より後に読み込むため、ここで上書きする) */
+.profit-box > div:nth-child(3) { background: var(--primary); border-radius: var(--r-lg); padding: var(--sp-4) var(--sp-5); }
+.profit-box > div:nth-child(3) dt { color: var(--on-primary); }
+.profit-box > div:nth-child(3) dd { color: var(--on-primary); font-size: 48px; font-weight: 800; }
+@media (max-width: 767px) { .profit-box > div:nth-child(3) dd { font-size: 40px; } }

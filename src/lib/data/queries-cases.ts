@@ -92,14 +92,28 @@ export type CaseCounts = {
   total: number;
   needsInvoice: number;
   byStatus: Record<CaseDisplayStatus, number>;
+  /** 入金待ち(請求済の案件の未入金の合計・税込)と、その件数。一覧の頭の大きな数字に使う */
+  receivable: { amount: number; count: number };
+  /** 入金済の案件の入金の合計 */
+  paidAmount: number;
+  /** 請求した金額の合計(請求のある案件) */
+  invoicedAmount: number;
 };
 
 /** 絞り込みの前の件数(状態ごと・「請求が未作成」)。一覧の上の「要対応」と状態の件数に使う */
 export async function getCaseCounts(): Promise<CaseCounts> {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("case_overview").select("display_status, needs_invoice");
+  const { data, error } = await supabase
+    .from("case_overview")
+    .select("display_status, needs_invoice, invoiced_total, paid_total, unpaid_total");
   if (error) throw error;
-  const row = z.object({ display_status: z.enum(CASE_DISPLAY_STATUSES), needs_invoice: z.boolean() });
+  const row = z.object({
+    display_status: z.enum(CASE_DISPLAY_STATUSES),
+    needs_invoice: z.boolean(),
+    invoiced_total: z.coerce.number(),
+    paid_total: z.coerce.number(),
+    unpaid_total: z.coerce.number(),
+  });
   const byStatus: Record<CaseDisplayStatus, number> = {
     依頼: 0,
     見積中: 0,
@@ -111,12 +125,29 @@ export async function getCaseCounts(): Promise<CaseCounts> {
     失注: 0,
   };
   let needsInvoice = 0;
+  let receivableAmount = 0;
+  let receivableCount = 0;
+  let paidAmount = 0;
+  let invoicedAmount = 0;
   const rows = (data ?? []).map((r) => row.parse(r));
   for (const r of rows) {
     byStatus[r.display_status] += 1;
     if (r.needs_invoice) needsInvoice += 1;
+    invoicedAmount += r.invoiced_total;
+    paidAmount += r.paid_total;
+    if (r.display_status === "請求済") {
+      receivableAmount += r.unpaid_total;
+      receivableCount += 1;
+    }
   }
-  return { total: rows.length, needsInvoice, byStatus };
+  return {
+    total: rows.length,
+    needsInvoice,
+    byStatus,
+    receivable: { amount: receivableAmount, count: receivableCount },
+    paidAmount,
+    invoicedAmount,
+  };
 }
 
 /** 案件1件(取り消した案件も返す。画面で「元に戻す」を出すため) */
