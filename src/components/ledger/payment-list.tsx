@@ -55,10 +55,13 @@ export function PaymentList({
   invoiceId,
   showDeleted = false,
   readOnly = false,
+  openAddSignal = 0,
 }: {
   invoiceId: string;
   showDeleted?: boolean;
   readOnly?: boolean;
+  /** 値が増えるたびに「入金を登録」を開く(請求のカードの「入金を登録」ボタンから) */
+  openAddSignal?: number;
 }) {
   const [payments, setPayments] = useState<Payment[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -77,6 +80,10 @@ export function PaymentList({
   useEffect(() => {
     reload();
   }, [reload]);
+
+  useEffect(() => {
+    if (openAddSignal > 0 && !readOnly) setAddOpen(true);
+  }, [openAddSignal, readOnly]);
 
   const editingPayment = payments?.find((p) => p.id === editingId) ?? null;
 

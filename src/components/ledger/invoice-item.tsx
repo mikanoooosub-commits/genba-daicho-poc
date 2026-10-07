@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Pencil } from "lucide-react";
+import { ChevronDown, ChevronUp, Pencil, Plus } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ export function InvoiceItem({
   onChanged,
   showBuildingName = true,
   showDeletedPayments = false,
+  primaryPayment = false,
 }: {
   row: InvoiceLedgerRow;
   onChanged?: () => void;
@@ -46,8 +47,11 @@ export function InvoiceItem({
   showBuildingName?: boolean;
   /** true のとき、展開した入金明細に取消済み(is_deleted=true)の入金も表示する(ISSUE-007) */
   showDeletedPayments?: boolean;
+  /** その案件の次の一手が「入金を登録」のとき true(主のボタンにする) */
+  primaryPayment?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+  const [addSignal, setAddSignal] = useState(0);
   const [editOpen, setEditOpen] = useState(false);
   const [editInvoice, setEditInvoice] = useState<Invoice | null>(null);
   const [loadingEdit, setLoadingEdit] = useState(false);
@@ -91,6 +95,20 @@ export function InvoiceItem({
             <span className="font-bold tabular-nums">{formatYen(row.amount - row.paid_amount)}</span>
           </span>
         </div>
+
+        {row.amount - row.paid_amount > 0 && (
+          <Button
+            variant={primaryPayment ? "default" : "outline"}
+            className={primaryPayment ? "btn-float" : "self-start"}
+            onClick={() => {
+              setExpanded(true);
+              setAddSignal((n) => n + 1);
+            }}
+          >
+            <Plus className="size-[18px]" />
+            入金を登録
+          </Button>
+        )}
 
         <div className="flex flex-wrap items-center gap-1 border-t border-border/50 pt-2">
           <Dialog
@@ -159,7 +177,7 @@ export function InvoiceItem({
           </Button>
         </div>
 
-        {expanded && <PaymentList invoiceId={row.invoice_id} showDeleted={showDeletedPayments} />}
+        {expanded && <PaymentList invoiceId={row.invoice_id} showDeleted={showDeletedPayments} openAddSignal={addSignal} />}
       </CardContent>
     </Card>
   );

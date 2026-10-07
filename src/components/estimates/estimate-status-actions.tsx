@@ -76,7 +76,7 @@ export function EstimateStatusActions({
               下書きを取り消す
             </button>
             <button
-              className="btn btn-primary"
+              className={dirty ? "btn btn-secondary" : "btn btn-primary"}
               type="button"
               disabled={pending || dirty}
               title={dirty ? "先に「下書きを保存」してください" : undefined}
@@ -196,7 +196,7 @@ export function CaseStatusSuggestion({
         <strong>案件の状態を「{suggested}」にしますか</strong>
         {reason}(いまは「{caseStatus}」です。押すまで変わりません)
         <div style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-2)", flexWrap: "wrap" }}>
-          <button className="btn btn-primary" type="button" disabled={pending} onClick={apply}>
+          <button className="btn btn-secondary" type="button" disabled={pending} onClick={apply}>
             「{suggested}」にする
           </button>
           <button className="btn btn-ghost" type="button" onClick={() => setDismissed(true)}>

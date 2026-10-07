@@ -73,7 +73,7 @@ export default async function CasesPage({ searchParams }: { searchParams: Search
           <p className="sub">依頼から入金まで、1件の仕事を1行で見ます。</p>
         </div>
         <div className="head-actions">
-          <Link className="btn btn-primary" href="/cases/new">
+          <Link className="btn btn-primary btn-float" href="/cases/new">
             <Plus className="icon" aria-hidden="true" />
             案件を登録
           </Link>

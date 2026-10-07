@@ -18,10 +18,13 @@ export function CaseEstimatesSection({
   estimates,
   disabled,
   primary = false,
+  invoiceFromEstimateId = null,
 }: {
   caseId: string;
   estimates: Estimate[];
   disabled: boolean;
+  /** 完了で請求がなく、採用済みの見積があるとき、その見積の id(「この見積から請求を作る」を主にする) */
+  invoiceFromEstimateId?: string | null;
   /** 「見積を作る」がその状態の次の一手のとき true(依頼・見積中) */
   primary?: boolean;
 }) {
@@ -32,6 +35,11 @@ export function CaseEstimatesSection({
       </div>
       {!disabled && (
         <div className="sec-action">
+          {invoiceFromEstimateId && (
+            <Link className="btn btn-primary btn-float" href={`/estimates/${invoiceFromEstimateId}/invoice`}>
+              この見積から請求を作る
+            </Link>
+          )}
           <CreateEstimateButton
             caseId={caseId}
             primary={primary}

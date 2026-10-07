@@ -18,7 +18,16 @@ import type { Invoice, InvoiceLedgerRow } from "@/lib/types";
  * 代わりに `PaymentList` の入金明細と同じ「クライアント側でオンデマンド取得」の設計に合わせ、
  * チェックを入れたときだけ `getDeletedInvoicesAction({ siteId })` を呼ぶ。
  */
-export function SiteInvoiceList({ siteId, rows }: { siteId: string; rows: InvoiceLedgerRow[] }) {
+export function SiteInvoiceList({
+  siteId,
+  rows,
+  primaryPayment = false,
+}: {
+  siteId: string;
+  rows: InvoiceLedgerRow[];
+  /** 案件の次の一手が「入金を登録」のとき true(最初の未入金の請求だけ主のボタンにする) */
+  primaryPayment?: boolean;
+}) {
   const router = useRouter();
   const [showDeleted, setShowDeleted] = useState(false);
   const [deletedInvoices, setDeletedInvoices] = useState<Invoice[] | null>(null);
@@ -52,10 +61,11 @@ export function SiteInvoiceList({ siteId, rows }: { siteId: string; rows: Invoic
         取消済みを表示
       </label>
 
-      {rows.map((r) => (
+      {rows.map((r, i) => (
         <InvoiceItem
           key={r.invoice_id}
           row={r}
+          primaryPayment={primaryPayment && i === rows.findIndex((x) => x.amount - x.paid_amount > 0)}
           showBuildingName={false}
           showDeletedPayments={showDeleted}
           onChanged={() => router.refresh()}

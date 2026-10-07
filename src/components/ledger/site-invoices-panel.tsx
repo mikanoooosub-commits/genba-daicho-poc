@@ -16,11 +16,14 @@ export async function SiteInvoicesPanel({
   siteId,
   buildingName,
   primary = false,
+  primaryPayment = false,
 }: {
   siteId: string;
   buildingName: string;
   /** 「請求を追加」がその状態の次の一手のとき true */
   primary?: boolean;
+  /** 「入金を登録」がその状態の次の一手のとき true(請求済) */
+  primaryPayment?: boolean;
 }) {
   const rows = await getInvoiceLedger({ siteId });
 
@@ -41,7 +44,7 @@ export async function SiteInvoicesPanel({
           `PaymentList` の入金明細と同じ「クライアント側で必要になったら取得する」設計に合わせた)。
           アクティブな請求が0件でも取消済みだけ存在する場合があるため、常にレンダリングする。
         */}
-        <SiteInvoiceList siteId={siteId} rows={rows} />
+        <SiteInvoiceList siteId={siteId} rows={rows} primaryPayment={primaryPayment} />
       </div>
     </section>
   );

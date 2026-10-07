@@ -446,7 +446,7 @@ export function EstimateWorkspace({
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <button className="btn btn-primary" type="button" disabled={pending || !dirty} onClick={save}>
+              <button className={dirty ? "btn btn-primary" : "btn btn-secondary"} type="button" disabled={pending || !dirty} onClick={save}>
                 {pending ? "保存しています…" : "下書きを保存"}
               </button>
             </div>

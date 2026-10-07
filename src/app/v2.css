@@ -579,3 +579,9 @@ a { color: var(--link); text-underline-offset: 3px; }
 
 /* 一覧・詳細の中のリンクも押す場所を 44px にする(段階A の F-04) */
 .th-sort-link, .est-list a, .items a, .case-line a, .dl dd a, .caption a { display: inline-flex; align-items: center; min-height: var(--tap); }
+
+/* スマホ: 一覧のカードは、どこを押しても詳細に移る(先頭のリンクの押す範囲をカード全体に広げる) */
+@media (max-width: 767px) {
+  .table-cards tr { position: relative; }
+  .table-cards td.title-cell a::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-lg); }
+}

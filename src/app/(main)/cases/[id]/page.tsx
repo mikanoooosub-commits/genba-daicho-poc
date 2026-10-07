@@ -56,15 +56,20 @@ export default async function CaseDetailPage({
   // その状態で次にやる1つ(主のボタン)。1画面に主は1つ(D106-1)。
   // 依頼・見積中=見積を作る / 受注・施工中=施工を記録 / 完了で請求なし=請求を追加 / 請求済・入金済・失注=なし
   const hasInvoice = (overview?.invoice_count ?? 0) > 0;
-  const primaryAction: "estimate" | "job" | "invoice" | null = isDeleted
+  const adoptedEstimate = estimates.find((e) => e.status === "採用") ?? null;
+  const primaryAction: "estimate" | "job" | "invoice" | "invoice-from-estimate" | "payment" | null = isDeleted
     ? null
     : displayStatus === "依頼" || displayStatus === "見積中"
       ? "estimate"
       : displayStatus === "受注" || displayStatus === "施工中"
         ? "job"
         : displayStatus === "完了" && !hasInvoice
-          ? "invoice"
-          : null;
+          ? adoptedEstimate
+            ? "invoice-from-estimate"
+            : "invoice"
+          : displayStatus === "請求済"
+            ? "payment"
+            : null;
 
   const flow = (
     <ol className="flow" aria-label="状態の流れ">
@@ -160,11 +165,17 @@ export default async function CaseDetailPage({
         disabled={isDeleted}
       />
 
-      <CaseEstimatesSection caseId={kase.id} estimates={estimates} disabled={isDeleted} primary={primaryAction === "estimate"} />
+      <CaseEstimatesSection
+        caseId={kase.id}
+        estimates={estimates}
+        disabled={isDeleted}
+        primary={primaryAction === "estimate"}
+        invoiceFromEstimateId={primaryAction === "invoice-from-estimate" ? (adoptedEstimate?.id ?? null) : null}
+      />
 
       <CaseJobsSection caseId={kase.id} jobs={jobs} disabled={isDeleted} primary={primaryAction === "job"} />
 
-      <SiteInvoicesPanel siteId={kase.site_id} buildingName={place} primary={primaryAction === "invoice"} />
+      <SiteInvoicesPanel siteId={kase.site_id} buildingName={place} primary={primaryAction === "invoice"} primaryPayment={primaryAction === "payment"} />
 
       <section className="card card-pad section-gap" aria-label="案件の項目">
         <dl className="dl-grid">
