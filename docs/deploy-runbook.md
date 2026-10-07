@@ -49,3 +49,4 @@
 |---|---|---|---|
 | 2026-10-06 | v1(地図つき)から v2(物件・案件の台帳)に入れ替え(`rebuild` を `main` に早送りでマージ。D92)。DB は migration_005〜007 を適用済みで、戻さない(足すだけ) | `a80cacf` | 直前の Production = `4e29e0d`(v1)。Vercel の Deployments で「Promote to Production」 |
 | 2026-10-06 | 段階3(見積・原価・粗利・見積書の印刷・事業者情報)に入れ替え(`stage3` を `main` に早送りでマージ。D100)。DB は migration_008・009 を適用済みで、戻さない(足すだけ) | `ceaa5a4` | 直前の Production = `186838b`(v2 の段階2)。Vercel の Deployments で「Promote to Production」 |
+| 2026-10-07 | 見た目の入れ替え(WO-012・縛りなし案 v2 の採用。案B+表は案A。D111): 橙の主ボタン・一覧の頭の深緑の面と「次の一手」の列・詳細の「次にやること」と粗利の面・見積の保存と提出の位置・登録(スマホ)の進み・スマホの下ナビ4項目(「その他」=`/more`)・`/design`。`design` を `main` に早送りでマージ。**DB は変えていない**(読み取りの `getCaseCounts` に合計を足しただけ)。**書き込みを伴う流れ(S1〜S3)は PL は未実行**(HANDOVER.md §4) | `c9d71aa`(コード。文書の追加を含むコミットが後ろに続く) | 直前の Production = `f84586a`(段階3の版)。Vercel の Deployments で「Promote to Production」。DB は戻さない |
