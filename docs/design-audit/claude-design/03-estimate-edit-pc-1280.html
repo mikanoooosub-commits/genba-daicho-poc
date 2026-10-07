@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>見積の編集(PC 1280px・採用後)— 現場台帳</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+</head>
+<body>
+<div class="app">
+<nav class="sidenav" aria-label="メニュー">
+  <div class="brand">現場台帳<small>研修用の架空データ</small></div>
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a>
+  <a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a>
+  <a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a>
+  <a href="#"><span class="ico ico-client" aria-hidden="true"></span>発注元</a>
+  <a href="#"><span class="ico ico-settings" aria-hidden="true"></span>設定</a>
+  <div class="account">
+    <a href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a>
+    <a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a>
+  </div>
+</nav>
+<header class="topbar">
+  <span class="brand">現場台帳</span>
+  <a href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a>
+  <a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a>
+</header>
+<main class="main"><div class="main-inner">
+  <nav class="breadcrumb" aria-label="現在地"><a href="#">案件</a><span aria-hidden="true">›</span><a href="#">K2026-0016 さくらマンション 305</a><span aria-hidden="true">›</span><span aria-current="page">見積</span></nav>
+  <div class="page-head">
+    <div>
+      <div class="title-row">
+        <h1>見積 <span class="num">M2026-0005</span></h1>
+        <span class="ver">第1版</span>
+        <span class="status status-progress"><span class="ico ico-st-half" aria-hidden="true"></span>採用</span>
+      </div>
+      <p class="sub">さくらマンション 305・管理会社A(架空)・v1 からの移行分・提出日 <span class="num">2026/10/7(水)</span></p>
+    </div>
+    <div class="aside">
+      <span class="status status-progress"><span class="ico ico-st-half" aria-hidden="true"></span>案件: 完了</span>
+    </div>
+  </div>
+
+  <ol class="flow" aria-label="状態の流れ">
+    <li class="done"><span class="ico ico-check" aria-hidden="true"></span>依頼</li>
+    <li class="done"><span class="ico ico-check" aria-hidden="true"></span>見積中</li>
+    <li class="done"><span class="ico ico-check" aria-hidden="true"></span>受注</li>
+    <li class="done"><span class="ico ico-check" aria-hidden="true"></span>施工中</li>
+    <li class="now" aria-current="step">完了</li>
+    <li>請求済</li>
+    <li>入金済</li>
+  </ol>
+
+  <div class="actions" style="margin: var(--sp-4) 0 var(--sp-5)">
+    <p class="caption note">出し直すときは、先に「提出済に戻す」を押します。</p>
+    <a class="btn btn-ghost" href="#"><span class="ico ico-print" aria-hidden="true"></span>見積書を見る・印刷</a>
+    <button type="button" class="btn btn-secondary">提出済に戻す</button>
+    <button type="button" class="btn btn-primary">この見積から請求を作る</button>
+  </div>
+
+  <div class="split">
+    <section class="card" aria-label="見積の内容">
+      <div class="card-body">
+        <dl class="dl-grid cols-3">
+          <div><dt>宛先(請求先)</dt><dd>管理会社A(架空)</dd></div>
+          <div><dt>有効期限</dt><dd>—</dd></div>
+          <div><dt>税率</dt><dd class="num">10%</dd></div>
+        </dl>
+      </div>
+      <div class="table-wrap">
+      <table class="table table-lines">
+        <thead>
+          <tr><th scope="col">区分</th><th scope="col">内容</th><th scope="col" class="r">数量</th><th scope="col">単位</th><th scope="col" class="r">単価</th><th scope="col" class="r">金額</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>施工費</td><td>クロス張替え(壁・天井)</td><td class="r num">45</td><td>㎡</td><td class="r num">¥1,200</td><td class="r num money">¥54,000</td></tr>
+          <tr><td>施工費</td><td>ハウスクリーニング一式</td><td class="r num">1</td><td>式</td><td class="r num">¥28,000</td><td class="r num money">¥28,000</td></tr>
+          <tr><td>商品代</td><td>洗面化粧台 ABC-750(架空)</td><td class="r num">1</td><td>台</td><td class="r num">¥42,000</td><td class="r num money">¥42,000</td></tr>
+          <tr><td>経費</td><td>廃材処分費</td><td class="r num">1</td><td>式</td><td class="r num">¥6,000</td><td class="r num money">¥6,000</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="split-foot">
+        <div class="field field-read">
+          <span class="label">備考(見積書に載ります)<span class="opt">任意</span></span>
+          <p class="value box">※架空のデモデータです。</p>
+        </div>
+        <dl class="totals">
+          <div><dt>小計(税抜)</dt><dd>¥130,000</dd></div>
+          <div><dt>消費税(10%・1円未満切り捨て)</dt><dd>¥13,000</dd></div>
+          <div class="total"><dt>合計(税込)</dt><dd>¥143,000</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <aside class="card card-sec dense" aria-labelledby="h-prev">
+      <div class="card-head"><h2 id="h-prev" style="font-size: var(--fs-h3)">前回の見積と施工</h2></div>
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="false">同じ部屋 <span class="badge num">0</span></button>
+        <button type="button" role="tab" aria-selected="true">同じ物件 <span class="badge num">1</span></button>
+        <button type="button" role="tab" aria-selected="false">同じ発注元 <span class="badge num">2</span></button>
+      </div>
+      <div class="card-body" style="padding: var(--sp-4)">
+        <div class="subcard">
+          <div class="row-line"><span><span class="kind">施工</span> <strong class="num">K2026-0001</strong></span><span class="caption num">2026/6/18(木)</span></div>
+          <p class="caption">さくらマンション 203・管理会社A(架空)・見積なし(v1 から移した案件など)</p>
+          <ul class="rows">
+            <li>
+              <div class="row-line"><span><span class="kind">施工</span> <strong>水回りクリーニング</strong>・退去前クリーニング</span></div>
+              <div class="row-line"><span class="caption num">2026/9/20(日)</span><button type="button" class="btn btn-ghost" style="margin-left:auto"><span class="ico ico-copy" aria-hidden="true"></span>明細に</button></div>
+            </li>
+            <li>
+              <div class="row-line"><span><span class="kind">施工</span> <strong>フローリング補修</strong>・キズ部分の部分補修</span></div>
+              <div class="row-line"><span class="caption num">2026/8/2(日)</span><button type="button" class="btn btn-ghost" style="margin-left:auto"><span class="ico ico-copy" aria-hidden="true"></span>明細に</button></div>
+            </li>
+            <li>
+              <div class="row-line"><span><span class="kind">施工</span> <strong>クロス張替え</strong>・全室クロス張替え、退去後の原状回復</span></div>
+              <div class="row-line"><span class="caption num">2026/6/18(木)</span><button type="button" class="btn btn-ghost" style="margin-left:auto"><span class="ico ico-copy" aria-hidden="true"></span>明細に</button></div>
+            </li>
+          </ul>
+        </div>
+        <p><a class="link-tap" href="#">失注した案件も含める</a></p>
+        <p class="caption">写した単価は下書きに入るだけです。金額はご自身で確かめてから提出します。</p>
+      </div>
+    </aside>
+  </div>
+</div></main>
+<nav class="bottomnav" aria-label="メニュー">
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a>
+  <a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a>
+  <a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a>
+  <a href="#"><span class="ico ico-more" aria-hidden="true"></span>その他</a>
+</nav>
+</div>
+</body>
+</html>

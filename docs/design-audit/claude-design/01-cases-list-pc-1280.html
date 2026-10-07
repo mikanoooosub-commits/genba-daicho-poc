@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案件の一覧(PC 1280px)— 現場台帳</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+</head>
+<body>
+<div class="app">
+<nav class="sidenav" aria-label="メニュー">
+  <div class="brand">現場台帳<small>研修用の架空データ</small></div>
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a>
+  <a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a>
+  <a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a>
+  <a href="#"><span class="ico ico-client" aria-hidden="true"></span>発注元</a>
+  <a href="#"><span class="ico ico-settings" aria-hidden="true"></span>設定</a>
+  <div class="account">
+    <a href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a>
+    <a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a>
+  </div>
+</nav>
+<header class="topbar">
+  <span class="brand">現場台帳</span>
+  <a href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a>
+  <a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a>
+</header>
+<main class="main"><div class="main-inner">
+  <div class="page-head">
+    <div>
+      <h1>案件</h1>
+      <p class="sub">依頼から入金まで、1件の仕事を1行で見ます。</p>
+    </div>
+    <a class="btn btn-primary" href="#"><span class="ico ico-plus" aria-hidden="true"></span>案件を登録</a>
+  </div>
+
+  <div class="attention">
+    <a class="warn" href="#">
+      <span class="big num">1</span>
+      <span class="txt">
+        <strong class="ttl"><span class="ico ico-warn" aria-hidden="true"></span>請求が未作成</strong>
+        <span class="lbl">完了したのに請求がありません</span>
+      </span>
+      <span class="ico ico-chevron-right go" aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <section class="card has-cards" aria-label="案件の一覧">
+    <form class="filters">
+      <div class="field search">
+        <label for="q">探す</label>
+        <input class="input" id="q" type="search" placeholder="物件名・部屋番号・案件番号・依頼の内容">
+      </div>
+      <div class="field">
+        <label for="client">発注元</label>
+        <select class="select" id="client">
+          <option>すべて</option>
+          <option>FC本部C(架空・クリーニング)</option>
+          <option>FC本部D(架空・リペア)</option>
+          <option>管理会社A(架空)</option>
+          <option>管理会社B(架空)</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary" type="submit"><span class="ico ico-search" aria-hidden="true"></span>絞り込む</button>
+    </form>
+    <div class="chips" role="group" aria-label="状態">
+      <button type="button" class="chip" aria-pressed="true">すべて <span class="n num">13</span></button>
+      <button type="button" class="chip" aria-pressed="false">依頼 <span class="n num">0</span></button>
+      <button type="button" class="chip" aria-pressed="false">見積中 <span class="n num">0</span></button>
+      <button type="button" class="chip" aria-pressed="false">受注 <span class="n num">0</span></button>
+      <button type="button" class="chip" aria-pressed="false">施工中 <span class="n num">0</span></button>
+      <button type="button" class="chip" aria-pressed="false">完了 <span class="n num">1</span></button>
+      <button type="button" class="chip" aria-pressed="false">請求済 <span class="n num">8</span></button>
+      <button type="button" class="chip" aria-pressed="false">入金済 <span class="n num">4</span></button>
+      <button type="button" class="chip" aria-pressed="false">失注 <span class="n num">0</span></button>
+      <span class="result-count num">全 13 件</span>
+    </div>
+    <div class="table-wrap">
+    <table class="table table-cards">
+      <thead>
+        <tr><th scope="col">案件</th><th scope="col">発注元</th><th scope="col">受付日</th><th scope="col">状態</th><th scope="col" class="r">請求(税込)</th><th scope="col">気づき</th></tr>
+      </thead>
+      <tbody>
+      <tr class="is-warn">
+        <td class="title-cell"><a href="#"><span class="name">さくらマンション 305</span><span class="meta">K2026-0016・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社A(架空)</td>
+        <td class="num" data-label="受付日">2026/8/18(火)</td>
+        <td class="status-cell"><span class="status status-progress"><span class="ico ico-st-half" aria-hidden="true"></span>完了</span></td>
+        <td class="r num none" data-label="請求(税込)">—</td>
+        <td class="flag-cell" data-label="気づき"><span class="flag flag-warn"><span class="ico ico-warn" aria-hidden="true"></span>請求が未作成</span></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">ひまわりマンション成増 502</span><span class="meta">K2026-0004・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社B(架空)</td>
+        <td class="num" data-label="受付日">2026/7/14(火)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥124,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">サンライズハイツ 101</span><span class="meta">K2026-0002・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社A(架空)</td>
+        <td class="num" data-label="受付日">2026/7/5(日)</td>
+        <td class="status-cell"><span class="status status-good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥42,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">クリーンステージ前野町 303</span><span class="meta">K2026-0008・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部C(架空・クリーニング)</td>
+        <td class="num" data-label="受付日">2026/7/1(水)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥75,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">徳丸コーポ 108</span><span class="meta">K2026-0005・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社B(架空)</td>
+        <td class="num" data-label="受付日">2026/6/30(火)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥42,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">グリーンコーポ板橋 305-A</span><span class="meta">K2026-0003・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社A(架空)</td>
+        <td class="num" data-label="受付日">2026/6/25(木)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥223,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">リノベガーデン大塚 509</span><span class="meta">K2026-0012・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部D(架空・リペア)</td>
+        <td class="num" data-label="受付日">2026/6/22(月)</td>
+        <td class="status-cell"><span class="status status-good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥39,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">クリーンヒルズ相生町 401</span><span class="meta">K2026-0009・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部C(架空・クリーニング)</td>
+        <td class="num" data-label="受付日">2026/6/20(土)</td>
+        <td class="status-cell"><span class="status status-good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥33,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">さくらマンション 203</span><span class="meta">K2026-0001・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社A(架空)</td>
+        <td class="num" data-label="受付日">2026/6/18(木)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥128,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">リノベテラス坂上 110</span><span class="meta">K2026-0011・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部D(架空・リペア)</td>
+        <td class="num" data-label="受付日">2026/6/15(月)</td>
+        <td class="status-cell"><span class="status status-good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥26,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">クリーンハイム西台 204</span><span class="meta">K2026-0007・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部C(架空・クリーニング)</td>
+        <td class="num" data-label="受付日">2026/6/12(金)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥161,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">リノベコート常盤台 206</span><span class="meta">K2026-0010・v1 からの移行分</span></a></td>
+        <td data-label="発注元">FC本部D(架空・リペア)</td>
+        <td class="num" data-label="受付日">2026/6/8(月)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥153,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      <tr>
+        <td class="title-cell"><a href="#"><span class="name">パークサイド高島平 712</span><span class="meta">K2026-0006・v1 からの移行分</span></a></td>
+        <td data-label="発注元">管理会社B(架空)</td>
+        <td class="num" data-label="受付日">2026/6/5(金)</td>
+        <td class="status-cell"><span class="status status-info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></td>
+        <td class="r num money" data-label="請求(税込)">¥97,000</td>
+        <td class="flag-cell" data-label="気づき"></td>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <details class="card disclosure" style="margin-top: var(--sp-5)">
+    <summary><span class="ico ico-chevron-down" aria-hidden="true"></span>取り消した案件(10件)</summary>
+  </details>
+</div></main>
+<nav class="bottomnav" aria-label="メニュー">
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a>
+  <a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a>
+  <a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a>
+  <a href="#"><span class="ico ico-more" aria-hidden="true"></span>その他</a>
+</nav>
+</div>
+</body>
+</html>

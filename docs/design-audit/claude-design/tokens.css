@@ -1,0 +1,75 @@
+/* 現場台帳 — generated from tokens.json */
+:root, [data-theme="light"] {
+  --bg: #f5f7f6;
+  --surface: #ffffff;
+  --surface-sunken: #eef2f1;
+  --ink: #1a2226;
+  --ink-muted: #44514f;
+  --ink-faint: #636f6d;
+  --line: #d7dedd;
+  --line-strong: #6f7e7c;
+  --primary: #0f3b36;
+  --primary-hover: #1b554c;
+  --primary-soft: #e3eeeb;
+  --on-primary: #ffffff;
+  --on-primary-muted: #bfd6d2;
+  --link: #0f5f55;
+  --brand-accent: #c1752f;
+  --accent-strong: #7c420e;
+  --accent-soft: #fcebd5;
+  --danger-solid: #93301a;
+  --st-neutral-bg: #ecefef;
+  --st-neutral-fg: #3d4a4c;
+  --st-progress-bg: #e3eeeb;
+  --st-progress-fg: #0f3b36;
+  --st-info-bg: #e2ecf7;
+  --st-info-fg: #1f4a80;
+  --st-good-bg: #ddf0e3;
+  --st-good-fg: #1b5733;
+  --st-warn-bg: #fcebd5;
+  --st-warn-fg: #7a3e0a;
+  --st-danger-bg: #fbe6de;
+  --st-danger-fg: #8e2a0e;
+  --row-hover: #f9fbfa;
+  --toast-link: #ffd9b0;
+  --focus-ring: #ffd43d;
+  --focus-ring-outer: #1a1a1a;
+  --shadow-1: 0 1px 2px rgba(15, 59, 54, 0.08), 0 0 0 1px rgba(15, 59, 54, 0.04);
+  --shadow-2: 0 8px 24px rgba(15, 59, 54, 0.16);
+}
+:root {
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-pill: 999px;
+  --fs-caption: 14px;
+  --fs-dense: 15px;
+  --fs-body: 16px;
+  --fs-lead: 18px;
+  --fs-h3: 18px;
+  --fs-h2: 20px;
+  --fs-h1: 24px;
+  --fs-num-xl: 28px;
+  --lh-body: 1.7;
+  --lh-dense: 1.45;
+  --lh-head: 1.4;
+  --tap: 44px;
+  --tap-field: 56px;
+  --nav-w: 232px;
+  --content-max: 1200px;
+  --font-jp: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", YuGothic, Meiryo, system-ui, sans-serif;
+}
+.h1 { font-family: var(--font-jp); font-size: 24px; line-height: 1.4; font-weight: 700; }
+.h2 { font-family: var(--font-jp); font-size: 20px; line-height: 1.4; font-weight: 700; }
+.h3 { font-family: var(--font-jp); font-size: 18px; line-height: 1.4; font-weight: 700; }
+.body { font-family: var(--font-jp); font-size: 16px; line-height: 1.7; font-weight: 400; }
+.dense { font-family: var(--font-jp); font-size: 15px; line-height: 1.45; font-weight: 400; }
+.caption { font-family: var(--font-jp); font-size: 14px; line-height: 1.5; font-weight: 400; }
+.num-xl { font-family: var(--font-jp); font-size: 28px; line-height: 1.2; font-weight: 700; }
