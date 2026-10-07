@@ -177,3 +177,13 @@
   .items-table:not(.items-readonly) th:nth-child(1) { width: 128px !important; }
   .items-table:not(.items-readonly) .select { padding-right: 28px; }
 }
+
+/* エラーを目立たせる(ハイライト): 左の一言は赤い面+太い左線、誤りのある行は赤みの面、欄は太い赤い枠 */
+.est-msg.error { background: var(--st-danger-bg); border-left: 6px solid var(--danger-solid); border-radius: var(--r-md); padding: var(--sp-2) var(--sp-3); }
+.items-table tr.row-has-error > td { background: var(--st-danger-bg); }
+@media (max-width: 1439px) { .items-table:not(.items-readonly) tr.row-has-error { background: var(--st-danger-bg); box-shadow: inset 6px 0 0 var(--danger-solid); } }
+.items-table .input[aria-invalid="true"] { border: 3px solid var(--st-danger-fg); background: var(--surface); }
+.est-msg.error { font-size: var(--fs-body); }
+.est-msg.error .btn-link { font-size: var(--fs-caption); }
+/* エラーの面が2行になっても、ボタンは動かさない(上に揃える) */
+.est-bar { align-items: flex-start; }

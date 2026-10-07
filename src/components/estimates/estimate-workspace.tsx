@@ -358,7 +358,7 @@ export function EstimateWorkspace({
               const label = `${idx + 1}行目`;
               return (
                 <Fragment key={r.key}>
-                <tr className={r.category === "値引き" ? "discount" : undefined}>
+                <tr className={[r.category === "値引き" ? "discount" : "", rowError?.key === r.key ? "row-has-error" : ""].filter(Boolean).join(" ") || undefined}>
                   <td className="c-cat" data-label="区分">
                     {editable ? (
                       <select
