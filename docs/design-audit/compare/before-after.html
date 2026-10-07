@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>現場台帳 ビフォーアフター(WO-012 段階C-1)</title>
+<style>
+  :root { --bg:#F5F7F6; --ink:#1A2226; --muted:#44514F; --line:#D7DEDD; --primary:#0F3B36; --soft:#E3EEEB; --warn:#FCEBD5; --warnfg:#7A3E0A; --bad:#FBE6DE; --badfg:#8E2A0E; --good:#DDF0E3; --goodfg:#1B5733; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Hiragino Sans","Yu Gothic UI","Yu Gothic",Meiryo,system-ui,sans-serif; font-size: 16px; line-height: 1.7; }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  h2 { font-size: 21px; margin: 48px 0 8px; padding-top: 16px; border-top: 3px solid var(--primary); }
+  h3 { font-size: 17px; margin: 0 0 6px; }
+  .lead { color: var(--muted); margin: 0 0 16px; max-width: 70ch; }
+  .note { font-size: 14px; color: var(--muted); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; margin: 16px 0; }
+  .pair.sp { grid-template-columns: 1fr 1fr; max-width: 760px; }
+  figure { margin: 0; background: #fff; border-radius: 12px; box-shadow: 0 1px 2px rgba(15,59,54,.1); padding: 12px; }
+  figcaption { font-weight: 700; margin-bottom: 8px; display: flex; gap: 8px; align-items: center; }
+  .tag { font-size: 14px; padding: 0 10px; border-radius: 4px; border: 1px solid currentColor; }
+  .before .tag { color: var(--badfg); background: var(--bad); }
+  .after .tag { color: var(--goodfg); background: var(--good); }
+  img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 8px; }
+  .crop { overflow: hidden; border-radius: 8px; border: 1px solid var(--line); }
+  .crop img { border: 0; border-radius: 0; }
+  ol.points { margin: 8px 0 0; padding-left: 22px; }
+  ol.points li { margin: 6px 0; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 2px rgba(15,59,54,.1); font-size: 15px; }
+  th, td { padding: 10px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { background: #EEF2F1; font-size: 14px; color: var(--muted); }
+  td.b { background: #fff7f4; } td.a { background: #f3faf5; font-weight: 700; }
+  .box { background: #fff; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 2px rgba(15,59,54,.1); }
+  .why { background: var(--soft); border-left: 6px solid var(--primary); padding: 12px 16px; border-radius: 8px; margin: 12px 0; }
+  @media (max-width: 800px) { .pair, .pair.sp { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>現場台帳 ビフォーアフター</h1>
+  <p class="lead">研修(10/8)に向けて、案件の一覧・案件の詳細・見積の3画面の見た目を直しました(WO-012 段階C-1)。<strong>機能・文言・URL・データは変えていません。</strong>見た目と配置だけです。いまはプレビュー用のブランチで、本番にはまだ入っていません。</p>
+
+  <h2>まず結論: 何が変わったか(3つ)</h2>
+  <div class="box">
+    <ol class="points">
+      <li><strong>「次に何を押すか」が1つに絞られた。</strong> 以前は濃い緑のボタンが同じ画面に2〜3個あり、どれが主か分からなかった。いまは「その状態の次の一手」だけが濃い緑(例: 完了した案件=「請求を追加」)。</li>
+      <li><strong>大事な数字が目に入る。</strong> 粗利・見積の合計・要対応の件数を、大きい文字と色の帯にした。以前は小さい文字で、他の項目と同じ強さだった。</li>
+      <li><strong>スマホで読める・押せる。</strong> 文字は最小14px、ボタンは44px以上。スマホの案件詳細で「請求済・入金済」が画面の右に切れていた不具合も直した。</li>
+    </ol>
+  </div>
+
+  <h2>数字で比べる(計測値)</h2>
+  <p class="lead">同じ画面を、同じ方法(ブラウザで文字の大きさ・ボタンの高さ・主ボタンの数・横スクロールを測る)で計測しました。「前」は 10/6 の棚卸し、「後」は今日の計測です。</p>
+  <table>
+    <thead><tr><th>画面</th><th>項目</th><th>前</th><th>後</th></tr></thead>
+    <tbody>
+      <tr><td rowspan="3">案件の一覧(PC)</td><td>押しにくいボタン・リンク(44px未満)</td><td class="b">34個(44個中)</td><td class="a">0個</td></tr>
+      <tr><td>濃い緑の「主」ボタンの数</td><td class="b">2個(登録と絞り込み)</td><td class="a">1個(案件を登録)</td></tr>
+      <tr><td>文字の最小サイズ</td><td class="b">14px</td><td class="a">14px(変わらず)</td></tr>
+      <tr><td rowspan="4">案件の詳細(スマホ)</td><td>横にはみ出して画面が横に動く</td><td class="b">あり(389px)</td><td class="a">なし(375px)</td></tr>
+      <tr><td>14px未満の小さい文字</td><td class="b">25か所(12px 13か所・13px 12か所)</td><td class="a">0か所</td></tr>
+      <tr><td>押しにくいボタン・リンク(44px未満)</td><td class="b">26個</td><td class="a">2個(うち1つは旧画面の部品)</td></tr>
+      <tr><td>状態の流れ「請求済・入金済」</td><td class="b">右に切れて見えない</td><td class="a">4列×2行で全部見える</td></tr>
+      <tr><td rowspan="2">見積(PC)</td><td>押しにくいボタン・リンク(44px未満)</td><td class="b">(未計測)</td><td class="a">0個</td></tr>
+      <tr><td>明細の見え方</td><td class="b">1行が2段(項目名が小さい12px)</td><td class="a">1行で読める表(14〜15px)</td></tr>
+    </tbody>
+  </table>
+  <p class="note">※ 12画面すべてで、横スクロールなし・14px未満の文字なしを確認。「後」の44px未満の残りは、旧画面の部品(台帳のチェック枠など)で、研修のあとに直します。</p>
+
+  <h2>1. 案件の一覧(PC)</h2>
+  <p class="lead">アプリの入口。「いま何をすべきか」が一覧の頭で分かる画面です。</p>
+  <div class="pair">
+    <figure class="before"><figcaption><span class="tag">前</span>案件の一覧</figcaption><img src="before-pc-cases.jpg" alt="前: 案件の一覧(PC)"></figure>
+    <figure class="after"><figcaption><span class="tag">後</span>案件の一覧</figcaption><img src="after-pc-cases.jpg" alt="後: 案件の一覧(PC)"></figure>
+  </div>
+  <ol class="points">
+    <li><strong>「請求が未作成」の注意</strong>: 小さい注意枠 → 画面の幅いっぱいの橙の帯(件数 28px・タイトル 18px の太字+三角のアイコン)。クリックで絞り込めるのは同じ。</li>
+    <li><strong>状態のチップ</strong>(すべて 13・依頼 0…): 高さ 36px → 44px。選択中は「濃い緑で塗りつぶし」→「薄い緑の地+太い枠+✓」に(塗りつぶすと主ボタンが2つあるように見えるため)。</li>
+    <li><strong>「絞り込む」</strong>: 主(濃い緑)→ 副(白地+緑の枠)。主は「案件を登録」の1つだけに。</li>
+    <li><strong>表</strong>: 行の高さ 60px・金額は太字で右揃え・先頭の列(物件名)全体が44pxの押せる範囲に。補足の「旧画面から移した案件」は、内部の呼び名「v1」をやめた。</li>
+  </ol>
+
+  <h2>2. 案件の詳細(スマホ 375px)</h2>
+  <p class="lead">1件の仕事を、依頼から入金まで1画面で見る画面。現場でスマホから開くことが多い画面です。</p>
+  <div class="pair sp">
+    <figure class="before"><figcaption><span class="tag">前</span>スマホ</figcaption><img src="before-sp-case-detail.jpg" alt="前: 案件の詳細(スマホ)"></figure>
+    <figure class="after"><figcaption><span class="tag">後</span>スマホ</figcaption><img src="after-sp-case-detail.jpg" alt="後: 案件の詳細(スマホ)"></figure>
+  </div>
+  <div class="why"><strong>いちばん大きい違い:</strong> 前は、上から「項目の羅列 → 状態 → 見積 → 原価と粗利 → 施工 → 請求・入金」の順で、同じ見た目の箱が続いていました。後は「状態 → 原価と粗利 → 見積 → 施工 → 請求・入金 → 項目」の順で、<strong>最初の画面に状態と粗利(¥130,000)が入ります</strong>。</div>
+  <ol class="points">
+    <li><strong>状態の流れ</strong>: 前は右に切れて「請求済・入金済」が見えず、ページ全体が横に動いた。後は4列×2行に折り返して全部見える。今の段(完了)は濃い緑、済んだ段は✓。</li>
+    <li><strong>「状態を変える」の6つのボタン</strong>: 前は常に開いていて、上の流れと二重だった。後は折りたたみ(押すと開く)。</li>
+    <li><strong>粗利(税抜)</strong>: 小さい文字の3つの数字 → 「粗利 ¥130,000」を28pxの帯で先頭に。売上・原価は下に小さく。</li>
+    <li><strong>主ボタン</strong>: 前は「見積を作る」「施工を記録」の両方が濃い緑。後は、この案件(完了・請求なし)の次の一手の<strong>「請求を追加」だけが濃い緑</strong>で、スマホでは下ナビのすぐ上に浮いて親指で届く。他は白地+枠。</li>
+    <li><strong>項目(案件番号・受付日・物件…)</strong>: 縦に1項目ずつ → 2列の格子にして下へ。「v1 から移した案件」→「旧画面から移した案件」。</li>
+  </ol>
+
+  <h2>3. 見積(PC・採用後)</h2>
+  <p class="lead">見積の明細と合計を見る画面。印刷して発注元に渡す見積書の元になります。</p>
+  <div class="pair">
+    <figure class="before"><figcaption><span class="tag">前</span>見積</figcaption><img src="before-pc-estimate.jpg" alt="前: 見積(PC)"></figure>
+    <figure class="after"><figcaption><span class="tag">後</span>見積</figcaption><img src="after-pc-estimate.jpg" alt="後: 見積(PC)"></figure>
+  </div>
+  <ol class="points">
+    <li><strong>明細</strong>: 前は1つの明細が2段(区分・内容・数量が上、単位・単価・金額が下で項目名が小さい)。後は<strong>1行で区分・内容・数量・単位・単価・金額</strong>が読める表。金額は右揃えで太字。</li>
+    <li><strong>合計(税込)</strong>: 小さい数字 → 薄い緑の帯に 28px で ¥143,000。</li>
+    <li><strong>「金額はすべて税抜です。」</strong>を表の上に1行追加(見積の税込・税抜の取り違えを防ぐため)。</li>
+  </ol>
+  <p class="note">※ 見積を作っている最中(下書き)の画面は、今回は直していません。Claude Design の案を待って、研修のあとに直します。</p>
+
+  <h2>まだ直していないもの(研修のあと)</h2>
+  <div class="box">
+    台帳・発注元・ログイン画面の見た目の載せ替え/確認のダイアログの作り直し/404・エラー・読み込み中の画面/見積の下書き(入力中)の画面/旧画面の言葉(「現場」「キャンセル」)。
+  </div>
+
+  <h2>この資料について</h2>
+  <p class="note">画像は、ブラウザ(縮小表示)で撮った確認用です。細かい文字がつぶれて見えます。実物の見え方は、プレビュー(Vercel)の画面で確かめてください。画像の元: <code>poc-app/docs/screenshots/design/before-after/</code>。</p>
+</main>
+</body>
+</html>
