@@ -39,7 +39,7 @@ function UnitSection({ history, buildingId }: { history: UnitHistory; buildingId
           </small>
         </h2>
         <div style={{ display: "flex", gap: "var(--sp-2)", flexWrap: "wrap", alignItems: "center" }}>
-          <Link className="btn btn-secondary btn-sm" href={newCaseHref}>
+          <Link className="btn btn-secondary" href={newCaseHref}>
             {unit ? "この部屋で案件を登録" : "案件を登録"}
           </Link>
           {unit && unit.room_no !== null && <UnitDeletedButton unitId={unit.id} restore={false} />}
@@ -138,7 +138,7 @@ export default async function BuildingDetailPage({ params }: { params: Promise<{
         <div className="b-title">
           <h1 id="bname">{building.name}</h1>
           <span className="kind">{building.kind}</span>
-          <Link className="btn btn-secondary btn-sm" href={`/buildings/${building.id}/edit`} style={{ marginLeft: "auto" }}>
+          <Link className="btn btn-secondary" href={`/buildings/${building.id}/edit`} style={{ marginLeft: "auto" }}>
             <Pencil className="icon" aria-hidden="true" />
             編集
           </Link>

@@ -228,7 +228,7 @@ export function CaseQuickForm({ buildings, units, clients, recentBuildingIds, in
               {effectiveClient.name}
               <small>{clientId ? "選んだ発注元" : "この物件のふだんの発注元"}</small>
             </span>
-            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setChangingClient(true)}>
+            <button type="button" className="btn btn-ghost" onClick={() => setChangingClient(true)}>
               変える
             </button>
           </div>

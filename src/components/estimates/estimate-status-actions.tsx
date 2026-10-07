@@ -72,7 +72,7 @@ export function EstimateStatusActions({
 
         {estimate.status === "下書き" && (
           <>
-            <button className="btn btn-danger btn-sm" type="button" disabled={pending} onClick={discard}>
+            <button className="btn btn-danger" type="button" disabled={pending} onClick={discard}>
               下書きを取り消す
             </button>
             <button
@@ -124,7 +124,7 @@ export function EstimateStatusActions({
               </span>
             ) : (
               <>
-                <button className="btn btn-secondary btn-sm" type="button" disabled={pending} onClick={() => changeStatus("提出済")}>
+                <button className="btn btn-secondary" type="button" disabled={pending} onClick={() => changeStatus("提出済")}>
                   提出済に戻す
                 </button>
                 <Link className="btn btn-primary" href={`/estimates/${estimate.id}/invoice`}>
@@ -137,7 +137,7 @@ export function EstimateStatusActions({
 
         {estimate.status === "不採用" && (
           <>
-            <button className="btn btn-secondary btn-sm" type="button" disabled={pending} onClick={() => changeStatus("提出済")}>
+            <button className="btn btn-secondary" type="button" disabled={pending} onClick={() => changeStatus("提出済")}>
               提出済に戻す
             </button>
             {isLatest && (
@@ -196,10 +196,10 @@ export function CaseStatusSuggestion({
         <strong>案件の状態を「{suggested}」にしますか</strong>
         {reason}(いまは「{caseStatus}」です。押すまで変わりません)
         <div style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-2)", flexWrap: "wrap" }}>
-          <button className="btn btn-primary btn-sm" type="button" disabled={pending} onClick={apply}>
+          <button className="btn btn-primary" type="button" disabled={pending} onClick={apply}>
             「{suggested}」にする
           </button>
-          <button className="btn btn-ghost btn-sm" type="button" onClick={() => setDismissed(true)}>
+          <button className="btn btn-ghost" type="button" onClick={() => setDismissed(true)}>
             このまま
           </button>
         </div>

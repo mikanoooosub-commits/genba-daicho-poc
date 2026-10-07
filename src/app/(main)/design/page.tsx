@@ -102,7 +102,7 @@ export default function DesignPage() {
       <ul className="sg-toc" aria-label="この画面の目次">
         {SECTIONS.map(([id, label]) => (
           <li key={id}>
-            <a className="btn btn-secondary btn-sm" href={`#${id}`}>
+            <a className="btn btn-secondary" href={`#${id}`}>
               {label}
             </a>
           </li>

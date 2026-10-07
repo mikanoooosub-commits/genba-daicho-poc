@@ -17,7 +17,7 @@ export function AddUnitsForm({ buildingId }: { buildingId: string }) {
 
   if (!open) {
     return (
-      <button type="button" className="btn btn-ghost btn-sm" onClick={() => setOpen(true)}>
+      <button type="button" className="btn btn-ghost" onClick={() => setOpen(true)}>
         <Plus className="icon" aria-hidden="true" />
         部屋を足す
       </button>

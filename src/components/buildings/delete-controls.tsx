@@ -25,7 +25,7 @@ export function DeleteBuildingButton({
 
   if (!confirming) {
     return (
-      <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirming(true)}>
+      <button type="button" className="btn btn-danger" onClick={() => setConfirming(true)}>
         <Trash2 className="icon" aria-hidden="true" />
         この物件を取り消す
       </button>
@@ -56,10 +56,10 @@ export function DeleteBuildingButton({
           </span>
         )}
         <span style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-3)", flexWrap: "wrap" }}>
-          <button type="button" className="btn btn-danger btn-sm" onClick={handleDelete} disabled={pending}>
+          <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={pending}>
             {pending ? "取り消し中…" : "取り消す"}
           </button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setConfirming(false)} disabled={pending}>
+          <button type="button" className="btn btn-secondary" onClick={() => setConfirming(false)} disabled={pending}>
             やめる
           </button>
         </span>
@@ -78,7 +78,7 @@ export function RestoreBuildingButton({ buildingId }: { buildingId: string }) {
     <>
       <button
         type="button"
-        className="btn btn-secondary btn-sm"
+        className="btn btn-secondary"
         disabled={pending}
         onClick={() => {
           setError("");
@@ -111,7 +111,7 @@ export function UnitDeletedButton({ unitId, restore }: { unitId: string; restore
     <>
       <button
         type="button"
-        className={restore ? "btn btn-secondary btn-sm" : "btn btn-ghost btn-sm"}
+        className={restore ? "btn btn-secondary" : "btn btn-ghost"}
         disabled={pending}
         onClick={() => {
           setError("");

@@ -263,7 +263,8 @@ export function EstimateWorkspace({
           </div>
         </div>
 
-        <table className="items-table">
+        <p className="caption table-note">金額はすべて税抜です。</p>
+        <table className={editable ? "items-table" : "items-table items-readonly"}>
           <thead>
             <tr>
               <th scope="col" style={{ width: 110 }}>区分</th>
@@ -388,7 +389,7 @@ export function EstimateWorkspace({
 
         {editable && (
           <div className="add-row">
-            <button className="btn btn-secondary btn-sm" type="button" onClick={() => addRow()}>
+            <button className="btn btn-secondary" type="button" onClick={() => addRow()}>
               <Plus className="icon" aria-hidden="true" />
               行を足す
             </button>
@@ -515,7 +516,7 @@ export function EstimateWorkspace({
                         {editable && (
                           <button
                             type="button"
-                            className="btn btn-ghost btn-sm"
+                            className="btn btn-ghost"
                             disabled={pending || dirty}
                             onClick={() => copyItems([it.id])}
                             aria-label={`「${it.description}」の明細を1行写す`}
@@ -528,7 +529,7 @@ export function EstimateWorkspace({
                   </ul>
                   {editable && (
                     <button
-                      className="btn btn-secondary btn-sm"
+                      className="btn btn-secondary"
                       type="button"
                       disabled={pending || dirty}
                       onClick={() => copyItems(ref.items.map((it) => it.id))}
@@ -551,7 +552,7 @@ export function EstimateWorkspace({
                       {editable && (
                         <button
                           type="button"
-                          className="btn btn-ghost btn-sm"
+                          className="btn btn-ghost"
                           onClick={() => addFromJob(j, ref.caseNo)}
                           aria-label="この施工の内容で明細を1行つくる"
                         >
@@ -566,7 +567,7 @@ export function EstimateWorkspace({
           ))}
         </ul>
         <div style={{ padding: "0 var(--sp-4) var(--sp-4)", display: "grid", gap: "var(--sp-2)" }}>
-          <a className="btn btn-ghost btn-sm" href={includeLost ? "?" : "?lost=1"} style={{ justifySelf: "start" }}>
+          <a className="btn btn-ghost" href={includeLost ? "?" : "?lost=1"} style={{ justifySelf: "start" }}>
             {includeLost ? "失注した案件を含めない" : "失注した案件も含める"}
           </a>
           <p className="caption muted">

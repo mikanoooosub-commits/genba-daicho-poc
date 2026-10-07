@@ -18,13 +18,13 @@
 .items-table td { padding: var(--sp-2) var(--sp-2); border-bottom: 1px solid var(--line); vertical-align: middle; }
 .items-table td:first-child, .items-table th:first-child { padding-left: var(--sp-5); }
 .items-table td:last-child, .items-table th:last-child { padding-right: var(--sp-4); }
-.items-table .input, .items-table .select { min-height: 40px; font-size: var(--fs-dense); padding: 0 var(--sp-2); }
+.items-table .input, .items-table .select { min-height: var(--tap); font-size: var(--fs-dense); padding: 0 var(--sp-2); }
 .items-table .select { padding-right: 28px; background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%; }
 .items-table .amount { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .items-table .copied { display: block; font-size: var(--fs-caption); color: var(--accent-strong); margin-top: 2px; }
 .items-table .discount .amount { color: var(--st-danger-fg); }
 .items-table .readonly-cell { font-size: var(--fs-dense); }
-.row-del { border: 0; background: none; color: var(--ink-muted); cursor: pointer; min-width: 36px; min-height: 36px; border-radius: var(--r-md); font-size: var(--fs-lead); }
+.row-del { border: 0; background: none; color: var(--ink-muted); cursor: pointer; min-width: var(--tap); min-height: var(--tap); border-radius: var(--r-md); font-size: var(--fs-lead); }
 .row-del:hover { background: var(--surface-sunken); color: var(--st-danger-fg); }
 .add-row { padding: var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); display: flex; gap: var(--sp-2); flex-wrap: wrap; align-items: center; }
 
@@ -39,7 +39,7 @@
 /* 前回の見積と施工 */
 .ref { position: sticky; top: var(--sp-4); }
 .ref .tabs { margin: 0; padding: 0 var(--sp-3); }
-.ref .tabs button { flex: 1 1 auto; justify-content: center; padding: 0 var(--sp-2); font-size: var(--fs-caption); min-height: 40px; background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--ink-muted); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ref .tabs button { flex: 1 1 auto; justify-content: center; padding: 0 var(--sp-2); font-size: var(--fs-caption); min-height: var(--tap); background: none; border: 0; border-bottom: 2px solid transparent; margin-bottom: -2px; color: var(--ink-muted); font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .ref .tabs button[aria-selected="true"] { color: var(--primary); border-bottom-color: var(--primary); }
 .ref-list { list-style: none; margin: 0; padding: var(--sp-3) var(--sp-4) var(--sp-4); display: grid; gap: var(--sp-3); }
 .ref-item { border: 1px solid var(--line); border-radius: var(--r-md); padding: var(--sp-3); }
@@ -71,18 +71,18 @@
 
 /* 1440px 未満(右に前回の見積を出すと幅が足りない)は、明細の1行を2段にする */
 @media (min-width: 768px) and (max-width: 1439px) {
-  .items-table thead { display: none; }
-  .items-table, .items-table tbody { display: block; width: 100%; }
-  .items-table tr { display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)) 36px; gap: var(--sp-2) var(--sp-2); padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); align-items: end; }
-  .items-table td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
-  .items-table td::before { content: attr(data-label); font-size: var(--fs-caption); color: var(--ink-muted); font-weight: 700; }
-  .items-table td.c-cat { grid-column: 1; grid-row: 1; }
-  .items-table td.c-desc { grid-column: 2 / 6; grid-row: 1; }
-  .items-table td.c-del { grid-column: 6; grid-row: 1; }
-  .items-table td.c-del::before { content: none; }
-  .items-table td.c-amt { grid-column: 5; grid-row: 2; text-align: right; align-items: flex-end; justify-content: flex-end; min-height: 40px; }
-  .items-table td.c-amt::before { align-self: flex-end; }
-  .items-table .copied { order: 3; }
+  .items-table:not(.items-readonly) thead { display: none; }
+  .items-table:not(.items-readonly), .items-table:not(.items-readonly) tbody { display: block; width: 100%; }
+  .items-table:not(.items-readonly) tr { display: grid; grid-template-columns: 104px repeat(4, minmax(0, 1fr)) var(--tap); gap: var(--sp-2) var(--sp-2); padding: var(--sp-3) var(--sp-4) var(--sp-3) var(--sp-5); border-bottom: 1px solid var(--line); align-items: end; }
+  .items-table:not(.items-readonly) td { border: 0; padding: 0 !important; display: flex; flex-direction: column; gap: 2px; }
+  .items-table:not(.items-readonly) td::before { content: attr(data-label); font-size: var(--fs-caption); color: var(--ink-muted); font-weight: 700; }
+  .items-table:not(.items-readonly) td.c-cat { grid-column: 1; grid-row: 1; }
+  .items-table:not(.items-readonly) td.c-desc { grid-column: 2 / 6; grid-row: 1; }
+  .items-table:not(.items-readonly) td.c-del { grid-column: 6; grid-row: 1; }
+  .items-table:not(.items-readonly) td.c-del::before { content: none; }
+  .items-table:not(.items-readonly) td.c-amt { grid-column: 5; grid-row: 2; text-align: right; align-items: flex-end; justify-content: flex-end; min-height: var(--tap); }
+  .items-table:not(.items-readonly) td.c-amt::before { align-self: flex-end; }
+  .items-table:not(.items-readonly) .copied { order: 3; }
 }
 @media (max-width: 1023px) {
   .est-grid { grid-template-columns: minmax(0, 1fr); }
@@ -106,3 +106,23 @@
   .items-table td.c-del::before { content: none; }
   .items-table td.c-amt { grid-column: 1 / -1; flex-direction: row; justify-content: space-between; align-items: baseline; }
 }
+
+/* ── 見積の明細(Claude Design の案): 読み取りは1行で読める表、合計は帯 ── */
+.table-note { padding: var(--sp-3) var(--sp-5) 0; }
+.items-table th { padding: var(--sp-3) var(--sp-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line-strong); line-height: 1.5; }
+.items-table td { height: 52px; }
+.items-readonly td { font-size: var(--fs-dense); }
+.items-readonly .amount { font-weight: 700; }
+.items-readonly .readonly-cell { display: block; }
+.totals dd { font-size: var(--fs-h3); font-weight: 700; }
+.totals dt.grand, .totals dd.grand { background: var(--primary-soft); color: var(--primary); border-top: 0; padding: var(--sp-3) 0; align-self: stretch; display: flex; align-items: center; }
+.totals dt.grand { padding-left: var(--sp-4); border-radius: var(--r-md) 0 0 var(--r-md); font-size: var(--fs-body); }
+.totals dd.grand { padding-right: var(--sp-4); border-radius: 0 var(--r-md) var(--r-md) 0; justify-content: flex-end; font-size: var(--fs-num-xl); line-height: 1.2; }
+.row-del { min-width: var(--tap); min-height: var(--tap); }
+/* 読み取りの表は列を詰めて、内容が折り返さないようにする(列の幅は JSX の style より優先) */
+.items-readonly th:nth-child(1) { width: 96px !important; }
+.items-readonly th:nth-child(3) { width: 56px !important; }
+.items-readonly th:nth-child(4) { width: 56px !important; }
+.items-readonly th:nth-child(5) { width: 96px !important; }
+.items-readonly th:nth-child(6) { width: 100px !important; }
+.items-readonly th, .items-readonly td { padding-left: var(--sp-2); padding-right: var(--sp-2); }
