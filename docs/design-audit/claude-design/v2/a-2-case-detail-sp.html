@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案A (2) 案件の詳細 スマホ — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/a.css">
+</head>
+<body>
+<div class="app">
+<header class="topbar"><span class="brand">現場台帳</span><a href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a><a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a></header>
+<main class="main"><div class="main-inner">
+  <nav class="breadcrumb" aria-label="現在地"><a href="#">案件</a><span aria-hidden="true">›</span><span class="num" aria-current="page">K2026-0016</span></nav>
+  <div class="page-head">
+    <div>
+      <h1>さくらマンション 305</h1>
+      <p class="sub">管理会社A(架空)・<span class="num">2026/8/18(火)</span> 受付</p>
+    </div>
+  </div>
+
+  <div class="stack">
+  <section class="a-next" style="display:grid; grid-template-columns: auto 1fr; padding: var(--sp-4)">
+    <span class="mark"><span class="ico ico-warn" aria-hidden="true"></span></span>
+    <div><p class="lead">次にやること</p><p class="what">請求を作る</p><p class="why">完了しています。請求がまだありません。</p></div>
+    <a class="btn btn-primary btn-field btn-block" href="#" style="grid-column: 1 / -1; margin: var(--sp-1) 0 0"><span class="ico ico-plus" aria-hidden="true"></span>請求を追加</a>
+  </section>
+
+  <section class="card card-sec" aria-labelledby="h-status">
+    <div class="card-head"><h2 id="h-status">状態</h2></div>
+    <div class="card-body">
+      <span class="a-rail wide" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="now"></i><i class=""></i><i class=""></i></span>
+      <p class="a-railcap"><span><b>完了</b>(7つのうち5つ目)</span><span>次は 請求済</span></p>
+      <details class="disclosure">
+        <summary><span>状態を変える<small>(戻すときも、ここから)</small></span><span class="ico ico-chevron-down" aria-hidden="true"></span></summary>
+        <div class="disclosure-body">
+          <div class="picks" role="group" aria-label="状態を変える">
+            <button type="button" class="pick" aria-pressed="false">依頼</button><button type="button" class="pick" aria-pressed="false">見積中</button><button type="button" class="pick" aria-pressed="false">受注</button>
+            <button type="button" class="pick" aria-pressed="false">施工中</button><button type="button" class="pick" aria-pressed="true"><span class="ico ico-check" aria-hidden="true"></span>完了</button><button type="button" class="pick" aria-pressed="false">失注</button>
+          </div>
+          <p class="caption">「請求済」「入金済」は、請求と入金から自動で決まります。変更は履歴に残ります。</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <section class="card card-sec" aria-labelledby="h-profit">
+    <div class="card-head"><h2 id="h-profit">原価と粗利<small>(税抜)</small></h2></div>
+    <div class="card-action"><a class="btn btn-secondary" href="#"><span class="ico ico-plus" aria-hidden="true"></span>原価を入れる</a></div>
+    <div class="card-body">
+      <dl class="totals">
+        <div class="total"><dt>粗利(見込み)</dt><dd>¥130,000</dd></div>
+      </dl>
+      <div class="a-bar" role="img" aria-label="売上 130,000円のうち、原価 0円、粗利 130,000円"><i class="profit" style="width:100%"></i></div>
+      <p class="a-legend"><span><i class="sw profit"></i>粗利 <b>¥130,000</b></span><span><i class="sw cost"></i>原価 <b>¥0</b></span><span>売上 <b>¥130,000</b></span></p>
+      <p class="caption">売上は、採用した見積の小計(税抜)で見込んでいます。請求を作ると確定します。原価(外注費・材料費・経費)はまだ入っていません。</p>
+    </div>
+  </section>
+
+  <section class="card card-sec card-log" aria-labelledby="h-est">
+    <div class="card-head"><h2 id="h-est">見積</h2></div>
+    <div class="card-action"><a class="btn btn-secondary" href="#"><span class="ico ico-plus" aria-hidden="true"></span>別の見積を作る</a></div>
+    <div class="card-body"><ul class="rows"><li>
+      <div class="row-line"><a class="link-tap num" href="#">M2026-0005 第1版</a><span class="status status-progress"><span class="ico ico-st-half" aria-hidden="true"></span>採用</span></div>
+      <div class="row-line"><span class="caption num">提出 2026/10/7(水)</span><span class="amount num"><small>税込</small> ¥143,000</span></div>
+    </li></ul></div>
+  </section>
+
+  <section class="card card-sec card-log" aria-labelledby="h-job">
+    <div class="card-head"><h2 id="h-job">施工<span class="count num">1件</span></h2></div>
+    <div class="card-action"><a class="btn btn-secondary" href="#"><span class="ico ico-plus" aria-hidden="true"></span>施工を記録</a></div>
+    <div class="card-body"><ul class="rows"><li>
+      <p><span class="num">2026/8/18(火)</span>・<strong>洗面台の交換</strong></p>
+      <p class="caption">洗面化粧台の交換・手応え 普通・担当 本人</p>
+      <div class="row-actions">
+        <a class="btn btn-ghost" href="#"><span class="ico ico-edit" aria-hidden="true"></span>編集</a><a class="btn btn-ghost" href="#"><span class="ico ico-history" aria-hidden="true"></span>変更履歴</a>
+        <button type="button" class="btn btn-danger"><span class="ico ico-trash" aria-hidden="true"></span>削除</button>
+      </div>
+    </li></ul></div>
+  </section>
+
+  <section class="card card-sec card-log" aria-labelledby="h-inv">
+    <div class="card-head"><h2 id="h-inv">請求・入金</h2></div>
+    <div class="card-body"><p class="empty-inline">請求はまだありません。上の「請求を追加」から作ります。</p></div>
+  </section>
+
+  <section class="card" aria-label="案件の項目">
+    <div class="card-body">
+      <dl class="dl-grid">
+        <div><dt>案件番号</dt><dd class="num">K2026-0016</dd></div>
+        <div><dt>受付日</dt><dd class="num">2026/8/18(火)</dd></div>
+        <div class="wide"><dt>物件</dt><dd><a href="#">さくらマンション 305</a></dd></div>
+        <div class="wide"><dt>発注元(請求先)</dt><dd>管理会社A(架空)</dd></div>
+        <div><dt>種類</dt><dd>その他</dd></div>
+        <div><dt>集客経路</dt><dd>その他</dd></div>
+        <div class="wide"><dt>依頼の内容</dt><dd>旧画面からの移行分<span class="caption">旧画面から移した案件(施工と請求をまとめてあります)</span></dd></div>
+      </dl>
+      <div class="actions" style="margin-top: var(--sp-4); justify-content: space-between">
+        <span><a class="btn btn-secondary" href="#"><span class="ico ico-edit" aria-hidden="true"></span>編集</a> <a class="btn btn-ghost" href="#"><span class="ico ico-history" aria-hidden="true"></span>変更履歴</a></span>
+        <button type="button" class="btn btn-danger"><span class="ico ico-trash" aria-hidden="true"></span>この案件を取り消す</button>
+      </div>
+    </div>
+  </section>
+  </div>
+</div></main>
+<nav class="bottomnav" aria-label="メニュー">
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a><a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a><a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a><a href="#"><span class="ico ico-more" aria-hidden="true"></span>その他</a>
+</nav>
+</div>
+</body>
+</html>

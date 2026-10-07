@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案C (3) 見積の編集 PC — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/c.css">
+</head>
+<body>
+<div class="v2c desk">
+<header class="c-mast">
+  <div class="logo">現場台帳<small>研修用の架空データ</small></div>
+  <nav aria-label="メニュー"><a href="#" aria-current="page">案件</a><a href="#">物件</a><a href="#">台帳</a><a href="#">発注元</a><a href="#">設定</a></nav>
+  <div class="right"><a class="icon" href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a><a class="icon" href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a></div>
+</header>
+<div class="c-bar">
+  <div>
+    <nav class="crumb" aria-label="現在地"><a href="#">案件</a><span aria-hidden="true">›</span><a href="#">K2026-0048 さくらマンション 203</a><span aria-hidden="true">›</span><span>見積</span></nav>
+    <div class="ttl"><h1>見積 <span class="c-num">M2026-0052</span> 第1版</h1><span class="c-stamp neutral"><span class="ico ico-st-open" aria-hidden="true"></span>下書き</span><span class="c-cap">さくらマンション 203・管理会社A(架空)・退去後の原状回復</span></div>
+  </div>
+  <div class="right">
+    <span class="tot c-big"><small>合計(税込)</small>¥135,300</span>
+    <a class="c-link" href="#"><span class="ico ico-print" aria-hidden="true"></span>見積書を見る</a>
+    <button type="button" class="c-btn">下書きを保存</button>
+    <button type="button" class="c-btn go">提出済にする</button>
+  </div>
+</div>
+<div class="c-desk">
+  <aside class="c-note" aria-labelledby="c-h-prev">
+    <h2 id="c-h-prev">前回から写す</h2>
+    <div class="c-tabs" role="tablist"><button type="button" role="tab" aria-selected="true">同じ部屋 <b>3</b></button><button type="button" role="tab" aria-selected="false">同じ物件 <b>1</b></button><button type="button" role="tab" aria-selected="false">同じ発注元 <b>4</b></button></div>
+    <ul class="c-prev"><li><span class="t">水回りクリーニング</span><span class="d"><span class="c-num">2026/9/20(日)</span>・退去前クリーニング。手応え 良い</span><button type="button" class="c-btn" aria-label="水回りクリーニング を明細に足す">写す<span class="ico ico-arrow-right" aria-hidden="true"></span></button></li><li><span class="t">フローリング補修</span><span class="d"><span class="c-num">2026/8/2(日)</span>・キズ部分の部分補修(外注)</span><button type="button" class="c-btn" aria-label="フローリング補修 を明細に足す">写す<span class="ico ico-arrow-right" aria-hidden="true"></span></button></li><li><span class="t">クロス張替え</span><span class="d"><span class="c-num">2026/6/18(木)</span>・全室クロス張替え。経過年数6年、通常損耗の範囲(★架空)</span><button type="button" class="c-btn" aria-label="クロス張替え を明細に足す">写す<span class="ico ico-arrow-right" aria-hidden="true"></span></button></li></ul>
+    <p class="c-info"><span class="ico ico-info" aria-hidden="true"></span><span>この部屋の以前の仕事は旧画面から移したもので、見積の明細がありません。「同じ発注元」に明細つきの見積があります。</span></p>
+    <ul class="c-prev"><li>
+      <span class="t c-num">M2026-0050 第1版</span>
+      <span class="d"><span class="c-num">2026/9/28(月)</span>・サンライズハイツ 101・提出済・税抜 <span class="c-num">¥34,000</span></span>
+      <button type="button" class="c-btn" aria-label="明細を写す(2行)">2行写す<span class="ico ico-arrow-right" aria-hidden="true"></span></button>
+      <span class="ln"><span>クロス張替え 量産品 12㎡</span><span class="c-num">@1,000</span></span>
+      <span class="ln"><span>ハウスクリーニング(1K) 1式</span><span class="c-num">@22,000</span></span>
+    </li></ul>
+    <p class="c-cap">写した単価は下書きに入るだけです。金額はご自身で確かめてから提出します。</p>
+  </aside>
+
+  <main class="c-sheet" aria-label="見積書(このまま直せます)">
+    <p class="title">御見積書</p>
+    <div class="head">
+      <div>
+        <div class="to"><label class="visually-hidden" for="to">宛先</label><select class="c-sel" id="to"><option selected>管理会社A(架空)</option></select><span>御中</span></div>
+        <dl class="meta">
+          <dt>件名</dt><dd>さくらマンション 203 退去後の原状回復</dd>
+          <dt><label for="exp">有効期限</label></dt><dd><input class="c-in c-num" id="exp" value="2026/11/2(月)" style="width: 160px"></dd>
+          <dt><label for="tax">税率</label></dt><dd><select class="c-sel" id="tax" style="width: 96px"><option selected>10%</option></select></dd>
+        </dl>
+        <div class="grand"><span>御見積金額(税込)</span><b class="c-big">¥135,300</b></div>
+      </div>
+      <div class="from-co">
+        <p class="c-num">見積番号 M2026-0052(第1版)</p>
+        <p class="c-num">発行日 2026年10月3日</p>
+        <b style="margin-top: var(--sp-3)">サンプル内装 合同会社(架空)</b>
+        <p>東京都板橋区〇〇 0-0-0(架空)</p>
+        <p class="c-num">電話 00-0000-0000(架空)</p>
+        <p class="c-num">登録番号 T0000000000000(架空)</p>
+      </div>
+    </div>
+    <table class="c-grid">
+      <thead><tr><th scope="col">区分</th><th scope="col">内容</th><th scope="col">数量</th><th scope="col">単位</th><th scope="col">単価(税抜)</th><th scope="col">金額(税抜)</th><th scope="col" style="border:0; background:none"><span class="visually-hidden">行を消す</span></th></tr></thead>
+      <tbody>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option selected>施工費</option><option>商品代</option><option>経費</option><option>値引き</option></select></td>
+          <td><input aria-label="内容" value="クロス張替え 量産品(壁・天井)"></td>
+          <td style="width:60px"><input class="r" aria-label="数量" inputmode="decimal" value="32.5"></td>
+          <td style="width:48px"><input aria-label="単位" value="㎡" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="1,000"></td>
+          <td class="amt" style="width:92px">32,500</td>
+          <td class="x"><button type="button" aria-label="1行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option selected>施工費</option><option>商品代</option><option>経費</option><option>値引き</option></select></td>
+          <td><input aria-label="内容" value="クッションフロア張替え"></td>
+          <td style="width:60px" class="active"><input class="r" aria-label="数量" inputmode="decimal" value="8.2"></td>
+          <td style="width:48px"><input aria-label="単位" value="㎡" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="2,800"></td>
+          <td class="amt" style="width:92px">22,960</td>
+          <td class="x"><button type="button" aria-label="2行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option selected>施工費</option><option>商品代</option><option>経費</option><option>値引き</option></select></td>
+          <td><input aria-label="内容" value="ハウスクリーニング(1K)"></td>
+          <td style="width:60px"><input class="r" aria-label="数量" inputmode="decimal" value="1"></td>
+          <td style="width:48px"><input aria-label="単位" value="式" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="25,000"></td>
+          <td class="amt" style="width:92px">25,000</td>
+          <td class="x"><button type="button" aria-label="3行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option>施工費</option><option selected>商品代</option><option>経費</option><option>値引き</option></select></td>
+          <td><input aria-label="内容" value="洗面化粧台 ABC-750(架空)"></td>
+          <td style="width:60px"><input class="r" aria-label="数量" inputmode="decimal" value="1"></td>
+          <td style="width:48px"><input aria-label="単位" value="台" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="38,000"></td>
+          <td class="amt" style="width:92px">38,000</td>
+          <td class="x"><button type="button" aria-label="4行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option>施工費</option><option>商品代</option><option selected>経費</option><option>値引き</option></select></td>
+          <td><input aria-label="内容" value="廃材処分費"></td>
+          <td style="width:60px"><input class="r" aria-label="数量" inputmode="decimal" value="1"></td>
+          <td style="width:48px"><input aria-label="単位" value="式" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="5,000"></td>
+          <td class="amt" style="width:92px">5,000</td>
+          <td class="x"><button type="button" aria-label="5行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr>
+          <td style="width:76px"><select class="" aria-label="区分"><option>施工費</option><option>商品代</option><option>経費</option><option selected>値引き</option></select></td>
+          <td><input aria-label="内容" value="端数値引き"></td>
+          <td style="width:60px"><input class="r" aria-label="数量" inputmode="decimal" value="1"></td>
+          <td style="width:48px"><input aria-label="単位" value="式" style="text-align:center"></td>
+          <td style="width:84px"><input class="r" aria-label="単価(税抜)" inputmode="numeric" value="−460"></td>
+          <td class="amt neg" style="width:92px">−460</td>
+          <td class="x"><button type="button" aria-label="6行目を消す"><span class="ico ico-x" aria-hidden="true"></span></button></td>
+        </tr>
+        <tr class="add"><td colspan="6"><button type="button"><span class="ico ico-plus" aria-hidden="true"></span>行を足す</button></td><td class="x"></td></tr>
+      </tbody>
+    </table>
+    <div class="foot">
+      <div><label class="c-lbl" for="memo">備考(見積書に載ります・任意)</label><textarea class="c-memo" id="memo">退去立会い時の状態にもとづく見積です。負担区分は管理会社さまのご判断に従います。</textarea><p class="c-cap">入居者のお名前は入れません(預かる情報を減らすため)。</p></div>
+      <dl class="c-sums">
+        <div><dt>小計(税抜)</dt><dd>123,000</dd></div>
+        <div><dt>消費税(10%・1円未満切り捨て)</dt><dd>12,300</dd></div>
+        <div class="t"><dt>合計(税込)</dt><dd>¥135,300</dd></div>
+      </dl>
+    </div>
+  </main>
+
+  <aside class="c-margin" aria-label="欄外">
+    <div><p class="c-lbl">案件の進み</p><ol class="c-steps"><li class="done"><span class="ico ico-check" aria-hidden="true"></span><span>依頼</span></li><li class="now"><span class="ico ico-st-half" aria-hidden="true"></span><span>見積中</span></li><li class=""><span class="ico ico-st-open" aria-hidden="true"></span><span>受注</span></li><li class=""><span class="ico ico-st-open" aria-hidden="true"></span><span>施工中</span></li><li class=""><span class="ico ico-st-open" aria-hidden="true"></span><span>完了</span></li><li class=""><span class="ico ico-st-open" aria-hidden="true"></span><span>請求済</span></li><li class=""><span class="ico ico-st-open" aria-hidden="true"></span><span>入金済</span></li></ol></div>
+    <div style="display:grid; gap: var(--sp-3)">
+      <p class="c-lbl">写した行</p>
+      <p class="mn"><span class="ico ico-from" aria-hidden="true"></span><span><span class="c-num">1</span>行目: 前回(<span class="c-num">2026/6/18</span> の施工)から写した</span></p>
+      <p class="mn"><span class="ico ico-from" aria-hidden="true"></span><span><span class="c-num">3</span>行目: サンライズハイツ 101 の見積から写した</span></p>
+    </div>
+    <p class="c-cap">紙の見積書と同じ並びです。直した所が、そのまま印刷に出ます。</p>
+  </aside>
+</div>
+</div>
+</body>
+</html>

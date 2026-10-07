@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案C (1) 案件の一覧 PC — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/c.css">
+</head>
+<body>
+<div class="v2c">
+<header class="c-mast">
+  <div class="logo">現場台帳<small>研修用の架空データ</small></div>
+  <nav aria-label="メニュー"><a href="#" aria-current="page">案件</a><a href="#">物件</a><a href="#">台帳</a><a href="#">発注元</a><a href="#">設定</a></nav>
+  <div class="right"><a class="c-btn go" href="#"><span class="ico ico-plus" aria-hidden="true"></span>案件を登録</a><a class="icon" href="#" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a><a class="icon" href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a></div>
+</header>
+<div class="c-wrap">
+  <aside class="c-index">
+    <div><h1>案件</h1><p class="c-cap">次にやることの順に、全 <span class="c-num">13</span> 件。</p></div>
+    <ol aria-label="段取り">
+      <li class="zero"><a href="#"><span class="n">1</span><span class="t">見積を出す</span><span class="q">0件</span><span class="s">依頼・見積中</span></a></li>
+      <li class="zero"><a href="#"><span class="n">2</span><span class="t">施工する</span><span class="q">0件</span><span class="s">受注・施工中</span></a></li>
+      <li><a href="#s3"><span class="n">3</span><span class="t"><span class="c-mark">請求を作る</span></span><span class="q">1件</span><span class="s">完了・請求が未作成</span></a></li>
+      <li><a href="#s4"><span class="n">4</span><span class="t">入金を待つ</span><span class="q">8件</span><span class="s">請求済・¥1,003,000</span></a></li>
+      <li><a href="#s5"><span class="n">5</span><span class="t">済んだ</span><span class="q">4件</span><span class="s">入金済・¥140,000</span></a></li>
+    </ol>
+    <form style="display:grid; gap: var(--sp-3)">
+      <div><label class="c-lbl" for="q">探す</label><input class="c-in" id="q" type="search" placeholder="物件名・部屋番号・案件番号・依頼の内容"></div>
+      <div><label class="c-lbl" for="client">発注元</label><select class="c-sel" id="client"><option selected>すべて</option><option>FC本部C(架空・クリーニング)</option><option>FC本部D(架空・リペア)</option><option>管理会社A(架空)</option><option>管理会社B(架空)</option></select></div>
+      <button type="submit" class="c-btn"><span class="ico ico-search" aria-hidden="true"></span>絞り込む</button>
+    </form>
+    <div><p class="c-lbl">状態で絞る</p><div class="c-chips" role="group" aria-label="状態"><button type="button" class="c-chip" aria-pressed="true">すべて <b>13</b></button><button type="button" class="c-chip" aria-pressed="false">依頼 <b>0</b></button><button type="button" class="c-chip" aria-pressed="false">見積中 <b>0</b></button><button type="button" class="c-chip" aria-pressed="false">受注 <b>0</b></button><button type="button" class="c-chip" aria-pressed="false">施工中 <b>0</b></button><button type="button" class="c-chip" aria-pressed="false">完了 <b>1</b></button><button type="button" class="c-chip" aria-pressed="false">請求済 <b>8</b></button><button type="button" class="c-chip" aria-pressed="false">入金済 <b>4</b></button><button type="button" class="c-chip" aria-pressed="false">失注 <b>0</b></button></div></div>
+  </aside>
+
+  <main>
+    <section class="c-sec" id="s3">
+      <header><h2><span class="c-mark">請求を作る</span></h2><span class="q">1件・完了したのに請求がありません</span></header>
+      <div class="c-todo">
+        <a href="#" style="color: var(--ink); text-decoration:none"><span class="nm">さくらマンション 305</span><span class="c-cap" style="display:block">管理会社A(架空)・K2026-0016・<span class="c-num">2026/8/18(火)</span> 受付</span></a>
+        <span class="c-stamp progress"><span class="ico ico-st-half" aria-hidden="true"></span>完了</span>
+        <a class="c-btn go big" href="#">請求を作る<span class="ico ico-arrow-right" aria-hidden="true"></span></a>
+      </div>
+    </section>
+
+    <section class="c-sec" id="s4">
+      <header><h2>入金を待つ</h2><span class="q">8件</span><span class="sum c-big"><small>請求済・税込</small>¥1,003,000</span></header>
+      <ul class="c-rowlist">
+      <li><a class="row" href="#"><span class="nm"><b>ひまわりマンション成増 502</b><span class="mt">管理会社B(架空)・K2026-0004</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/7/14(火) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥124,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>クリーンステージ前野町 303</b><span class="mt">FC本部C(架空・クリーニング)・K2026-0008</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/7/1(水) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥75,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>徳丸コーポ 108</b><span class="mt">管理会社B(架空)・K2026-0005</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/30(火) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥42,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>グリーンコーポ板橋 305-A</b><span class="mt">管理会社A(架空)・K2026-0003</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/25(木) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥223,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>さくらマンション 203</b><span class="mt">管理会社A(架空)・K2026-0001</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/18(木) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥128,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>クリーンハイム西台 204</b><span class="mt">FC本部C(架空・クリーニング)・K2026-0007</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/12(金) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥161,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>リノベコート常盤台 206</b><span class="mt">FC本部D(架空・リペア)・K2026-0010</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/8(月) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥153,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>パークサイド高島平 712</b><span class="mt">管理会社B(架空)・K2026-0006</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/5(金) 受付</span><span><span class="c-stamp info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span></span><span class="am c-big">¥97,000</span></a></li>
+      </ul>
+    </section>
+
+    <section class="c-sec" id="s5">
+      <header><h2>済んだ</h2><span class="q">4件</span><span class="sum c-big"><small>入金済・税込</small>¥140,000</span></header>
+      <ul class="c-rowlist">
+      <li><a class="row" href="#"><span class="nm"><b>サンライズハイツ 101</b><span class="mt">管理会社A(架空)・K2026-0002</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/7/5(日) 受付</span><span><span class="c-stamp good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></span><span class="am c-big">¥42,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>リノベガーデン大塚 509</b><span class="mt">FC本部D(架空・リペア)・K2026-0012</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/22(月) 受付</span><span><span class="c-stamp good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></span><span class="am c-big">¥39,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>クリーンヒルズ相生町 401</b><span class="mt">FC本部C(架空・クリーニング)・K2026-0009</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/20(土) 受付</span><span><span class="c-stamp good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></span><span class="am c-big">¥33,000</span></a></li>
+      <li><a class="row" href="#"><span class="nm"><b>リノベテラス坂上 110</b><span class="mt">FC本部D(架空・リペア)・K2026-0011</span></span><span class="dots" aria-hidden="true"></span><span class="dt">2026/6/15(月) 受付</span><span><span class="c-stamp good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span></span><span class="am c-big">¥26,000</span></a></li>
+      </ul>
+    </section>
+
+    <details class="c-fold"><summary><span class="ico ico-chevron-down chev" aria-hidden="true"></span>取り消した案件(10件)</summary></details>
+  </main>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案B (1) 案件の一覧 PC — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/b.css">
+</head>
+<body>
+<div class="v2b">
+<nav class="b-rail" aria-label="メニュー">
+  <div class="logo">現場<br>台帳</div>
+  <a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a><a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a><a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a><a href="#"><span class="ico ico-client" aria-hidden="true"></span>発注元</a><a href="#"><span class="ico ico-settings" aria-hidden="true"></span>設定</a>
+  <a href="#" class="sp" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a><a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a>
+</nav>
+<main class="b-main">
+  <div class="b-head">
+    <div><h1>案件</h1><p class="sub">依頼から入金まで。全 <span class="b-num">13</span> 件</p></div>
+    <div class="right"><a class="b-btn" href="#"><span class="ico ico-plus" aria-hidden="true"></span>案件を登録</a></div>
+  </div>
+
+  <section class="b-hero b-hero-grid" aria-label="お金のまとめ">
+    <div>
+      <p class="k"><span class="ico ico-st-clock" aria-hidden="true"></span>入金待ち</p>
+      <p class="v b-num">¥1,003,000</p>
+      <p class="s">請求済 <span class="b-num">8</span>件・税込</p>
+    </div>
+    <div>
+      <p class="k">請求した<span class="b-num">¥1,143,000</span>(<span class="b-num">12</span>件)の、入金の進み</p>
+      <div class="b-bar" style="margin-top: var(--sp-2)" role="img" aria-label="入金済 ¥140,000、入金待ち ¥1,003,000"><i class="paid" style="width:12.2%"></i><i class="wait" style="flex:1"></i></div>
+      <div class="b-key">
+        <div><i class="sw paid"></i><span class="ico ico-st-done" aria-hidden="true"></span>入金済 <small><span class="b-num">4</span>件</small><b>¥140,000</b></div>
+        <div><i class="sw wait"></i><span class="ico ico-st-clock" aria-hidden="true"></span>入金待ち <small><span class="b-num">8</span>件</small><b>¥1,003,000</b></div>
+      </div>
+    </div>
+    <a class="b-todo" href="#">
+      <span class="k"><span class="ico ico-warn" aria-hidden="true"></span>次にやること <span class="b-num">1</span>件</span>
+      <span class="t">請求を作る</span>
+      <span class="d">さくらマンション 305・完了したのに請求がありません</span>
+      <span class="go">案件を開く<span class="ico ico-arrow-right" aria-hidden="true"></span></span>
+    </a>
+  </section>
+
+  <form class="b-filter">
+    <div style="flex: 1 1 320px"><label class="visually-hidden" for="q">探す</label><input class="b-input" id="q" type="search" placeholder="探す: 物件名・部屋番号・案件番号・依頼の内容"></div>
+    <div style="flex: 0 0 280px"><label class="visually-hidden" for="client">発注元</label><select class="b-select" id="client"><option selected>発注元: すべて</option><option>FC本部C(架空・クリーニング)</option><option>FC本部D(架空・リペア)</option><option>管理会社A(架空)</option><option>管理会社B(架空)</option></select></div>
+    <button type="submit" class="b-btn"><span class="ico ico-search" aria-hidden="true"></span>絞り込む</button>
+  </form>
+  <div class="b-segs" role="group" aria-label="状態" style="margin-bottom: var(--sp-5)">
+    <button type="button" class="b-seg" aria-pressed="true">すべて <b>13</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">依頼 <b>0</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">見積中 <b>0</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">受注 <b>0</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">施工中 <b>0</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">完了 <b>1</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">請求済 <b>8</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">入金済 <b>4</b></button>
+    <button type="button" class="b-seg" aria-pressed="false">失注 <b>0</b></button>
+  </div>
+
+  <div class="b-cards">
+    <a class="b-case todo" href="#">
+      <span class="top"><span class="b-st progress"><span class="ico ico-st-half" aria-hidden="true"></span>完了</span><span class="date">2026/8/18(火) 受付</span></span>
+      <span class="name">さくらマンション 305</span>
+      <span class="meta">管理会社A(架空)・K2026-0016</span>
+      <span class="bot"><span class="nx"><span class="ico ico-warn" aria-hidden="true"></span>請求を作る →</span><span class="amt b-num">—<small>請求はまだ</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i><i class=""></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/7/14(火) 受付</span></span>
+      <span class="name">ひまわりマンション成増 502</span>
+      <span class="meta">管理会社B(架空)・K2026-0004</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥124,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case paid" href="#">
+      <span class="top"><span class="b-st good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span><span class="date">2026/7/5(日) 受付</span></span>
+      <span class="name">サンライズハイツ 101</span>
+      <span class="meta">管理会社A(架空)・K2026-0002</span>
+      <span class="bot"><span class="nx"><span class="ico ico-check" aria-hidden="true"></span>済み</span><span class="amt b-num">¥42,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/7/1(水) 受付</span></span>
+      <span class="name">クリーンステージ前野町 303</span>
+      <span class="meta">FC本部C(架空・クリーニング)・K2026-0008</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥75,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/30(火) 受付</span></span>
+      <span class="name">徳丸コーポ 108</span>
+      <span class="meta">管理会社B(架空)・K2026-0005</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥42,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/25(木) 受付</span></span>
+      <span class="name">グリーンコーポ板橋 305-A</span>
+      <span class="meta">管理会社A(架空)・K2026-0003</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥223,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case paid" href="#">
+      <span class="top"><span class="b-st good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span><span class="date">2026/6/22(月) 受付</span></span>
+      <span class="name">リノベガーデン大塚 509</span>
+      <span class="meta">FC本部D(架空・リペア)・K2026-0012</span>
+      <span class="bot"><span class="nx"><span class="ico ico-check" aria-hidden="true"></span>済み</span><span class="amt b-num">¥39,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+    </a>
+    <a class="b-case paid" href="#">
+      <span class="top"><span class="b-st good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span><span class="date">2026/6/20(土) 受付</span></span>
+      <span class="name">クリーンヒルズ相生町 401</span>
+      <span class="meta">FC本部C(架空・クリーニング)・K2026-0009</span>
+      <span class="bot"><span class="nx"><span class="ico ico-check" aria-hidden="true"></span>済み</span><span class="amt b-num">¥33,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/18(木) 受付</span></span>
+      <span class="name">さくらマンション 203</span>
+      <span class="meta">管理会社A(架空)・K2026-0001</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥128,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case paid" href="#">
+      <span class="top"><span class="b-st good"><span class="ico ico-st-done" aria-hidden="true"></span>入金済</span><span class="date">2026/6/15(月) 受付</span></span>
+      <span class="name">リノベテラス坂上 110</span>
+      <span class="meta">FC本部D(架空・リペア)・K2026-0011</span>
+      <span class="bot"><span class="nx"><span class="ico ico-check" aria-hidden="true"></span>済み</span><span class="amt b-num">¥26,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/12(金) 受付</span></span>
+      <span class="name">クリーンハイム西台 204</span>
+      <span class="meta">FC本部C(架空・クリーニング)・K2026-0007</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥161,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/8(月) 受付</span></span>
+      <span class="name">リノベコート常盤台 206</span>
+      <span class="meta">FC本部D(架空・リペア)・K2026-0010</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥153,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+    <a class="b-case" href="#">
+      <span class="top"><span class="b-st info"><span class="ico ico-st-clock" aria-hidden="true"></span>請求済</span><span class="date">2026/6/5(金) 受付</span></span>
+      <span class="name">パークサイド高島平 712</span>
+      <span class="meta">管理会社B(架空)・K2026-0006</span>
+      <span class="bot"><span class="nx"><span class="ico ico-st-clock" aria-hidden="true"></span>入金を待つ</span><span class="amt b-num">¥97,000<small>請求(税込)</small></span></span>
+      <span class="b-steps" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class=""></i></span>
+    </a>
+  </div>
+
+  <details class="b-fold"><summary><span class="ico ico-chevron-down" aria-hidden="true"></span>取り消した案件(10件)</summary></details>
+</main>
+</div>
+</body>
+</html>

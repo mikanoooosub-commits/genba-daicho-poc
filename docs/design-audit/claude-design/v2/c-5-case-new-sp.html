@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案C (5) 案件の登録 スマホ — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/c.css">
+</head>
+<body>
+<div class="v2c">
+<header class="c-top"><a href="#" aria-label="案件に戻る"><span class="ico ico-chevron-left" aria-hidden="true"></span></a><h1 class="ttl">案件を登録</h1></header>
+<main class="c-page" style="padding-bottom: 148px">
+  <p class="c-sentence"><a class="c-blank" href="#p1">さくらマンション</a> の <a class="c-blank active" href="#p2"><span class="c-num">203</span></a> で、<br><a class="c-blank" href="#p3">管理会社A(架空)</a> から、<br><a class="c-blank" href="#p4">原状回復</a> の依頼。</p>
+
+  <div>
+    <label class="c-lbl" for="memo">依頼の内容(任意・1行)</label>
+    <input class="c-in" id="memo" value="退去後の原状回復。立会いは 10/6" style="min-height: var(--tap-field)">
+  </div>
+
+  <section aria-label="選び直す">
+    <details class="c-pick" id="p1">
+      <summary><span class="k">物件 <span style="color: var(--st-danger-fg); font-weight:700">必須</span></span><span class="v">さくらマンション</span><span class="ico ico-chevron-down" aria-hidden="true"></span></summary>
+      <div>
+        <input class="c-in" type="search" aria-label="物件名で探す" placeholder="物件名で探す" style="min-height: var(--tap-field)">
+        <div class="c-opts two">
+          <button type="button" class="c-opt" aria-pressed="true">さくらマンション<small>集合住宅・管理会社A(架空)</small></button>
+          <button type="button" class="c-opt" aria-pressed="false">サンライズハイツ<small>集合住宅・管理会社A(架空)</small></button>
+          <button type="button" class="c-opt" aria-pressed="false">グリーンコーポ板橋<small>集合住宅・管理会社A(架空)</small></button>
+          <button type="button" class="c-opt new" aria-pressed="false"><span class="ico ico-plus" aria-hidden="true"></span>新しい物件</button>
+        </div>
+      </div>
+    </details>
+    <details class="c-pick" id="p2" open>
+      <summary><span class="k">部屋 任意</span><span class="v"><span class="c-mark c-num">203</span></span><span class="ico ico-chevron-down" aria-hidden="true"></span></summary>
+      <div>
+        <div class="c-opts">
+          <button type="button" class="c-opt center c-num" aria-pressed="true" style="font-size: var(--fs-h2)">203</button><button type="button" class="c-opt center c-num" aria-pressed="false" style="font-size: var(--fs-h2)">305</button><button type="button" class="c-opt new" aria-pressed="false"><span class="ico ico-plus" aria-hidden="true"></span>番号</button>
+        </div>
+        <p class="c-cap">選ばないときは「物件全体・共用部」になります。</p>
+      </div>
+    </details>
+    <details class="c-pick" id="p3">
+      <summary><span class="k">発注元 <span style="color: var(--st-danger-fg); font-weight:700">必須</span></span><span class="v">管理会社A(架空)</span><span class="ico ico-chevron-down" aria-hidden="true"></span></summary>
+      <div><p class="c-cap">この物件のふだんの発注元が入っています。</p><p><button type="button" class="c-btn">変える</button></p></div>
+    </details>
+    <details class="c-pick" id="p4">
+      <summary><span class="k">種類</span><span class="v">原状回復</span><span class="ico ico-chevron-down" aria-hidden="true"></span></summary>
+      <div>
+        <div class="c-opts">
+          <button type="button" class="c-opt center" aria-pressed="true">原状回復</button><button type="button" class="c-opt center" aria-pressed="false">リフォーム</button><button type="button" class="c-opt center" aria-pressed="false">クリーニング</button>
+          <button type="button" class="c-opt center" aria-pressed="false">修繕</button><button type="button" class="c-opt center" aria-pressed="false">その他</button>
+        </div>
+      </div>
+    </details>
+  </section>
+</main>
+<div class="c-dock">
+  <p class="c-cap">受付日は今日で入ります。入居者のお名前は入れません。</p>
+  <button type="button" class="c-btn go big block">この内容で登録する</button>
+</div>
+</div>
+</body>
+</html>

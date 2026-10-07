@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>案C (2) 案件の詳細 スマホ — 現場台帳 v2</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/icons-extra.css">
+<link rel="stylesheet" href="css/c.css">
+</head>
+<body>
+<div class="v2c">
+<header class="c-top"><a href="#"><span class="ico ico-chevron-left" aria-hidden="true"></span>案件</a><a href="#" class="sp" aria-label="アカウント"><span class="ico ico-key" aria-hidden="true"></span></a><a href="#" aria-label="ログアウト"><span class="ico ico-logout" aria-hidden="true"></span></a></header>
+<main class="c-page">
+  <div>
+    <h1>さくらマンション 305</h1>
+    <p class="c-cap"><span class="c-num">K2026-0016</span>・管理会社A(架空)</p>
+  </div>
+  <div>
+    <p class="c-say">完了。次は <span class="c-mark">請求を作る</span>。</p>
+    <a class="c-btn go big block" href="#" style="margin-top: var(--sp-3)"><span class="ico ico-plus" aria-hidden="true"></span>請求を追加</a>
+  </div>
+
+  <section class="c-money" aria-label="原価と粗利">
+    <p class="c-cap">粗利(税抜・見込み)</p>
+    <p class="v c-big">¥130,000</p>
+    <p class="c-eq"><span>売上 <b>¥130,000</b></span><span class="op">−</span><span>原価 <b>¥0</b></span></p>
+    <p class="c-cap">売上は、採用した見積の小計(税抜)で見込んでいます。請求を作ると確定します。</p>
+    <a class="c-link" href="#"><span class="ico ico-plus" aria-hidden="true"></span>原価を入れる</a>
+  </section>
+
+  <section aria-label="段取り">
+    <ol class="c-line">
+      <li class="done"><span class="dot"><span class="ico ico-check" aria-hidden="true"></span></span>
+        <div class="h"><h2>依頼</h2><span class="c-cap c-num">2026/8/18(火) 受付</span></div>
+        <div class="body">
+          <p><a class="c-link" href="#">さくらマンション 305</a></p>
+          <p>管理会社A(架空)から <span class="c-cap">発注元(請求先)</span></p>
+          <p class="c-cap">種類 その他・集客経路 その他</p>
+          <p><span class="c-cap">依頼の内容</span> 旧画面からの移行分 <span class="c-cap">旧画面から移した案件(施工と請求をまとめてあります)</span></p>
+          <p class="c-acts"><a class="c-link" href="#"><span class="ico ico-edit" aria-hidden="true"></span>編集</a><a class="c-link" href="#"><span class="ico ico-history" aria-hidden="true"></span>変更履歴</a></p>
+        </div>
+      </li>
+      <li class="done"><span class="dot"><span class="ico ico-check" aria-hidden="true"></span></span>
+        <div class="h"><h2>見積</h2><span class="c-stamp progress"><span class="ico ico-st-half" aria-hidden="true"></span>採用</span></div>
+        <div class="body">
+          <p class="amount c-big"><small>税込</small>¥143,000</p>
+          <p><a class="c-link c-num" href="#">M2026-0005 第1版</a> <span class="c-cap c-num">提出 2026/10/7(水)</span></p>
+          <p class="c-acts"><a class="c-link" href="#"><span class="ico ico-plus" aria-hidden="true"></span>別の見積を作る</a></p>
+        </div>
+      </li>
+      <li class="done"><span class="dot"><span class="ico ico-check" aria-hidden="true"></span></span>
+        <div class="h"><h2>受注</h2></div>
+      </li>
+      <li class="done"><span class="dot"><span class="ico ico-check" aria-hidden="true"></span></span>
+        <div class="h"><h2>施工</h2><span class="c-cap"><span class="c-num">1</span>件</span></div>
+        <div class="body">
+          <p><span class="c-num">2026/8/18(火)</span> <strong>洗面台の交換</strong></p>
+          <p class="c-cap">洗面化粧台の交換・手応え 普通・担当 本人</p>
+          <p class="c-acts"><a class="c-link" href="#"><span class="ico ico-edit" aria-hidden="true"></span>編集</a><a class="c-link" href="#"><span class="ico ico-history" aria-hidden="true"></span>変更履歴</a><button type="button" class="c-link danger"><span class="ico ico-trash" aria-hidden="true"></span>削除</button></p>
+          <p><a class="c-btn" href="#"><span class="ico ico-plus" aria-hidden="true"></span>施工を記録</a></p>
+        </div>
+      </li>
+      <li class="now"><span class="dot"></span>
+        <div class="h"><h2>完了</h2><span class="here">いまここ</span></div>
+        <div class="body">
+          <details class="c-fold" style="margin:0; border-top:0">
+            <summary style="min-height: var(--tap)">状態を変える<span class="c-cap" style="font-weight:400">(戻すときも)</span><span class="ico ico-chevron-down chev" aria-hidden="true"></span></summary>
+            <div>
+              <div class="c-opts" role="group" aria-label="状態を変える">
+                <button type="button" class="c-opt center" aria-pressed="false">依頼</button><button type="button" class="c-opt center" aria-pressed="false">見積中</button><button type="button" class="c-opt center" aria-pressed="false">受注</button>
+                <button type="button" class="c-opt center" aria-pressed="false">施工中</button><button type="button" class="c-opt center" aria-pressed="true">完了</button><button type="button" class="c-opt center" aria-pressed="false">失注</button>
+              </div>
+              <p class="c-cap">「請求済」「入金済」は、請求と入金から自動で決まります。変更は履歴に残ります。</p>
+            </div>
+          </details>
+        </div>
+      </li>
+      <li class="todo"><span class="dot"></span>
+        <div class="h"><h2>請求</h2></div>
+        <div class="body"><p class="c-cap">まだありません。上の「請求を追加」から作ります。</p></div>
+      </li>
+      <li class="todo"><span class="dot"></span>
+        <div class="h"><h2>入金</h2></div>
+        <div class="body"><p class="c-cap">請求のあとに入ります。</p></div>
+      </li>
+    </ol>
+  </section>
+
+  <p><button type="button" class="c-btn danger"><span class="ico ico-trash" aria-hidden="true"></span>この案件を取り消す</button></p>
+</main>
+<nav class="c-nav" aria-label="メニュー"><a href="#" aria-current="page"><span class="ico ico-case" aria-hidden="true"></span>案件</a><a href="#"><span class="ico ico-building" aria-hidden="true"></span>物件</a><a href="#"><span class="ico ico-ledger" aria-hidden="true"></span>台帳</a><a href="#"><span class="ico ico-more" aria-hidden="true"></span>その他</a></nav>
+</div>
+</body>
+</html>

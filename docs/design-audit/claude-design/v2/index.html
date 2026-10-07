@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>現場台帳 v2 — 3案の一覧</title>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+body { background: var(--bg); }
+.wrap { max-width: 1320px; margin: 0 auto; padding: var(--sp-6) var(--sp-5) var(--sp-7); }
+.lead { max-width: 76ch; color: var(--ink-muted); margin-top: var(--sp-2); }
+.pick { background: var(--surface); border-radius: var(--r-lg); box-shadow: var(--shadow-1); padding: var(--sp-5); margin-top: var(--sp-5); border-left: 8px solid var(--brand-accent); max-width: 96ch; }
+.pick h2 { font-size: var(--fs-h2); } .pick ul { margin: var(--sp-3) 0 0; padding-left: 1.4em; } .pick li + li { margin-top: var(--sp-1); }
+.var { margin-top: var(--sp-7); }
+.var > header { display: flex; align-items: baseline; flex-wrap: wrap; gap: var(--sp-2) var(--sp-4); border-bottom: 2px solid var(--ink); padding-bottom: var(--sp-2); }
+.var > header .tag { background: var(--primary); color: var(--on-primary); font-weight: 700; padding: 0 var(--sp-3); border-radius: var(--r-sm); }
+.var > header h2 { font-size: var(--fs-h1); } .var > header p { color: var(--ink-muted); }
+.shots { display: grid; grid-template-columns: 2fr 1fr 2fr 1fr 1fr; gap: var(--sp-4); margin-top: var(--sp-4); align-items: start; }
+.shot { display: grid; gap: var(--sp-1); color: var(--ink); text-decoration: none; }
+.shot .frame { display: block; background: var(--surface); border-radius: var(--r-md); box-shadow: var(--shadow-1); overflow: hidden; aspect-ratio: 16 / 13; }
+.shot.sp .frame { aspect-ratio: 375 / 812; }
+.shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.shot:hover .frame { box-shadow: var(--shadow-2); }
+.shot strong { margin-top: var(--sp-2); text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 900px) { .shots { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>現場台帳 v2 — 縛りを外した3案</h1>
+  <p class="lead">5画面×3案の静的な見本です。画像を押すと、その画面の HTML が開きます(PC は幅 1280px、スマホは幅 375px で見てください)。スマホの画像は最初の1画面だけで、全長の画像は <code>screenshots/</code> にあります。データはすべて架空です。</p>
+  <section class="pick">
+    <h2>最も推す案: B「数字が先」(一覧と見積の PC は、A の表組みを混ぜる)</h2>
+    <ul>
+      <li>「数字がすぐ目に入る」「次に何をするかが一目で分かる」を、最初の1画面で一番強く満たす。</li>
+      <li>縮めた画像でも形が残るので、LP の事例に向く。深緑×橙のままで、提案資料と同じ事業者の道具に見える。</li>
+      <li>弱い所: 一覧のカードは件数が増えると見比べにくい。見積(PC)の明細は2段で縦に長い。橙のボタンは枠が無いと白地で境目が立たない。</li>
+      <li>C からは「次にやることの順に束ねる並び」と「登録の一文」を拾える。理由と数字は <a href="PROPOSAL.md">PROPOSAL.md</a>。</li>
+    </ul>
+  </section>
+<section class="var" id="a"><header><span class="tag">案A</span><h2>次の一手が見える台帳</h2><p>いまの台帳のまま、画面の頭に「次にやること」を1つだけ濃く置く。</p></header><div class="shots"><a class="shot" href="a-1-cases-pc.html"><span class="frame"><img src="screenshots/a-1-cases-pc.png" alt="案A 案件の一覧(PC 1280px)" loading="lazy"></span><strong>(1) 案件の一覧(PC 1280px)</strong><span class="caption">数字の3枚(次にやること・入金待ち・入金済)+いまの表。状態の下に7段の小さな帯、右端の列を「次の一手」に。</span></a><a class="shot sp" href="a-2-case-detail-sp.html"><span class="frame"><img src="screenshots/a-2-case-detail-sp-first-view.png" alt="案A 案件の詳細(スマホ 375px)" loading="lazy"></span><strong>(2) 案件の詳細(スマホ 375px)</strong><span class="caption">頭に「次にやること: 請求を作る」と主ボタン。状態は7段の帯1本、粗利は帯グラフつき。</span></a><a class="shot" href="a-3-estimate-pc.html"><span class="frame"><img src="screenshots/a-3-estimate-pc.png" alt="案A 見積の編集(PC 1280px・下書き)" loading="lazy"></span><strong>(3) 見積の編集(PC 1280px・下書き)</strong><span class="caption">明細は1行=1件の入力の表。合計と操作(見積書を見る・下書きを保存・提出済にする)は画面の下に固定。前回の見積と施工は表の下。</span></a><a class="shot sp" href="a-4-estimate-sp.html"><span class="frame"><img src="screenshots/a-4-estimate-sp-first-view.png" alt="案A 見積の編集(スマホ 375px・下書き)" loading="lazy"></span><strong>(4) 見積の編集(スマホ 375px・下書き)</strong><span class="caption">明細は1件ずつのカード(内容/数量・単位・単価/金額)。合計と「提出済にする」を下に固定。</span></a><a class="shot sp" href="a-5-case-new-sp.html"><span class="frame"><img src="screenshots/a-5-case-new-sp-first-view.png" alt="案A 案件の登録(スマホ 375px)" loading="lazy"></span><strong>(5) 案件の登録(スマホ 375px)</strong><span class="caption">番号つきの質問を上から。済んだ質問は番号が ✓ に変わる。「登録する」を下に固定。</span></a></div></section>
+<section class="var" id="b"><header><span class="tag">案B</span><h2>数字が先</h2><p>開いた瞬間に、お金が目に入る。深緑の大きな面に数字、次の一手だけを明るい橙で塗る。</p></header><div class="shots"><a class="shot" href="b-1-cases-pc.html"><span class="frame"><img src="screenshots/b-1-cases-pc.png" alt="案B 案件の一覧(PC 1280px)" loading="lazy"></span><strong>(1) 案件の一覧(PC 1280px)</strong><span class="caption">深緑の面に、入金待ち ¥1,003,000(56px)・入金の進みの帯・次にやることの橙の札。案件はカードで、金額が一番大きい。</span></a><a class="shot sp" href="b-2-case-detail-sp.html"><span class="frame"><img src="screenshots/b-2-case-detail-sp-first-view.png" alt="案B 案件の詳細(スマホ 375px)" loading="lazy"></span><strong>(2) 案件の詳細(スマホ 375px)</strong><span class="caption">深緑の面に粗利 48px と売上・原価の帯。そのすぐ下に「請求を追加」の橙のボタン。</span></a><a class="shot" href="b-3-estimate-pc.html"><span class="frame"><img src="screenshots/b-3-estimate-pc.png" alt="案B 見積の編集(PC 1280px・下書き)" loading="lazy"></span><strong>(3) 見積の編集(PC 1280px・下書き)</strong><span class="caption">明細は「数量 × 単価 = 金額」の式の形。右に合計の塔(合計 52px・小計の内訳の帯・提出済にする)。前回から写す欄は明細の横。</span></a><a class="shot sp" href="b-4-estimate-sp.html"><span class="frame"><img src="screenshots/b-4-estimate-sp-first-view.png" alt="案B 見積の編集(スマホ 375px・下書き)" loading="lazy"></span><strong>(4) 見積の編集(スマホ 375px・下書き)</strong><span class="caption">合計と内訳の帯を上に固定。明細は1行に畳み、直す1行だけ開く。下に「下書きを保存」「提出済にする」。</span></a><a class="shot sp" href="b-5-case-new-sp.html"><span class="frame"><img src="screenshots/b-5-case-new-sp-first-view.png" alt="案B 案件の登録(スマホ 375px)" loading="lazy"></span><strong>(5) 案件の登録(スマホ 375px)</strong><span class="caption">大きなタイルで選ぶ。上に必須の進み、下に「さくらマンション 203・管理会社A(架空)・原状回復」の要約と橙の「登録する」。</span></a></div></section>
+<section class="var" id="c"><header><span class="tag">案C</span><h2>段取り帳</h2><p>状態ではなく「次にやること」の順に並べる、紙の帳面。</p></header><div class="shots"><a class="shot" href="c-1-cases-pc.html"><span class="frame"><img src="screenshots/c-1-cases-pc.png" alt="案C 案件の一覧(PC 1280px)" loading="lazy"></span><strong>(1) 案件の一覧(PC 1280px)</strong><span class="caption">左に段取りの索引(見積を出す 0・施工する 0・請求を作る 1・入金を待つ 8・済んだ 4)と絞り込み。右は束ごとの台帳の行、金額は点線の先。</span></a><a class="shot sp" href="c-2-case-detail-sp.html"><span class="frame"><img src="screenshots/c-2-case-detail-sp-first-view.png" alt="案C 案件の詳細(スマホ 375px)" loading="lazy"></span><strong>(2) 案件の詳細(スマホ 375px)</strong><span class="caption">「完了。次は請求を作る。」の一文と主ボタン。粗利は式(売上 − 原価)。その下は工程の線で、依頼→見積→受注→施工→完了(いまここ)→請求→入金。</span></a><a class="shot" href="c-3-estimate-pc.html"><span class="frame"><img src="screenshots/c-3-estimate-pc.png" alt="案C 見積の編集(PC 1280px・下書き)" loading="lazy"></span><strong>(3) 見積の編集(PC 1280px・下書き)</strong><span class="caption">印刷と同じ並びの見積書を、そのまま直す。左に「前回から写す」、右の欄外に案件の進みと写した行。上の帯に合計と操作。</span></a><a class="shot sp" href="c-4-estimate-sp.html"><span class="frame"><img src="screenshots/c-4-estimate-sp-first-view.png" alt="案C 見積の編集(スマホ 375px・下書き)" loading="lazy"></span><strong>(4) 見積の編集(スマホ 375px・下書き)</strong><span class="caption">伝票の形。明細は点線の先に金額、直す1行だけ式の形で開く。合計は二重罫。</span></a><a class="shot sp" href="c-5-case-new-sp.html"><span class="frame"><img src="screenshots/c-5-case-new-sp-first-view.png" alt="案C 案件の登録(スマホ 375px)" loading="lazy"></span><strong>(5) 案件の登録(スマホ 375px)</strong><span class="caption">「さくらマンション の 203 で、管理会社A(架空) から、原状回復 の依頼。」の一文。下線の所を押して選び直す。</span></a></div></section>
+</main>
+</body>
+</html>
