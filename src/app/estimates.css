@@ -126,3 +126,7 @@
 .items-readonly th:nth-child(5) { width: 96px !important; }
 .items-readonly th:nth-child(6) { width: 100px !important; }
 .items-readonly th, .items-readonly td { padding-left: var(--sp-2); padding-right: var(--sp-2); }
+
+/* 合計の帯: ラベルと金額の間の隙間をなくして1つの帯に見せる */
+.totals dl { column-gap: 0; }
+.totals dt:not(.grand) { padding-right: var(--sp-4); }
