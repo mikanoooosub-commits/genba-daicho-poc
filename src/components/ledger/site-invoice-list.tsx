@@ -64,15 +64,15 @@ export function SiteInvoiceList({ siteId, rows }: { siteId: string; rows: Invoic
 
       {showDeleted && (
         <div className="flex flex-col gap-2">
-          <h3 className="text-xs font-bold text-muted-foreground">
+          <h3 className="text-sm font-bold text-muted-foreground">
             取消済み請求（{deletedInvoices?.length ?? 0}件）
           </h3>
           {loadingDeleted && (
-            <p className="text-xs text-muted-foreground">読み込み中…</p>
+            <p className="text-sm text-muted-foreground">読み込み中…</p>
           )}
           {!loadingDeleted && deletedInvoices !== null && deletedInvoices.length === 0 && (
             <Card>
-              <CardContent className="py-4 text-center text-xs text-muted-foreground">
+              <CardContent className="py-4 text-center text-sm text-muted-foreground">
                 取消済みの請求はありません
               </CardContent>
             </Card>

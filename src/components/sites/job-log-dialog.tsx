@@ -109,15 +109,15 @@ export function JobLogDialog({ jobId }: { jobId: string }) {
                       <Icon className="size-4" />
                       {meta.label}
                     </span>
-                    <span className="text-xs text-muted-foreground">{formatDateTime(log.created_at)}</span>
+                    <span className="text-sm text-muted-foreground">{formatDateTime(log.created_at)}</span>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">
+                  <p className="mt-1 text-sm text-muted-foreground">
                     {log.userName ? log.userName : "不明なユーザー"}
                   </p>
                   {log.action === "update" && changes.length > 0 && (
                     <ul className="mt-2 flex flex-col gap-1">
                       {changes.map((c, i) => (
-                        <li key={i} className="text-xs">
+                        <li key={i} className="text-sm">
                           <span className="font-bold">{c.label}</span>：{c.from}
                           <span className="mx-1 text-muted-foreground">→</span>
                           <span className="text-foreground">{c.to}</span>

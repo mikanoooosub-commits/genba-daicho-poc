@@ -109,8 +109,8 @@ export function SiteDetailView({
           <CardContent className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-destructive">この現場は削除済みです</p>
-              <p className="text-xs text-muted-foreground">
-                地図のピン・一覧には表示されません。復元すると元に戻ります。
+              <p className="text-sm text-muted-foreground">
+                一覧には表示されません。復元すると元に戻ります。
               </p>
               {restoreError && <p className="mt-1 text-sm text-destructive">{restoreError}</p>}
             </div>
@@ -139,11 +139,11 @@ export function SiteDetailView({
               <p className="text-sm text-muted-foreground">
                 {siteState.client?.name ?? "発注元未設定"}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 集客経路: {LEAD_SOURCE_LABEL[siteState.lead_source]}
               </p>
               {siteState.address_memo && (
-                <p className="text-xs text-muted-foreground">{siteState.address_memo}</p>
+                <p className="text-sm text-muted-foreground">{siteState.address_memo}</p>
               )}
             </div>
             <Button
@@ -162,7 +162,7 @@ export function SiteDetailView({
       {/* 前回施工（照会にすぐ使える。SPEC.md §10②の受入条件） */}
       <Card>
         <CardContent className="flex flex-col gap-1">
-          <p className="text-xs font-bold text-muted-foreground">前回施工</p>
+          <p className="text-sm font-bold text-muted-foreground">前回施工</p>
           {latestJob ? (
             <>
               <p className="font-bold">{formatDate(latestJob.job_date)}</p>
@@ -182,7 +182,7 @@ export function SiteDetailView({
       {/* 同じ建物の他の部屋(S1: 別の部屋で見積を出すとき、前回の施工を探す) */}
       <Card>
         <CardContent className="flex flex-col gap-2">
-          <p className="text-xs font-bold text-muted-foreground">同じ建物の他の部屋</p>
+          <p className="text-sm font-bold text-muted-foreground">同じ建物の他の部屋</p>
           {!siteState.building_name.trim() ? (
             <p className="text-sm text-muted-foreground">建物名が未登録です</p>
           ) : siblings.length === 0 ? (
@@ -277,7 +277,7 @@ export function SiteDetailView({
           <CardContent className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold">この現場を削除する</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 論理削除のみ行われ、施工・請求・入金の記録は残ります(復元可能)。
               </p>
             </div>
@@ -308,7 +308,7 @@ export function SiteDetailView({
               {siteState.building_name}
               {siteState.room_no ? ` ${siteState.room_no}` : ""}
             </span>
-            」を削除します。地図のピン・一覧から表示されなくなりますが、後から復元できます
+            」を削除します。一覧から表示されなくなりますが、後から復元できます
             (施工・請求・入金の記録は消えません)。
           </p>
           {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}

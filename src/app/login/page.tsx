@@ -82,7 +82,7 @@ export default function LoginPage() {
         <div>
           <h1 className="text-xl font-extrabold">現場台帳(PoC)</h1>
           <p className="text-sm text-muted-foreground">
-            現場ごとの施工・請求・入金を、地図と台帳で。
+            案件ごとの施工・請求・入金を、台帳で。
           </p>
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("magic")}
-                className="text-center text-xs font-bold text-primary hover:underline"
+                className="text-center text-sm font-bold text-primary hover:underline"
               >
                 初回の方・パスワード未設定の方はこちら（メールでログイン）
               </button>
@@ -179,11 +179,11 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setMode("password")}
-                className="text-center text-xs font-bold text-primary hover:underline"
+                className="text-center text-sm font-bold text-primary hover:underline"
               >
                 パスワードでログインに戻る
               </button>
-              <p className="text-center text-xs text-muted-foreground">
+              <p className="text-center text-sm text-muted-foreground">
                 ログイン後、右上メニューからパスワードを設定できます。
               </p>
             </form>

@@ -101,7 +101,7 @@ export function PaymentForm({ invoiceId, initial, submitLabel, onSubmit, onSucce
           onChange={(e) => setAmount(e.target.value)}
           required
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           分割入金の場合は、入金のたびにこのフォームから追加してください（1件ずつ複数回登録可）。
         </p>
       </div>

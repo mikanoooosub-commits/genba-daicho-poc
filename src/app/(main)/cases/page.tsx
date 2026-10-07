@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileWarning, Plus, Search } from "lucide-react";
+import { ChevronDown, ChevronRight, FileWarning, Plus, Search } from "lucide-react";
 
 import { CasesTable } from "@/components/cases/cases-table";
 import { RestoreCaseButton } from "@/components/cases/case-controls";
@@ -87,11 +87,14 @@ export default async function CasesPage({ searchParams }: { searchParams: Search
           aria-current={filter.attention ? "true" : undefined}
         >
           <span className="big num">{counts.needsInvoice}</span>
-          <span className="lbl">
-            <FileWarning className="icon" aria-hidden="true" /> 請求が未作成
-            <br />
-            完了したのに請求がありません{filter.attention ? "(押すと解除)" : ""}
+          <span className="txt">
+            <span className="ttl">
+              <FileWarning className="icon" aria-hidden="true" />
+              請求が未作成
+            </span>
+            <span className="lbl">完了したのに請求がありません{filter.attention ? "(押すと解除)" : ""}</span>
           </span>
+          <ChevronRight className="icon go" aria-hidden="true" />
         </Link>
       </div>
 
@@ -184,12 +187,15 @@ export default async function CasesPage({ searchParams }: { searchParams: Search
       </section>
 
       {deletedCases.length > 0 && (
-        <details className="card card-pad" style={{ marginTop: "var(--sp-5)" }}>
-          <summary style={{ cursor: "pointer", fontWeight: 700 }}>取り消した案件({deletedCases.length}件)</summary>
-          <p className="hint" style={{ margin: "var(--sp-2) 0 var(--sp-3)" }}>
+        <details className="card disclosure" style={{ marginTop: "var(--sp-5)" }}>
+          <summary>
+            <ChevronDown className="icon" aria-hidden="true" />
+            取り消した案件({deletedCases.length}件)
+          </summary>
+          <p className="hint" style={{ margin: "0 var(--sp-5) var(--sp-3)" }}>
             誤って取り消したときは、ここから元に戻せます。施工の記録は残っています。
           </p>
-          <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: "var(--sp-2)" }}>
+          <ul style={{ listStyle: "none", margin: 0, padding: "0 var(--sp-5) var(--sp-5)", display: "grid", gap: "var(--sp-2)" }}>
             {deletedCases.map((c) => (
               <li key={c.id} style={{ display: "flex", gap: "var(--sp-3)", alignItems: "center", flexWrap: "wrap" }}>
                 <span>

@@ -29,12 +29,14 @@ export function CasesTable({ rows }: { rows: CaseOverview[] }) {
         const row = ctx.row.original;
         return (
           <>
-            <Link href={`/cases/${row.case_id}`}>{roomLabel(row)}</Link>
-            <span className="meta">
-              {row.case_no}
-              {row.is_migrated ? "・v1 からの移行分" : ""}
-              {row.request_summary && !row.is_migrated ? `・${row.request_summary}` : ""}
-            </span>
+            <Link href={`/cases/${row.case_id}`}>
+              <span className="name">{roomLabel(row)}</span>
+              <span className="meta">
+                {row.case_no}
+                {row.is_migrated ? "・旧画面から移した案件" : ""}
+                {row.request_summary && !row.is_migrated ? `・${row.request_summary}` : ""}
+              </span>
+            </Link>
           </>
         );
       },
@@ -52,7 +54,7 @@ export function CasesTable({ rows }: { rows: CaseOverview[] }) {
       header: "請求(税込)",
       cell: (ctx) => {
         const row = ctx.row.original;
-        return row.invoice_count > 0 ? <span className="num">{formatYen(ctx.getValue())}</span> : <span className="muted">—</span>;
+        return row.invoice_count > 0 ? formatYen(ctx.getValue()) : "—";
       },
     }),
     helper.accessor("needs_invoice", {
@@ -101,7 +103,9 @@ export function CasesTable({ rows }: { rows: CaseOverview[] }) {
                     : id === "display_status"
                       ? "status-cell"
                       : id === "invoiced_total"
-                        ? "r"
+                        ? row.original.invoice_count > 0
+                          ? "r num money"
+                          : "r num none"
                         : id === "needs_invoice"
                           ? "flag-cell"
                           : undefined;

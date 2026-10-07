@@ -68,10 +68,10 @@ export function InvoiceItem({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {showBuildingName && <p className="font-bold">{row.building_name}</p>}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               {row.client_name}（{row.client_type}）・{row.lead_source}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               発行日 {row.issue_date ? formatDate(row.issue_date) : "未設定"}
               {row.format_pattern ? ` ・様式: ${row.format_pattern}` : ""}
             </p>

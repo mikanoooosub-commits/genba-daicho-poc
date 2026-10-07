@@ -4,27 +4,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
+// 見た目は v2.css の .btn と同じ決まり(docs/DESIGN-SYSTEM.md §3): 押す場所 44px 以上・角 8px・影なし・
+// フォーカスの輪は全部品共通(v2.css の :focus-visible)。主=塗り、副=白地+深緑の枠、文字だけ=ghost、取り消し=白地+赤茶の枠。
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-bold transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-ring/50",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-base font-bold leading-tight transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-[18px] shrink-0 [&_svg]:shrink-0 outline-none",
   {
     variants: {
       variant: {
-        default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90 active:scale-[0.98]",
+        default: "bg-primary text-primary-foreground hover:bg-[var(--primary-hover)]",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "border border-destructive bg-card text-destructive hover:bg-[var(--st-danger-bg)]",
         outline:
-          "border-2 border-border bg-card hover:bg-accent hover:text-accent-foreground",
+          "border border-primary bg-card text-primary hover:bg-accent",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          "border border-primary bg-card text-primary hover:bg-accent",
+        ghost: "text-[var(--link)] hover:bg-accent",
+        link: "text-[var(--link)] underline underline-offset-4",
       },
       size: {
-        default: "h-11 px-5 py-2 has-[>svg]:px-4",
-        sm: "h-9 rounded-lg gap-1.5 px-3 has-[>svg]:px-2.5",
-        lg: "h-13 rounded-2xl px-7 text-base has-[>svg]:px-5",
-        icon: "size-10 rounded-full",
+        default: "min-h-11 px-4 py-2",
+        sm: "min-h-11 px-3 py-2",
+        lg: "min-h-14 px-6 py-2",
+        icon: "size-11",
       },
     },
     defaultVariants: {

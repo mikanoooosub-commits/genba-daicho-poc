@@ -160,7 +160,7 @@ export function LedgerView({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lf-client" className="text-xs">発注元</Label>
+            <Label htmlFor="lf-client" className="text-sm">発注元</Label>
             <Select
               value={filters.clientId || "all"}
               onValueChange={(v) => updateParam("client", v === "all" ? null : v)}
@@ -180,7 +180,7 @@ export function LedgerView({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lf-lead" className="text-xs">集客経路</Label>
+            <Label htmlFor="lf-lead" className="text-sm">集客経路</Label>
             <Select
               value={filters.leadSource || "all"}
               onValueChange={(v) => updateParam("lead", v === "all" ? null : v)}
@@ -200,7 +200,7 @@ export function LedgerView({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lf-month" className="text-xs">月(発行月)</Label>
+            <Label htmlFor="lf-month" className="text-sm">月(発行月)</Label>
             <Input
               id="lf-month"
               type="month"
@@ -336,7 +336,7 @@ function SummarySection({ summary }: { summary: LedgerSummary }) {
 function SummaryCell({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-xl border border-border/60 bg-card px-3 py-2.5 text-center shadow-sm">
-      <p className="text-[11px] text-muted-foreground">{label}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
       <p className="text-sm font-bold">{value}</p>
     </div>
   );
@@ -352,9 +352,9 @@ function SummaryGroup({
   if (rows.length === 0) return null;
   return (
     <div className="flex flex-col gap-1.5">
-      <p className="text-xs font-bold text-muted-foreground">{title}</p>
+      <p className="text-sm font-bold text-muted-foreground">{title}</p>
       <div className="overflow-x-auto rounded-lg border border-border/50">
-        <table className="w-full text-xs">
+        <table className="w-full text-sm">
           <thead>
             <tr className="bg-muted/50 text-left text-muted-foreground">
               <th className="px-2 py-1.5 font-bold">区分</th>

@@ -91,7 +91,7 @@ export function ClientManager({ clients }: { clients: Client[] }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="client-type" className="text-xs">
+              <Label htmlFor="client-type" className="text-sm">
                 種別
               </Label>
               <Select value={type} onValueChange={(v) => setType(v as ClientType)}>
@@ -109,7 +109,7 @@ export function ClientManager({ clients }: { clients: Client[] }) {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="client-memo" className="text-xs">
+              <Label htmlFor="client-memo" className="text-sm">
                 様式メモ（任意・請求書パターン・指定アプリ等）
               </Label>
               <Textarea
@@ -147,7 +147,7 @@ export function ClientManager({ clients }: { clients: Client[] }) {
               <div className="flex min-w-0 flex-1 flex-col">
                 <span className="truncate font-medium">{c.name}</span>
                 {c.format_memo && (
-                  <span className="truncate text-xs text-muted-foreground">{c.format_memo}</span>
+                  <span className="truncate text-sm text-muted-foreground">{c.format_memo}</span>
                 )}
               </div>
               <Badge variant="outline" className="shrink-0">

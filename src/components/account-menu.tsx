@@ -109,7 +109,7 @@ function PasswordDialog() {
           </div>
         ) : (
           <form onSubmit={handleSave} className="flex flex-col gap-4">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               メール＋パスワードでログインできるようになります。
             </p>
             <div className="flex flex-col gap-2">

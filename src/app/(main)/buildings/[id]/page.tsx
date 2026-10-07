@@ -65,7 +65,7 @@ function UnitSection({ history, buildingId }: { history: UnitHistory; buildingId
                   </Link>
                   <StatusLabel tone={caseStatusTone(kase.display_status)}>{kase.display_status}</StatusLabel>
                   <span className="date">受付 {formatDate(kase.received_on)}</span>
-                  {kase.is_migrated && <span className="legacy">v1 から移した案件</span>}
+                  {kase.is_migrated && <span className="legacy">旧画面から移した案件</span>}
                   {kase.needs_invoice && <span className="flag flag-warn">請求が未作成</span>}
                   {!kase.is_migrated && kase.request_summary && <span className="caption">{kase.request_summary}</span>}
                 </div>

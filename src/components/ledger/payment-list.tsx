@@ -83,7 +83,7 @@ export function PaymentList({
   return (
     <div className="flex flex-col gap-2 rounded-xl bg-muted/30 p-3">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-bold text-muted-foreground">入金明細</p>
+        <p className="text-sm font-bold text-muted-foreground">入金明細</p>
         {!readOnly && (
           <Dialog open={addOpen} onOpenChange={setAddOpen}>
             <DialogTrigger asChild>
@@ -111,9 +111,9 @@ export function PaymentList({
         )}
       </div>
 
-      {loading && <p className="text-xs text-muted-foreground">読み込み中…</p>}
+      {loading && <p className="text-sm text-muted-foreground">読み込み中…</p>}
       {!loading && payments && payments.length === 0 && (
-        <p className="text-xs text-muted-foreground">入金の記録はまだありません</p>
+        <p className="text-sm text-muted-foreground">入金の記録はまだありません</p>
       )}
       {!loading && payments && payments.length > 0 && (
         <ul className="flex flex-col gap-2">
@@ -127,11 +127,11 @@ export function PaymentList({
               <div className="min-w-0">
                 <p className="font-bold">
                   {formatYen(p.amount)}
-                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                  <span className="ml-2 text-sm font-normal text-muted-foreground">
                     {formatDate(p.payment_date)}
                   </span>
                 </p>
-                {p.memo && <p className="whitespace-pre-wrap text-xs text-muted-foreground">{p.memo}</p>}
+                {p.memo && <p className="whitespace-pre-wrap text-sm text-muted-foreground">{p.memo}</p>}
               </div>
               <div className="flex items-center gap-0.5">
                 <Badge variant="outline">{RECONCILIATION_STATUS_META[p.reconciliation_status].label}</Badge>

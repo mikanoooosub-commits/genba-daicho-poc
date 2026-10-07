@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, RotateCcw, Trash2 } from "lucide-react";
+import { AlertTriangle, ChevronDown, RotateCcw, Trash2 } from "lucide-react";
 
 import { changeCaseStatusAction, setCaseDeletedAction } from "@/lib/data/actions-cases";
 import { CASE_STATUS_ORDER, type CaseStatus } from "@/lib/types";
@@ -24,6 +24,7 @@ export function CaseStatusControls({
   jobCount,
   hasInvoice,
   justRecordedJob = false,
+  flow,
 }: {
   caseId: string;
   status: CaseStatus;
@@ -31,6 +32,8 @@ export function CaseStatusControls({
   hasInvoice: boolean;
   /** 施工を記録した直後(?job=1)。提案の頭に一言添える */
   justRecordedJob?: boolean;
+  /** 状態の流れ(案件の画面が組み立てて渡す) */
+  flow?: React.ReactNode;
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -56,85 +59,98 @@ export function CaseStatusControls({
   }
 
   return (
-    <section className="card card-pad section-gap" aria-labelledby="status-h">
-      <h2 id="status-h" style={{ fontSize: "var(--fs-lead)", marginBottom: "var(--sp-3)" }}>
-        状態
-      </h2>
-
-      {suggestion && (
-        <div className="notice notice-info suggest" role="status" style={{ marginBottom: "var(--sp-4)" }}>
-          <div>
-            {justRecordedJob && <strong>施工を記録しました。</strong>}
-            <strong>この案件を「{suggestion}」にしますか?</strong>
-            {suggestion === "完了"
-              ? hasInvoice
-                ? "請求はもう作ってあります。施工が続くなら「このまま」を選びます。"
-                : "完了にすると、請求を作るまで一覧に「請求が未作成」と出ます。施工が続くなら「このまま」を選びます。"
-              : "施工の記録があります。変えるかどうかは、ここで決めます。"}
-            <span className="row" style={{ marginTop: "var(--sp-3)" }}>
-              <button type="button" className="btn btn-primary btn-sm" disabled={pending} onClick={() => change(suggestion)}>
-                {suggestion}にする
-              </button>
-              <button type="button" className="btn btn-secondary btn-sm" disabled={pending} onClick={() => setDismissed(true)}>
-                このまま
-              </button>
-            </span>
-          </div>
-        </div>
-      )}
-
-      <div className="field">
-        <span className="label" id="status-pick">
-          状態を変える(戻すときも、ここから選びます)
-        </span>
-        <div className="seg" role="group" aria-labelledby="status-pick">
-          {CASE_STATUS_ORDER.map((s) => (
-            <button
-              key={s}
-              type="button"
-              className="pick"
-              aria-pressed={status === s}
-              disabled={pending || status === s}
-              onClick={() => (s === "失注" ? setAskingLost(true) : change(s))}
-            >
-              {s}
-            </button>
-          ))}
-        </div>
+    <section className="card card-sec section-gap" aria-labelledby="status-h">
+      <div className="sec-head">
+        <h2 id="status-h">状態</h2>
       </div>
+      <div className="sec-body">
+        {flow}
 
-      {askingLost && (
-        <div className="field" style={{ marginTop: "var(--sp-3)" }}>
-          <label htmlFor="lost-reason">
-            失注の理由<span className="opt">任意・1行</span>
-          </label>
-          <input
-            id="lost-reason"
-            className="input"
-            value={lostReason}
-            maxLength={200}
-            onChange={(e) => setLostReason(e.target.value)}
-            placeholder="例: 価格が合わなかった"
-          />
-          <span style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-2)", flexWrap: "wrap" }}>
-            <button type="button" className="btn btn-danger btn-sm" disabled={pending} onClick={() => change("失注", lostReason)}>
-              失注にする
-            </button>
-            <button type="button" className="btn btn-secondary btn-sm" disabled={pending} onClick={() => setAskingLost(false)}>
-              やめる
-            </button>
-          </span>
-        </div>
-      )}
+        {suggestion && (
+          <div className="notice notice-info suggest" role="status">
+            <div>
+              {justRecordedJob && <strong>施工を記録しました。</strong>}
+              <strong>この案件を「{suggestion}」にしますか?</strong>
+              {suggestion === "完了"
+                ? hasInvoice
+                  ? "請求はもう作ってあります。施工が続くなら「このまま」を選びます。"
+                  : "完了にすると、請求を作るまで一覧に「請求が未作成」と出ます。施工が続くなら「このまま」を選びます。"
+                : "施工の記録があります。変えるかどうかは、ここで決めます。"}
+              <span className="row" style={{ marginTop: "var(--sp-3)" }}>
+                <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => change(suggestion)}>
+                  {suggestion}にする
+                </button>
+                <button type="button" className="btn btn-ghost" disabled={pending} onClick={() => setDismissed(true)}>
+                  このまま
+                </button>
+              </span>
+            </div>
+          </div>
+        )}
 
-      {error && (
-        <p className="error-text" role="alert" style={{ marginTop: "var(--sp-3)" }}>
-          {error}
-        </p>
-      )}
-      <p className="hint" style={{ marginTop: "var(--sp-3)" }}>
-        「請求済」「入金済」は、請求と入金から自動で決まります(ここでは選べません)。変更は履歴に残ります。
-      </p>
+        <details className="disclosure">
+          <summary>
+            <span>
+              状態を変える<small>(戻すときも、ここから選びます)</small>
+            </span>
+            <ChevronDown className="icon" aria-hidden="true" />
+          </summary>
+          <div className="disclosure-body">
+            <div className="field">
+              <span className="label sr-only" id="status-pick">
+                状態を選ぶ
+              </span>
+              <div className="picks three" role="group" aria-labelledby="status-pick">
+                {CASE_STATUS_ORDER.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    className="pick center"
+                    aria-pressed={status === s}
+                    disabled={pending || status === s}
+                    onClick={() => (s === "失注" ? setAskingLost(true) : change(s))}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {askingLost && (
+              <div className="field">
+                <label htmlFor="lost-reason">
+                  失注の理由<span className="opt">任意・1行</span>
+                </label>
+                <input
+                  id="lost-reason"
+                  className="input"
+                  value={lostReason}
+                  maxLength={200}
+                  onChange={(e) => setLostReason(e.target.value)}
+                  placeholder="例: 価格が合わなかった"
+                />
+                <span style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-2)", flexWrap: "wrap" }}>
+                  <button type="button" className="btn btn-danger" disabled={pending} onClick={() => change("失注", lostReason)}>
+                    失注にする
+                  </button>
+                  <button type="button" className="btn btn-secondary" disabled={pending} onClick={() => setAskingLost(false)}>
+                    やめる
+                  </button>
+                </span>
+              </div>
+            )}
+
+            {error && (
+              <p className="error-text" role="alert">
+                {error}
+              </p>
+            )}
+            <p className="hint">
+              「請求済」「入金済」は、請求と入金から自動で決まります(ここでは選べません)。変更は履歴に残ります。
+            </p>
+          </div>
+        </details>
+      </div>
     </section>
   );
 }
@@ -147,7 +163,7 @@ export function DeleteCaseButton({ caseId, jobCount }: { caseId: string; jobCoun
 
   if (!confirming) {
     return (
-      <button type="button" className="btn btn-danger btn-sm" onClick={() => setConfirming(true)}>
+      <button type="button" className="btn btn-danger" onClick={() => setConfirming(true)}>
         <Trash2 className="icon" aria-hidden="true" />
         この案件を取り消す
       </button>
@@ -176,10 +192,10 @@ export function DeleteCaseButton({ caseId, jobCount }: { caseId: string; jobCoun
           </span>
         )}
         <span style={{ display: "flex", gap: "var(--sp-2)", marginTop: "var(--sp-3)", flexWrap: "wrap" }}>
-          <button type="button" className="btn btn-danger btn-sm" onClick={handleDelete} disabled={pending}>
+          <button type="button" className="btn btn-danger" onClick={handleDelete} disabled={pending}>
             {pending ? "取り消し中…" : "取り消す"}
           </button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={() => setConfirming(false)} disabled={pending}>
+          <button type="button" className="btn btn-secondary" onClick={() => setConfirming(false)} disabled={pending}>
             やめる
           </button>
         </span>
@@ -198,7 +214,7 @@ export function RestoreCaseButton({ caseId }: { caseId: string }) {
     <>
       <button
         type="button"
-        className="btn btn-secondary btn-sm"
+        className="btn btn-secondary"
         disabled={pending}
         onClick={() => {
           setError("");

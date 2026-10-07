@@ -128,8 +128,8 @@ export function JobForm({ siteId, jobId, initial, submitLabel, onSuccess, onCanc
           value={photoUrlsText}
           onChange={(e) => setPhotoUrlsText(e.target.value)}
         />
-        <p className="text-xs text-muted-foreground">
-          管理会社アプリ・LINE等にある写真のURLを貼り付けてください（アップロード機能は次段。PM決定 D38-7）
+        <p className="text-sm text-muted-foreground">
+          管理会社アプリ・LINE等にある写真のURLを貼り付けます(アップロードは今後対応)
         </p>
       </div>
       <div className="flex flex-col gap-2">

@@ -141,7 +141,7 @@ export function InvoiceForm({
           aria-describedby={amountLocked ? "if-amount-locked" : undefined}
         />
         {amountLocked && (
-          <p id="if-amount-locked" className="text-xs text-muted-foreground">
+          <p id="if-amount-locked" className="text-sm text-muted-foreground">
             見積から作った請求の金額・税率は直せません。直すときは、見積を出し直します。
           </p>
         )}

@@ -21,7 +21,7 @@ export default async function BusinessProfilePage() {
         </section>
       ) : (
         <div className="notice notice-warn" role="status">
-          <div>事業者情報の行が見つかりません。migration_009 が適用されているか確かめてください。</div>
+          <div>事業者情報が見つかりません。管理者に連絡してください。</div>
         </div>
       )}
     </>

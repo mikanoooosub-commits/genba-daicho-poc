@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, BookOpen, Briefcase, ClipboardList, Settings } from "lucide-react";
+import { Building2, BookOpen, Briefcase, ClipboardList, Ellipsis, Settings } from "lucide-react";
 
 import { AccountMenu } from "@/components/account-menu";
 
@@ -21,6 +21,20 @@ const ITEMS = [
   },
   { href: "/clients", label: "発注元", icon: Briefcase, match: (p: string) => p.startsWith("/clients") },
   { href: "/settings/business-profile", label: "設定", icon: Settings, match: (p: string) => p.startsWith("/settings") },
+] as const;
+
+// スマホの下ナビは4項目(D104-7): 案件・物件・台帳・その他(発注元と事業者情報は「その他」の画面にまとめる)。
+// 段階4 で未入金が入ったら、見本・実装・文書を同時に直す。
+const MOBILE_ITEMS = [
+  ITEMS[0],
+  ITEMS[1],
+  ITEMS[2],
+  {
+    href: "/more",
+    label: "その他",
+    icon: Ellipsis,
+    match: (p: string) => p.startsWith("/more") || p.startsWith("/clients") || p.startsWith("/settings"),
+  },
 ] as const;
 
 export function AppNav() {
@@ -52,8 +66,8 @@ export function AppNav() {
         </span>
       </header>
 
-      <nav className="bottomnav" aria-label="メニュー">
-        {ITEMS.map(({ href, label, icon: Icon, match }) => (
+      <nav className="bottomnav" aria-label="メニュー(スマホ)">
+        {MOBILE_ITEMS.map(({ href, label, icon: Icon, match }) => (
           <Link key={href} href={href} aria-current={match(pathname) ? "page" : undefined}>
             <Icon className="icon" aria-hidden="true" />
             {label}

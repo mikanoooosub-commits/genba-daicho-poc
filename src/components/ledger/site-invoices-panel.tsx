@@ -1,6 +1,3 @@
-import { Plus } from "lucide-react";
-
-import { Card, CardContent } from "@/components/ui/card";
 import { getInvoiceLedger } from "@/lib/data/queries-ledger";
 import { SiteInvoiceAddButton } from "@/components/ledger/site-invoice-add-button";
 import { SiteInvoiceList } from "@/components/ledger/site-invoice-list";
@@ -18,35 +15,34 @@ import { SiteInvoiceList } from "@/components/ledger/site-invoice-list";
 export async function SiteInvoicesPanel({
   siteId,
   buildingName,
+  primary = false,
 }: {
   siteId: string;
   buildingName: string;
+  /** 「請求を追加」がその状態の次の一手のとき true */
+  primary?: boolean;
 }) {
   const rows = await getInvoiceLedger({ siteId });
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-sm font-bold">請求・入金</h2>
-        <SiteInvoiceAddButton siteId={siteId} buildingName={buildingName} />
+    <section className="card card-sec card-log section-gap" aria-labelledby="invoices-h">
+      <div className="sec-head">
+        <h2 id="invoices-h">請求・入金</h2>
       </div>
+      <div className="sec-action">
+        <SiteInvoiceAddButton siteId={siteId} buildingName={buildingName} primary={primary} />
+      </div>
+      <div className="sec-body">
+        {rows.length === 0 ? <p className="empty-inline">(請求はまだありません)</p> : null}
 
-      {rows.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-2 py-8 text-center text-sm text-muted-foreground">
-            <Plus className="size-5" />
-            まだこの現場の請求はありません
-          </CardContent>
-        </Card>
-      ) : null}
-
-      {/*
-        取消済み請求(ISSUE-007)は SiteInvoiceList 側でオンデマンド取得する
-        (`sites/[id]/page.tsx` は実装A担当ファイルのため searchParams を追加で渡せない。
-        `PaymentList` の入金明細と同じ「クライアント側で必要になったら取得する」設計に合わせた)。
-        アクティブな請求が0件でも取消済みだけ存在する場合があるため、常にレンダリングする。
-      */}
-      <SiteInvoiceList siteId={siteId} rows={rows} />
-    </div>
+        {/*
+          取消済み請求(ISSUE-007)は SiteInvoiceList 側でオンデマンド取得する
+          (`sites/[id]/page.tsx` は実装A担当ファイルのため searchParams を追加で渡せない。
+          `PaymentList` の入金明細と同じ「クライアント側で必要になったら取得する」設計に合わせた)。
+          アクティブな請求が0件でも取消済みだけ存在する場合があるため、常にレンダリングする。
+        */}
+        <SiteInvoiceList siteId={siteId} rows={rows} />
+      </div>
+    </section>
   );
 }

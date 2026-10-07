@@ -27,7 +27,7 @@ function basisHelp(f: CaseFinancials): string {
     case "見込み":
       return "請求がまだないので、採用した見積の小計(税抜)で見込んでいます。請求を作ると確定します。";
     case "内訳なし":
-      return "見積に結びつかない請求(v1 の画面で作った請求など)があるため、税抜の売上が分からず、粗利は出しません。税込の金額から逆算はしません。";
+      return "見積に結びつかない請求(旧画面で作った請求など)があり、税抜の売上が分かりません。そのため粗利は出しません。税込の金額からの逆算もしません。";
     case "未定":
       return "採用した見積も請求もないので、売上が決まっていません。";
   }
@@ -113,16 +113,21 @@ export function CaseCostsSection({
   const costTotal = financials?.cost_total_yen ?? costs.reduce((s, c) => s + c.amount_yen, 0);
 
   return (
-    <section className="card card-pad section-gap" aria-labelledby="costs-h">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", flexWrap: "wrap" }}>
-        <h2 id="costs-h" style={{ fontSize: "var(--fs-lead)" }}>原価と粗利(税抜)</h2>
-        {!disabled && !open && (
-          <button className="btn btn-secondary btn-sm" type="button" onClick={() => setOpen(true)}>
+    <section className="card card-sec section-gap" aria-labelledby="costs-h">
+      <div className="sec-head">
+        <h2 id="costs-h">
+          原価と粗利<small>(税抜)</small>
+        </h2>
+      </div>
+      {!disabled && !open && (
+        <div className="sec-action">
+          <button className="btn btn-secondary" type="button" onClick={() => setOpen(true)}>
             <Plus className="icon" aria-hidden="true" />
             原価を入れる
           </button>
-        )}
-      </div>
+        </div>
+      )}
+      <div className="sec-body">
 
       {financials && (
         <>
@@ -150,11 +155,11 @@ export function CaseCostsSection({
       )}
 
       {costs.length === 0 ? (
-        <p className="muted" style={{ marginTop: "var(--sp-3)" }}>
+        <p className="muted">
           原価はまだありません。外注費・材料費・経費を入れると、粗利が見えます。
         </p>
       ) : (
-        <ul className="est-list" style={{ marginTop: "var(--sp-3)" }}>
+        <ul className="est-list">
           {costs.map((c) => (
             <li key={c.id}>
               <span className="tag tag-est">{c.category}</span>
@@ -166,7 +171,7 @@ export function CaseCostsSection({
                 {formatYen(c.amount_yen)}
               </span>
               {!disabled && (
-                <button className="btn btn-ghost btn-sm" type="button" disabled={pending} onClick={() => remove(c)}>
+                <button className="btn btn-ghost" type="button" disabled={pending} onClick={() => remove(c)}>
                   取り消す
                 </button>
               )}
@@ -184,7 +189,7 @@ export function CaseCostsSection({
                 <button
                   key={c}
                   type="button"
-                  className={category === c ? "btn btn-primary btn-sm" : "btn btn-secondary btn-sm"}
+                  className={category === c ? "btn btn-secondary pick-on" : "btn btn-secondary"}
                   aria-pressed={category === c}
                   onClick={() => setCategory(c)}
                 >
@@ -219,10 +224,10 @@ export function CaseCostsSection({
               />
               <div style={{ display: "flex", gap: "var(--sp-2)", alignItems: "center", flexWrap: "wrap" }}>
                 <span className="hint">税込の金額から計算する:</span>
-                <button className="btn btn-ghost btn-sm" type="button" onClick={() => applyTax(10)}>
+                <button className="btn btn-ghost" type="button" onClick={() => applyTax(10)}>
                   10%
                 </button>
-                <button className="btn btn-ghost btn-sm" type="button" onClick={() => applyTax(8)}>
+                <button className="btn btn-ghost" type="button" onClick={() => applyTax(8)}>
                   8%
                 </button>
               </div>
@@ -249,6 +254,7 @@ export function CaseCostsSection({
           <div>{error}</div>
         </div>
       )}
+      </div>
     </section>
   );
 }

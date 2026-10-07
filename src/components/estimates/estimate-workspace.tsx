@@ -431,12 +431,12 @@ export function EstimateWorkspace({
           <div style={{ padding: "0 var(--sp-5) var(--sp-5)", display: "grid", gap: "var(--sp-2)" }}>
             {dirty && (
               <p className="hint" role="status">
-                未保存の変更があります。上の合計は「試算」です。保存すると、サーバーが計算した値で確定します。
+                未保存の変更があります。上の合計は「試算」です。保存すると、計算し直して確定します。
               </p>
             )}
             {saved && !dirty && !error && (
               <p className="hint" role="status">
-                保存しました。合計はサーバーが計算した値です。
+                保存しました。合計は保存時に計算し直した値です。
               </p>
             )}
             {error && (
@@ -500,7 +500,7 @@ export function EstimateWorkspace({
                 {ref.buildingName}
                 {ref.roomNo ? ` ${ref.roomNo}` : ""}・{ref.clientName}
                 {ref.caseStatus === "失注" ? "・失注した案件" : ""}
-                {ref.estimate ? `・${ref.estimate.status}・税抜 ${formatYen(ref.estimate.subtotal_yen)}` : "・見積なし(v1 から移した案件など)"}
+                {ref.estimate ? `・${ref.estimate.status}・税抜 ${formatYen(ref.estimate.subtotal_yen)}` : "・見積なし(旧画面から移した案件など)"}
               </p>
               {ref.items.length > 0 && (
                 <>

@@ -191,7 +191,7 @@ export function CaseJobQuickForm({ caseId, siteId, placeLabel, caseNo, clientNam
             onChange={(e) => setPhotoUrlsText(e.target.value)}
             placeholder="https://..."
           />
-          <p className="hint">管理会社のアプリ・LINE などにある写真の URL を貼ります(アップロードは次の段階)。</p>
+          <p className="hint">管理会社のアプリ・LINE などにある写真の URL を貼ります(アップロードは今後対応)。</p>
         </div>
         <div className="q" style={{ marginTop: "var(--sp-3)" }}>
           <label className="q-label" htmlFor="jq-memo">

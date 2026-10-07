@@ -59,7 +59,7 @@ export function JobRow({ job }: { job: Job }) {
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <p className="font-bold">{formatDate(job.job_date)}</p>
-            {job.work_type && <p className="text-xs text-muted-foreground">{job.work_type}</p>}
+            {job.work_type && <p className="text-sm text-muted-foreground">{job.work_type}</p>}
           </div>
           <Badge className={JOB_RATING_META[job.rating].badgeClass}>
             {JOB_RATING_META[job.rating].label}
@@ -68,7 +68,7 @@ export function JobRow({ job }: { job: Job }) {
 
         {job.content && <p className="text-sm">{job.content}</p>}
         {job.assignee_name && (
-          <p className="text-xs text-muted-foreground">担当: {job.assignee_name}</p>
+          <p className="text-sm text-muted-foreground">担当: {job.assignee_name}</p>
         )}
 
         {job.photo_urls.length > 0 && (
@@ -79,7 +79,7 @@ export function JobRow({ job }: { job: Job }) {
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1 text-xs text-primary hover:underline"
+                className="flex items-center gap-1 text-sm text-primary hover:underline"
               >
                 <ImageIcon className="size-3.5" />
                 写真{i + 1}

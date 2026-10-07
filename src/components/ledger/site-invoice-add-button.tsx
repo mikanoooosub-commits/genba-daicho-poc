@@ -16,15 +16,24 @@ import { InvoiceForm } from "@/components/ledger/invoice-form";
 import { createInvoiceAction } from "@/lib/data/actions-ledger";
 
 /** 現場詳細画面から、この現場に紐づく請求を新規登録するボタン(現場は固定・選択UI無し) */
-export function SiteInvoiceAddButton({ siteId, buildingName }: { siteId: string; buildingName: string }) {
+export function SiteInvoiceAddButton({
+  siteId,
+  buildingName,
+  primary = false,
+}: {
+  siteId: string;
+  buildingName: string;
+  /** その状態で次にやる1つのとき true(主のボタン。スマホでは下ナビの上に浮く) */
+  primary?: boolean;
+}) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-1.5">
-          <Plus className="size-4" />
+        <Button variant={primary ? "default" : "outline"} className={primary ? "btn-float" : undefined}>
+          <Plus className="size-[18px]" />
           請求を追加
         </Button>
       </DialogTrigger>

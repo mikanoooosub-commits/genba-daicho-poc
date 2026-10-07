@@ -36,8 +36,8 @@ export function DeletedInvoiceItem({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             {buildingName && <p className="font-bold">{buildingName}</p>}
-            {clientLabel && <p className="text-xs text-muted-foreground">{clientLabel}</p>}
-            <p className="text-xs text-muted-foreground">
+            {clientLabel && <p className="text-sm text-muted-foreground">{clientLabel}</p>}
+            <p className="text-sm text-muted-foreground">
               発行日 {invoice.issue_date ? formatDate(invoice.issue_date) : "未設定"}
               {invoice.format_pattern ? ` ・様式: ${invoice.format_pattern}` : ""}
             </p>
@@ -52,7 +52,7 @@ export function DeletedInvoiceItem({
         </p>
 
         {invoice.memo && (
-          <p className="whitespace-pre-wrap rounded-lg bg-muted/60 p-2 text-xs text-muted-foreground">
+          <p className="whitespace-pre-wrap rounded-lg bg-muted/60 p-2 text-sm text-muted-foreground">
             {invoice.memo}
           </p>
         )}

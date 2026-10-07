@@ -17,23 +17,35 @@ export function CaseEstimatesSection({
   caseId,
   estimates,
   disabled,
+  primary = false,
 }: {
   caseId: string;
   estimates: Estimate[];
   disabled: boolean;
+  /** 「見積を作る」がその状態の次の一手のとき true(依頼・見積中) */
+  primary?: boolean;
 }) {
   return (
-    <section className="card card-pad section-gap" aria-labelledby="estimates-h">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "var(--sp-3)", flexWrap: "wrap" }}>
-        <h2 id="estimates-h" style={{ fontSize: "var(--fs-lead)" }}>見積</h2>
-        {!disabled && <CreateEstimateButton caseId={caseId} label={estimates.length === 0 ? "見積を作る" : "別の見積を作る"} />}
+    <section className="card card-sec card-log section-gap" aria-labelledby="estimates-h">
+      <div className="sec-head">
+        <h2 id="estimates-h">見積</h2>
       </div>
+      {!disabled && (
+        <div className="sec-action">
+          <CreateEstimateButton
+            caseId={caseId}
+            primary={primary}
+            label={estimates.length === 0 ? "見積を作る" : "別の見積を作る"}
+          />
+        </div>
+      )}
+      <div className="sec-body">
       {estimates.length === 0 ? (
-        <p className="muted" style={{ marginTop: "var(--sp-3)" }}>
+        <p className="empty-inline">
           見積はまだありません。{disabled ? "" : "「見積を作る」で、明細と合計を入れられます。同じ部屋や物件の前回の見積を写せます。"}
         </p>
       ) : (
-        <ul className="est-list" style={{ marginTop: "var(--sp-2)" }}>
+        <ul className="est-list">
           {estimates.map((e) => (
             <li key={e.id}>
               <span className="grow">
@@ -50,6 +62,7 @@ export function CaseEstimatesSection({
           ))}
         </ul>
       )}
+      </div>
     </section>
   );
 }
