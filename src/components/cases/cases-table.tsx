@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FileWarning } from "lucide-react";
+import { ArrowRight, Check, FileWarning } from "lucide-react";
 import { createColumnHelper, tableFeatures, useTable } from "@tanstack/react-table";
 
 import { StatusLabel, caseStatusTone } from "@/components/status-label";
@@ -16,6 +16,26 @@ import { formatDate, formatYen } from "@/lib/format";
 
 const features = tableFeatures({});
 const helper = createColumnHelper<typeof features, CaseOverview>();
+
+/** 状態から決まる「次にやる1つ」(D106-1)。案件の詳細の主ボタンと同じ決め方。新しいデータではない */
+function nextAction(status: CaseOverview["display_status"]): { label: string; warn?: boolean; done?: boolean } | null {
+  switch (status) {
+    case "依頼":
+    case "見積中":
+      return { label: "見積を作る" };
+    case "受注":
+    case "施工中":
+      return { label: "施工を記録" };
+    case "完了":
+      return { label: "請求を作る", warn: true };
+    case "請求済":
+      return { label: "入金を登録" };
+    case "入金済":
+      return { label: "済み", done: true };
+    case "失注":
+      return null;
+  }
+}
 
 function roomLabel(row: CaseOverview): string {
   return row.room_no ? `${row.building_name} ${row.room_no}` : row.building_name;
@@ -58,14 +78,18 @@ export function CasesTable({ rows }: { rows: CaseOverview[] }) {
       },
     }),
     helper.accessor("needs_invoice", {
-      header: "気づき",
-      cell: (ctx) =>
-        ctx.getValue() ? (
-          <span className="flag flag-warn">
-            <FileWarning className="icon" aria-hidden="true" />
-            請求が未作成
+      header: "次の一手",
+      cell: (ctx) => {
+        const next = nextAction(ctx.row.original.display_status);
+        if (!next) return null;
+        const Icon = next.done ? Check : next.warn ? FileWarning : ArrowRight;
+        return (
+          <span className={next.done ? "flag flag-done" : next.warn ? "flag flag-warn" : "flag flag-next"}>
+            <Icon className="icon" aria-hidden="true" />
+            {next.label}
           </span>
-        ) : null,
+        );
+      },
     }),
   ]);
 
@@ -76,6 +100,7 @@ export function CasesTable({ rows }: { rows: CaseOverview[] }) {
     client_name: "発注元",
     received_on: "受付日",
     invoiced_total: "請求(税込)",
+    needs_invoice: "次の一手",
   };
 
   return (

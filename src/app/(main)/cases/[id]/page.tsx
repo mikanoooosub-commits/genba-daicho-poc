@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FileWarning, Pencil } from "lucide-react";
+import { ChevronDown, FileWarning, Pencil } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { CaseAuditLog } from "@/components/cases/case-audit";
@@ -71,6 +71,23 @@ export default async function CaseDetailPage({
             ? "payment"
             : null;
 
+  // 「次にやること」の帯(状態から決まる案内。新しいデータではない)。押すと、その操作のある区画へ移る
+  const nextBand: { title: string; text: string; href: string; tone: "warn" | "info" | "done" } | null = isDeleted
+    ? null
+    : primaryAction === "estimate"
+      ? { title: "見積を作る", text: "依頼を受けています。見積を作って提出します。", href: "#estimates-h", tone: "info" }
+      : primaryAction === "job"
+        ? { title: "施工を記録", text: "施工したら、その日のうちに記録します。", href: "#jobs-h", tone: "info" }
+        : primaryAction === "invoice-from-estimate"
+          ? { title: "請求を作る", text: "完了しています。採用した見積から請求を作れます。", href: "#estimates-h", tone: "warn" }
+          : primaryAction === "invoice"
+            ? { title: "請求を作る", text: "完了しています。請求がまだありません。", href: "#invoices-h", tone: "warn" }
+            : primaryAction === "payment"
+              ? { title: "入金を登録", text: "請求を出しています。入金があったら登録します。", href: "#invoices-h", tone: "info" }
+              : displayStatus === "入金済"
+                ? { title: "済み", text: "入金まで済んでいます。", href: "#invoices-h", tone: "done" }
+                : null;
+
   const flow = (
     <ol className="flow" aria-label="状態の流れ">
       {CASE_DISPLAY_STATUS_ORDER.filter((s) => s !== "失注" || displayStatus === "失注").map((s) => {
@@ -138,6 +155,15 @@ export default async function CaseDetailPage({
           <CaseAuditLog caseId={kase.id} clientNames={Object.fromEntries(clients.map((c) => [c.id, c.name]))} />
         </div>
       </div>
+
+      {nextBand && (
+        <a className={`next-band next-${nextBand.tone}`} href={nextBand.href}>
+          <span className="lbl">次にやること</span>
+          <strong>{nextBand.title}</strong>
+          <span className="txt">{nextBand.text}</span>
+          <ChevronDown className="icon go" aria-hidden="true" />
+        </a>
+      )}
 
       {!isDeleted ? (
         <CaseStatusControls

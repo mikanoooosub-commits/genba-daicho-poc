@@ -585,3 +585,24 @@ a { color: var(--link); text-underline-offset: 3px; }
   .table-cards tr { position: relative; }
   .table-cards td.title-cell a::after { content: ""; position: absolute; inset: 0; border-radius: var(--r-lg); }
 }
+
+/* 一覧の「次の一手」(状態から決まる次にやる1つ)。橙=人の作業が要る(請求を作る)、済み=緑 */
+.flag-next { color: var(--ink); }
+.flag-done { color: var(--st-good-fg); }
+
+/* 案件の詳細の頭の「次にやること」(状態から決まる案内。押すと、その操作のある区画へ) */
+.next-band {
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0 var(--sp-3);
+  margin-bottom: var(--sp-4); padding: var(--sp-3) var(--sp-4); border-radius: var(--r-lg);
+  border-left: 8px solid var(--line-strong); background: var(--surface); box-shadow: var(--shadow-1);
+  color: var(--ink); text-decoration: none; min-height: var(--tap);
+}
+.next-band .lbl { grid-column: 1 / -1; font-size: var(--fs-caption); color: var(--ink-muted); line-height: 1.5; }
+.next-band strong { font-size: var(--fs-h3); line-height: 1.4; }
+.next-band .txt { grid-column: 1 / 2; font-size: var(--fs-caption); color: var(--ink-muted); line-height: 1.5; }
+.next-band .go { grid-column: 3; grid-row: 2 / 4; width: 20px; height: 20px; color: var(--ink-muted); }
+.next-warn { border-left-color: var(--brand-accent); background: var(--st-warn-bg); }
+.next-warn strong { color: var(--st-warn-fg); }
+.next-info { border-left-color: var(--st-info-fg); }
+.next-done { border-left-color: var(--st-good-fg); }
+.next-done strong { color: var(--st-good-fg); }
