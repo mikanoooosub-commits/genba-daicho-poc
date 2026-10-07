@@ -155,6 +155,7 @@ export function EstimateWorkspace({
   function update(key: string, patch: Partial<Row>) {
     setSaved(false);
     setSaveFailed(false); // 直し始めたら、保存できなかった一言は消す
+    setError("");
     setRowError((e) => (e && e.key === key ? null : e));
     setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   }
@@ -212,8 +213,8 @@ export function EstimateWorkspace({
     });
   }
 
-  // 保存できなかった行の欄へスクロールして、フォーカスを移す(画面の下のエラーの帯に気づかない問題の対策)
-  useEffect(() => {
+  // 「N行目の欄へ」を押したときだけ、その欄へ移る(自動では動かさない。視線を上から離さないため)
+  function jumpToError() {
     if (!rowError) return;
     const idx = rowsRef.current.findIndex((r) => r.key === rowError.key);
     const el = document.getElementById(`${uid}-${idx}-${rowError.field}`);
@@ -221,7 +222,7 @@ export function EstimateWorkspace({
       el.scrollIntoView({ block: "center", behavior: "smooth" });
       el.focus({ preventScroll: true });
     }
-  }, [rowError, uid]);
+  }
 
   // 未保存の変更があるときに、ページを離れる・再読み込みすると内容が消える。ブラウザ標準の警告を出す(PL-004)
   useEffect(() => {
@@ -249,12 +250,28 @@ export function EstimateWorkspace({
     addRow({ description: text, unit: "式", copiedNote: `↳ ${caseNo} の施工(${formatDate(job.job_date)})から` });
   }
 
+  // ボタンの行の左に出す一言。エラーも、未保存の案内も、ここ1か所にまとめる(視線が散らないように。PL-004)
+  const noteMessage: {
+    tone: "error" | "hint";
+    text: string;
+    jumpLabel?: string;
+    onJump?: () => void;
+  } | null = rowError
+    ? { tone: "error", text: `保存できませんでした。${rowError.message}`, jumpLabel: `${rowError.line}行目の欄へ`, onJump: jumpToError }
+    : error && editable
+      ? { tone: "error", text: saveFailed ? `保存できませんでした。${error}` : error }
+      : dirty
+        ? { tone: "hint", text: "未保存の変更があります。保存すると、見積書を開けます。" }
+        : saved
+          ? { tone: "hint", text: "保存しました。" }
+          : null;
+
   const visibleRefs = references.filter((r) => r.group === groupTab);
   const refCounts = (g: ReferenceGroupKey) => references.filter((r) => r.group === g).length;
 
   return (
     <>
-      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "var(--sp-4)" }}>
+      <div style={{ marginBottom: "var(--sp-4)" }}>
         <EstimateStatusActions
           estimate={estimate}
           isLatest={isLatest}
@@ -262,15 +279,8 @@ export function EstimateWorkspace({
           dirty={dirty}
           onSave={editable ? save : undefined}
           saving={pending}
-          saveNote={
-            saveFailed
-              ? rowError
-                ? `保存できませんでした。${rowError.line}行目を確かめてください`
-                : error
-                  ? `保存できませんでした。${error}`
-                  : undefined
-              : undefined
-          }
+          message={noteMessage}
+          messageId={`${uid}-msg`}
           totalText={totals ? formatSignedYen(totals.total) : undefined}
         />
       </div>
@@ -376,7 +386,7 @@ export function EstimateWorkspace({
                         className="input"
                         aria-label={`${label}の内容`}
                         aria-invalid={rowError?.key === r.key && rowError.field === "description" ? true : undefined}
-                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-msg` : undefined}
                         value={r.description}
                         maxLength={200}
                         onChange={(e) => update(r.key, { description: e.target.value })}
@@ -394,7 +404,7 @@ export function EstimateWorkspace({
                         inputMode="decimal"
                         aria-label={`${label}の数量`}
                         aria-invalid={rowError?.key === r.key && rowError.field === "quantity" ? true : undefined}
-                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-msg` : undefined}
                         value={r.quantity}
                         onChange={(e) => update(r.key, { quantity: e.target.value })}
                       />
@@ -410,7 +420,7 @@ export function EstimateWorkspace({
                         list={`${uid}-units`}
                         aria-label={`${label}の単位`}
                         aria-invalid={rowError?.key === r.key && rowError.field === "unit" ? true : undefined}
-                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-msg` : undefined}
                         value={r.unit}
                         maxLength={20}
                         onChange={(e) => update(r.key, { unit: e.target.value })}
@@ -426,7 +436,7 @@ export function EstimateWorkspace({
                         className="input input-num"
                         inputMode="numeric"
                         aria-invalid={rowError?.key === r.key && rowError.field === "unitPrice" ? true : undefined}
-                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-msg` : undefined}
                         aria-label={`${label}の単価${r.category === "値引き" ? "(値引きの金額。正の数で入れる)" : ""}`}
                         value={r.unitPrice}
                         onChange={(e) => update(r.key, { unitPrice: e.target.value })}
@@ -448,15 +458,6 @@ export function EstimateWorkspace({
                     </td>
                   )}
                 </tr>
-                {rowError && rowError.key === r.key && (
-                  <tr className="row-error">
-                    <td colSpan={7}>
-                      <span id={`${uid}-${idx}-err`} className="error-text" role="alert">
-                        {rowError.message}
-                      </span>
-                    </td>
-                  </tr>
-                )}
                 </Fragment>
               );
             })}
@@ -514,25 +515,6 @@ export function EstimateWorkspace({
           </dl>
         </div>
 
-        {editable && (
-          <div style={{ padding: "0 var(--sp-5) var(--sp-5)", display: "grid", gap: "var(--sp-2)" }}>
-            {dirty && (
-              <p className="hint" role="status">
-                未保存の変更があります。上の合計は「試算」です。保存すると、計算し直して確定します。
-              </p>
-            )}
-            {saved && !dirty && !error && (
-              <p className="hint" role="status">
-                保存しました。合計は保存時に計算し直した値です。
-              </p>
-            )}
-            {error && (
-              <div className="notice notice-danger" role="alert">
-                <div>{error}</div>
-              </div>
-            )}
-          </div>
-        )}
         {!editable && error && (
           <div className="notice notice-danger" role="alert" style={{ margin: "0 var(--sp-5) var(--sp-5)" }}>
             <div>{error}</div>

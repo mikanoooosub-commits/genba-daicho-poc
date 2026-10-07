@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { FileText, Printer } from "lucide-react";
+import { AlertOctagon, FileText, Printer } from "lucide-react";
 
 import {
   changeEstimateStatusAction,
@@ -25,7 +25,8 @@ export function EstimateStatusActions({
   onSave,
   saving = false,
   totalText,
-  saveNote,
+  message,
+  messageId,
 }: {
   estimate: Estimate;
   /** 同じ番号で、これがいちばん新しい版か */
@@ -38,8 +39,10 @@ export function EstimateStatusActions({
   saving?: boolean;
   /** スマホで、固定の帯に出す合計(税込)の文字 */
   totalText?: string;
-  /** 保存できなかったときの一言(保存ボタンの近くに出す。PL-004) */
-  saveNote?: string;
+  /** ボタンの行の左に出す一言(エラー・未保存の案内)。メッセージの置き場所は、ここ1か所にする(PL-004) */
+  message?: { tone: "error" | "hint"; text: string; jumpLabel?: string; onJump?: () => void } | null;
+  /** 入力欄の aria-describedby が指す id */
+  messageId?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -73,18 +76,39 @@ export function EstimateStatusActions({
     });
   }
 
+  // 左の一言: 画面から渡された一言(エラー・未保存)→ この部品の操作の失敗 → 状態ごとの案内、の順
+  const note =
+    message ??
+    (error
+      ? { tone: "error" as const, text: error }
+      : estimate.status === "提出済" && !isLatest
+        ? { tone: "hint" as const, text: "新しい版があるため、この版は採用・不採用にできません。" }
+        : estimate.status === "採用" && !invoiceId
+          ? { tone: "hint" as const, text: "出し直すときは、先に「提出済に戻す」を押します。" }
+          : null);
+
   return (
-    <div style={{ display: "grid", gap: "var(--sp-2)", justifyItems: "end" }}>
+    <div className="est-bar">
+      <div className={note ? `est-msg ${note.tone}` : "est-msg"} id={messageId} role={note?.tone === "error" ? "alert" : "status"}>
+        {note && (
+          <>
+            {note.tone === "error" && <AlertOctagon className="icon" aria-hidden="true" />}
+            <span>{note.text}</span>
+            {note.onJump && (
+              <button type="button" className="btn-link" onClick={note.onJump}>
+                {note.jumpLabel ?? "その欄へ"}
+              </button>
+            )}
+          </>
+        )}
+      </div>
       <div className="actions">
         {estimate.status === "下書き" && dirty ? (
           // 未保存のあいだに別の画面へ移ると、入力した内容が消える。保存するまで押せなくする(PL-004)
-          <>
-            <span className="btn btn-ghost" aria-disabled="true" title="保存すると開けます">
-              <Printer className="icon" aria-hidden="true" />
-              見積書を見る・印刷
-            </span>
-            <span className="hint">保存すると開けます</span>
-          </>
+          <span className="btn btn-ghost" aria-disabled="true" title="保存すると開けます">
+            <Printer className="icon" aria-hidden="true" />
+            見積書を見る・印刷
+          </span>
         ) : (
           <Link className="btn btn-ghost" href={`/estimates/${estimate.id}/print`}>
             <Printer className="icon" aria-hidden="true" />
@@ -189,22 +213,6 @@ export function EstimateStatusActions({
           </>
         )}
       </div>
-      {saveNote && (
-        <p className="error-text" role="alert">
-          {saveNote}
-        </p>
-      )}
-      {estimate.status === "提出済" && !isLatest && (
-        <p className="hint">新しい版があるため、この版は採用・不採用にできません。</p>
-      )}
-      {estimate.status === "採用" && !invoiceId && (
-        <p className="hint">出し直すときは、先に「提出済に戻す」を押します。</p>
-      )}
-      {error && (
-        <div className="notice notice-danger" role="alert">
-          <div>{error}</div>
-        </div>
-      )}
     </div>
   );
 }

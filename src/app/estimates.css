@@ -159,3 +159,15 @@
 
 /* 入力中の表(2段の行)は、セルの高さを中身に任せる。固定の高さだと項目名と入力欄が重なる(C-1 で入れた td の高さの副作用・PL-004 の確認で発見) */
 .items-table:not(.items-readonly) td { height: auto; }
+
+/* ボタンの行(PL-004・やり直し): 左に一言(エラー・未保存の案内)、右に4つのボタンを1行で。メッセージの置き場所はここだけ */
+.est-bar { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
+.est-msg { flex: 1; min-width: 0; display: flex; align-items: center; flex-wrap: nowrap; gap: var(--sp-2); font-size: var(--fs-caption); line-height: 1.5; color: var(--ink-muted); min-height: var(--tap); }
+.est-msg.error { color: var(--st-danger-fg); font-weight: 700; }
+.est-msg .icon { width: 20px; height: 20px; flex: none; }
+.est-msg .btn-link { flex: none; white-space: nowrap; background: none; border: 0; padding: 0 var(--sp-2); min-height: var(--tap); font: inherit; font-weight: 700; color: var(--link); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.est-bar .actions { display: flex; align-items: center; gap: var(--sp-2); flex: none; flex-wrap: nowrap; justify-content: flex-end; }
+.est-bar .est-dock { flex-wrap: nowrap; }
+.est-bar .actions .btn { white-space: nowrap; }
+@media (max-width: 1279px) { .est-bar { flex-wrap: wrap; } .est-bar .actions, .est-bar .est-dock { flex-wrap: wrap; } }
+@media (max-width: 767px) { .est-bar { flex-direction: column; align-items: stretch; gap: 0; } .est-msg { min-height: 0; } }
