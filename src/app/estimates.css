@@ -150,3 +150,12 @@
 .profit-box > div:nth-child(3) dt { color: var(--on-primary); }
 .profit-box > div:nth-child(3) dd { color: var(--on-primary); font-size: 48px; font-weight: 800; }
 @media (max-width: 767px) { .profit-box > div:nth-child(3) dd { font-size: 40px; } }
+
+/* 保存できなかった行の下の誤りの行(PL-004)。欄の赤い枠は .input[aria-invalid] */
+.items-table .row-error td { border-bottom: 1px solid var(--line); padding-top: 0 !important; height: auto; }
+@media (max-width: 1439px) { .items-table:not(.items-readonly) tr.row-error { display: block; padding: 0 var(--sp-5) var(--sp-3); }
+  .items-table:not(.items-readonly) tr.row-error td::before { content: none; } }
+.btn[aria-disabled="true"] { pointer-events: none; }
+
+/* 入力中の表(2段の行)は、セルの高さを中身に任せる。固定の高さだと項目名と入力欄が重なる(C-1 で入れた td の高さの副作用・PL-004 の確認で発見) */
+.items-table:not(.items-readonly) td { height: auto; }

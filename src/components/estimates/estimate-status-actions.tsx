@@ -25,6 +25,7 @@ export function EstimateStatusActions({
   onSave,
   saving = false,
   totalText,
+  saveNote,
 }: {
   estimate: Estimate;
   /** 同じ番号で、これがいちばん新しい版か */
@@ -37,6 +38,8 @@ export function EstimateStatusActions({
   saving?: boolean;
   /** スマホで、固定の帯に出す合計(税込)の文字 */
   totalText?: string;
+  /** 保存できなかったときの一言(保存ボタンの近くに出す。PL-004) */
+  saveNote?: string;
 }) {
   const router = useRouter();
   const [error, setError] = useState("");
@@ -73,10 +76,21 @@ export function EstimateStatusActions({
   return (
     <div style={{ display: "grid", gap: "var(--sp-2)", justifyItems: "end" }}>
       <div className="actions">
-        <Link className="btn btn-ghost" href={`/estimates/${estimate.id}/print`}>
-          <Printer className="icon" aria-hidden="true" />
-          見積書を見る・印刷
-        </Link>
+        {estimate.status === "下書き" && dirty ? (
+          // 未保存のあいだに別の画面へ移ると、入力した内容が消える。保存するまで押せなくする(PL-004)
+          <>
+            <span className="btn btn-ghost" aria-disabled="true" title="保存すると開けます">
+              <Printer className="icon" aria-hidden="true" />
+              見積書を見る・印刷
+            </span>
+            <span className="hint">保存すると開けます</span>
+          </>
+        ) : (
+          <Link className="btn btn-ghost" href={`/estimates/${estimate.id}/print`}>
+            <Printer className="icon" aria-hidden="true" />
+            見積書を見る・印刷
+          </Link>
+        )}
 
         {estimate.status === "下書き" && (
           <>
@@ -175,6 +189,11 @@ export function EstimateStatusActions({
           </>
         )}
       </div>
+      {saveNote && (
+        <p className="error-text" role="alert">
+          {saveNote}
+        </p>
+      )}
       {estimate.status === "提出済" && !isLatest && (
         <p className="hint">新しい版があるため、この版は採用・不採用にできません。</p>
       )}

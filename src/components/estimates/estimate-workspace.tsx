@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useMemo, useState, useTransition } from "react";
+import { useId, useMemo, useState, useTransition, Fragment, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Plus } from "lucide-react";
 
@@ -75,6 +75,13 @@ function rowAmount(row: Row): number | null {
   return row.category === "値引き" ? -Math.abs(amount) : amount;
 }
 
+type RowField = "category" | "description" | "quantity" | "unit" | "unitPrice";
+
+/** zod の誤りの場所(path の先頭)を、行の欄の種類に直す。分からなければ「内容」 */
+function toRowField(path: unknown): RowField {
+  return path === "category" || path === "quantity" || path === "unit" || path === "unitPrice" ? path : "description";
+}
+
 export function EstimateWorkspace({
   estimate,
   items,
@@ -98,11 +105,16 @@ export function EstimateWorkspace({
   const uid = useId();
   const [pending, startTransition] = useTransition();
   const [rows, setRows] = useState<Row[]>(() => items.map(toRow));
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
   const [taxRate, setTaxRate] = useState<number>(estimate.tax_rate_pct);
   const [validUntil, setValidUntil] = useState(estimate.valid_until ?? "");
   const [note, setNote] = useState(estimate.note ?? "");
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  // 保存できなかった理由(PL-004)。行の入力の誤りは、その行の欄の下に出し、そこへスクロールして欄にフォーカスを移す
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [rowError, setRowError] = useState<{ key: string; field: RowField; message: string; line: number } | null>(null);
   const [groupTab, setGroupTab] = useState<ReferenceGroupKey>(() => {
     for (const g of ["room", "building", "client"] as const) {
       if (references.some((r) => r.group === g)) return g;
@@ -142,6 +154,8 @@ export function EstimateWorkspace({
 
   function update(key: string, patch: Partial<Row>) {
     setSaved(false);
+    setSaveFailed(false); // 直し始めたら、保存できなかった一言は消す
+    setRowError((e) => (e && e.key === key ? null : e));
     setRows((rs) => rs.map((r) => (r.key === key ? { ...r, ...patch } : r)));
   }
   function addRow(partial: Partial<Row> = {}) {
@@ -150,11 +164,14 @@ export function EstimateWorkspace({
   }
   function removeRow(key: string) {
     setSaved(false);
+    setRowError((e) => (e && e.key === key ? null : e));
     setRows((rs) => rs.filter((r) => r.key !== key));
   }
 
   function save() {
     setError("");
+    setSaveFailed(false);
+    setRowError(null);
     const payloadItems: EstimateItemInput[] = [];
     for (const [i, r] of rows.entries()) {
       const parsed = estimateItemInputSchema.safeParse({
@@ -167,7 +184,12 @@ export function EstimateWorkspace({
         copiedFromItemId: r.copiedFromItemId,
       });
       if (!parsed.success) {
-        setError(`${i + 1}行目: ${parsed.error.issues[0]?.message ?? "入力を確かめてください"}`);
+        const issue = parsed.error.issues[0];
+        const message = issue?.message ?? "入力を確かめてください";
+        const field = toRowField(issue?.path[0]);
+        setError(`${i + 1}行目: ${message}`);
+        setSaveFailed(true);
+        setRowError({ key: r.key, field, message: `${i + 1}行目: ${message}`, line: i + 1 });
         return;
       }
       payloadItems.push(parsed.data);
@@ -185,9 +207,32 @@ export function EstimateWorkspace({
         router.refresh();
       } else {
         setError(result.error);
+        setSaveFailed(true);
       }
     });
   }
+
+  // 保存できなかった行の欄へスクロールして、フォーカスを移す(画面の下のエラーの帯に気づかない問題の対策)
+  useEffect(() => {
+    if (!rowError) return;
+    const idx = rowsRef.current.findIndex((r) => r.key === rowError.key);
+    const el = document.getElementById(`${uid}-${idx}-${rowError.field}`);
+    if (el) {
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      el.focus({ preventScroll: true });
+    }
+  }, [rowError, uid]);
+
+  // 未保存の変更があるときに、ページを離れる・再読み込みすると内容が消える。ブラウザ標準の警告を出す(PL-004)
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
   function copyItems(sourceItemIds: string[]) {
     setError("");
@@ -217,6 +262,15 @@ export function EstimateWorkspace({
           dirty={dirty}
           onSave={editable ? save : undefined}
           saving={pending}
+          saveNote={
+            saveFailed
+              ? rowError
+                ? `保存できませんでした。${rowError.line}行目を確かめてください`
+                : error
+                  ? `保存できませんでした。${error}`
+                  : undefined
+              : undefined
+          }
           totalText={totals ? formatSignedYen(totals.total) : undefined}
         />
       </div>
@@ -293,10 +347,12 @@ export function EstimateWorkspace({
               const amount = rowAmount(r);
               const label = `${idx + 1}行目`;
               return (
-                <tr key={r.key} className={r.category === "値引き" ? "discount" : undefined}>
+                <Fragment key={r.key}>
+                <tr className={r.category === "値引き" ? "discount" : undefined}>
                   <td className="c-cat" data-label="区分">
                     {editable ? (
                       <select
+                        id={`${uid}-${idx}-category`}
                         className="select"
                         aria-label={`${label}の区分`}
                         value={r.category}
@@ -316,8 +372,11 @@ export function EstimateWorkspace({
                   <td className="c-desc" data-label="内容">
                     {editable ? (
                       <input
+                        id={`${uid}-${idx}-description`}
                         className="input"
                         aria-label={`${label}の内容`}
+                        aria-invalid={rowError?.key === r.key && rowError.field === "description" ? true : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
                         value={r.description}
                         maxLength={200}
                         onChange={(e) => update(r.key, { description: e.target.value })}
@@ -330,9 +389,12 @@ export function EstimateWorkspace({
                   <td data-label="数量">
                     {editable ? (
                       <input
+                        id={`${uid}-${idx}-quantity`}
                         className="input input-num"
                         inputMode="decimal"
                         aria-label={`${label}の数量`}
+                        aria-invalid={rowError?.key === r.key && rowError.field === "quantity" ? true : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
                         value={r.quantity}
                         onChange={(e) => update(r.key, { quantity: e.target.value })}
                       />
@@ -343,9 +405,12 @@ export function EstimateWorkspace({
                   <td data-label="単位">
                     {editable ? (
                       <input
+                        id={`${uid}-${idx}-unit`}
                         className="input"
                         list={`${uid}-units`}
                         aria-label={`${label}の単位`}
+                        aria-invalid={rowError?.key === r.key && rowError.field === "unit" ? true : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
                         value={r.unit}
                         maxLength={20}
                         onChange={(e) => update(r.key, { unit: e.target.value })}
@@ -357,8 +422,11 @@ export function EstimateWorkspace({
                   <td data-label={r.category === "値引き" ? "値引き額(正の金額)" : "単価"}>
                     {editable ? (
                       <input
+                        id={`${uid}-${idx}-unitPrice`}
                         className="input input-num"
                         inputMode="numeric"
+                        aria-invalid={rowError?.key === r.key && rowError.field === "unitPrice" ? true : undefined}
+                        aria-describedby={rowError?.key === r.key ? `${uid}-${idx}-err` : undefined}
                         aria-label={`${label}の単価${r.category === "値引き" ? "(値引きの金額。正の数で入れる)" : ""}`}
                         value={r.unitPrice}
                         onChange={(e) => update(r.key, { unitPrice: e.target.value })}
@@ -380,6 +448,16 @@ export function EstimateWorkspace({
                     </td>
                   )}
                 </tr>
+                {rowError && rowError.key === r.key && (
+                  <tr className="row-error">
+                    <td colSpan={7}>
+                      <span id={`${uid}-${idx}-err`} className="error-text" role="alert">
+                        {rowError.message}
+                      </span>
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               );
             })}
           </tbody>
