@@ -1,0 +1,30 @@
+/* スタイルガイドのページ(/design)だけで使う見出しと見本の枠。
+   部品そのものの見た目は v2.css。ここは「見本を並べるための枠」しか持たない。 */
+.sg-section { margin-bottom: var(--sp-7); }
+.sg-section > h2 { margin-bottom: var(--sp-2); }
+.sg-section > .lead { color: var(--ink-muted); margin-bottom: var(--sp-4); max-width: 72ch; }
+.sg-row { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.sg-stack { display: grid; gap: var(--sp-4); }
+.sg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-3); }
+.sg-note { font-size: var(--fs-caption); color: var(--ink-muted); line-height: 1.5; }
+.sg-code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: var(--fs-caption); background: var(--surface-sunken); padding: 0 var(--sp-1); border-radius: var(--r-sm); }
+.sg-demo { padding: var(--sp-4) var(--sp-5); }
+.sg-demo + .sg-note { margin-top: var(--sp-2); }
+
+.sg-swatch { display: grid; gap: var(--sp-1); }
+.sg-swatch .chip-color { height: 48px; border-radius: var(--r-md); border: 1px solid var(--line); }
+.sg-swatch .name { font-weight: 700; font-size: var(--fs-caption); }
+.sg-swatch .val { font-size: var(--fs-caption); color: var(--ink-muted); }
+
+.sg-type { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--sp-2) var(--sp-4); align-items: baseline; }
+.sg-type dt { font-size: var(--fs-caption); color: var(--ink-muted); }
+.sg-type dd { margin: 0; }
+
+.sg-space { display: flex; align-items: flex-end; gap: var(--sp-4); flex-wrap: wrap; }
+.sg-space .bar { background: var(--primary); width: 32px; border-radius: var(--r-sm); }
+.sg-box { width: 96px; height: 64px; background: var(--surface); border: 1px solid var(--line); display: flex; align-items: center; justify-content: center; font-size: var(--fs-caption); color: var(--ink-muted); }
+
+.sg-do { border-left: 4px solid var(--st-good-fg); padding-left: var(--sp-3); }
+.sg-dont { border-left: 4px solid var(--st-danger-fg); padding-left: var(--sp-3); }
+.sg-pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--sp-4); }
+.sg-toc { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-5); padding: 0; list-style: none; }
