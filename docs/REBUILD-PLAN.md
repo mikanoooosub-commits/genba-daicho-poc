@@ -12,7 +12,7 @@
 |---|---|---|
 | 現場台帳として**使っている**もの | 地図と検索、現場の詳細、台帳(発注元別・経路別・月次)、発注元マスタ、施工・請求・入金の登録と取り消し、変更履歴の表示 | `src/` 約 10,400 行のうち約 5,500 行 |
 | チラシ配布アプリの**残り(どこからも使われていない、または転送で閉じている)** | `components/map/map-view.tsx`・`flyer-map.tsx`・`lib/use-geo-tracking.ts`、`components/visits/*`、`components/schools/*`、`register-dialog.tsx`、`map/note-form.tsx`、`lib/data/actions.ts`・`queries.ts`、`types.ts` の前半(School・Visit など)、`/list`・`/schools` のルート、デモ表示モード(`lib/demo.ts` ほか) | 約 3,000 行 |
-| チラシ配布アプリの文書 | `README.md`・`REQUIREMENTS.md`・`docs/設計書.md` ほか7本、`supabase/schema.sql`・`schema_demo.sql`・`seed_demo.sql` | — |
+| チラシ配布アプリの文書 | `README.md`・`docs/legacy/REQUIREMENTS.md`・`docs/legacy/設計書.md` ほか7本、`supabase/schema.sql`・`schema_demo.sql`・`seed_demo.sql` | — |
 | 土台(残す価値が高い) | middleware の認証、`lib/supabase/server.ts`(PGRST303 の再試行つき)、zod の検証(`lib/validation/*`)、監査トリガー `log_entity_changes()`、論理削除の作法、DELETE の取り消し(migration_002)、RLS と GRANT、Vercel のデプロイ手順(`docs/deploy-runbook.md`) | — |
 | データベース(本番) | `clients`・`sites`・`jobs`・`invoices`・`payments`・`audit_logs`、ビュー `site_status`・`invoice_ledger`。チラシ配布アプリのテーブルと `profiles` は本番に無い | — |
 
