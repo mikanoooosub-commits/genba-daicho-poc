@@ -41,6 +41,7 @@
 | LP 用の画像 | `docs/screenshots/lp/` は作っていない(ログイン画面は未ログインのヘッドレス Chrome で撮る予定)。前後の比較の画像は `docs/screenshots/design/` と `docs/design-audit/compare/` にある |
 | 採らなかった案 | 案B の細い帯のメニュー・見積の「数量×単価=金額」の式・合計の塔・案C 全体(理由は `docs/design-audit/v2-check.md`) |
 | 確認していないこと | Tab キーでのフォーカスの輪・実機の書体(游ゴシック・Hiragino)・スマホ実機・Vercel のプレビュー URL での確認 |
+| **Supabase の一時停止(2026-10-20 予告)** | 無料枠は7日以上使われないと自動で止まる。止まっても DB・ユーザーは残り、ダッシュボード(プロジェクト `restoration-reform-research`)の Restore で戻せる。**停止から90日を過ぎると戻せない(データの取り出しのみ)**。再開するときは先にダッシュボードの状態を見る。ログインのメールは Authentication → Users にある1件(ユーザー本人のアドレス) |
 
 ## 5. 守ること(このアプリの決まり)
 - **会話ではなくファイルを正とする。**変えたら、同じコミットで `docs/architecture.md`・`docs/change-log.md`・関連の文書も直す(`poc-app/CLAUDE.md` §5)。
