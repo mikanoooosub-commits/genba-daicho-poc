@@ -1,173 +1,96 @@
-> **rebuild ブランチの注記(2026-10-05・D85)**: このファイルはチラシ配布アプリ(flyer-tracker)だった頃の説明で、以下の `schema.sql`・`schema_demo.sql`・`seed_demo.sql` と地図・チラシ配布の画面・デモ表示モードは、このブランチから外した。現在の構成は `docs/architecture.md`、仕様は `docs/SPEC-v2.md`、規約は `CLAUDE.md` を見る。
+# 現場台帳(PoC)|原状回復・小規模リフォームの依頼〜見積〜施工〜請求〜入金を1本でつなぐ業務アプリ
 
-# チラトラ｜チラシ配布実績管理アプリ（flyer-tracker）
+## これは何か
 
-**地図上のピンでチラシ配布の実績を記録・共有・分析する、モバイルファーストの業務Webアプリ。**
-配布場所と配布履歴を分離したリレーショナル設計とし、各場所のピンの色は「直近の配布評価」で自動的に出し分ける。
+AI 導入コンサルの研修課題として作った PoC(試作)です。対象は、首都圏で原状回復・小規模リフォームを請け負う小規模事業者を想定しています。
 
-![Next.js](https://img.shields.io/badge/Next.js-15-000?logo=nextdotjs&logoColor=white)
-![React](https://img.shields.io/badge/React-19-20232a?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38bdf8?logo=tailwindcss&logoColor=white)
-![Supabase](https://img.shields.io/badge/Supabase-Auth%20%2B%20Postgres%20%2B%20RLS-3ecf8e?logo=supabase&logoColor=white)
-![Leaflet](https://img.shields.io/badge/Leaflet-OpenStreetMap-199900?logo=leaflet&logoColor=white)
-![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?logo=vercel)
+**実在の事業者への導入事例ではありません。** 画面とデータはすべて架空で、発注元などには「(架空)」のラベルを付けています。
 
-> 企画・要件定義・DB設計・実装・テスト・デプロイ・ドキュメント作成までを一貫して行った**個人開発**プロジェクト。
+本番の URL は https://genba-daicho-poc.vercel.app です。研修で見せるために置いているもので、ログインが必要です。サインアップは止めてあるため、第三者は登録できません(検索にも載らない設定です)。
 
----
+## できること
 
-## 解決する課題
+- **物件と部屋のマスター**: 建物を1つ登録し、その中の部屋を持つ。過去の仕事を物件・部屋から引ける
+- **案件**: 依頼から入金までを1件として持つ。登録はスマホで3タップ。一覧はフィルターで絞れ、状態の流れと「次の一手」(請求を作る・入金を待つ など)が1行で見える
+- **施工の記録**: 案件の画面から2タップで記録する
+- **見積**: 明細(施工費・商品代・経費・値引き)と税の計算、版の管理。前回の見積と施工を横に並べ、明細を写せる。A4 の見積書を印刷できる
+- **見積から請求**: 採用した見積の金額・税率をそのまま請求に写す
+- **原価と粗利**: 外注費・材料費・経費を入れると、案件ごとの粗利(税抜)が出る
+- **事業者情報**: 見積書に載せる屋号・住所・振込先などを1か所で持つ
+- **「請求が未作成」の気づき**: 完了したのに請求が無い案件を一覧の頭に出す
+- **台帳**: 請求と入金の記録・集計(この部分は前の版(v1)の画面のまま)
 
-チラシのポスティングは「いつ・どこに・何枚・どんな手応えだったか」が紙や記憶に埋もれて属人化しがち。
-同じ場所への重複配布や、効果の振り返りができないという現場の悩みがある。
+ほかの施工管理アプリにも、案件・見積・請求を扱う機能はあります。この PoC は、小規模事業者の事務の流れを1本でつなぐ形を、研修の中で試したものです。
 
-本アプリは **地図 × 記録 × チーム共有** で以下を実現する。
+## 画面
 
-- 配布実績を**地図上のピン**で直感的に記録・可視化
-- ピンの色（緑=良好／灰=普通／赤=非推奨）で**その場所の直近評価が一目**で分かる
-- チームで共有・相互編集しつつ、**「誰が・いつ・何を変えたか」を監査ログで追える**
+下の4枚は、実装の見本にしたデザイン案(Claude Design で作成)です。実際の画面は、この案をもとに組み直したもので、細部が違います(採用したのは「数字を先に見せる案」に、表の作りだけ別の案を合わせた形)。データはすべて架空です。
 
-## 主な機能
-
-**地図（ホーム）**
-- 配布場所ピンを直近評価で色分け表示／ピンにカーソルで過去の配布履歴をプレビュー
-- 地図タップでその地点に配布場所・メモを登録（**GPS現在地**取得・住所検索での位置指定にも対応）
-- 汎用の色付きメモ（マップメモ）を地図上に配置
-
-**一覧**
-- 配布履歴の一覧・**インライン編集**・期間/小学校での絞り込み・サマリー集計
-- **変更履歴ビュー**（誰が・いつ・変更前→後）／論理削除と復元
-- 報告用に **タブ区切りテキストでコピー**（PCではテーブル表示、スマホはカード表示）
-
-**認証・マスタ**
-- Supabase Auth（メール＋パスワード、初回はメールリンク）でメンバー限定
-- 小学校マスタ管理（座標登録つき）
-
-## こだわった設計・実装ポイント
-
-| 観点 | 内容 |
+| 案件の一覧(PC) | 見積の編集(PC) |
 |---|---|
-| **セキュリティ** | 全テーブルに **Row Level Security (RLS)** を適用し、未認証はデータ取得不可。パラメータ化クエリ＋自動エスケープでSQLインジェクション/XSSを防止。公開anon key前提でサインアップも無効化 |
-| **監査性** | `visits` の変更を **PostgreSQLトリガーで自動的に監査ログへ記録**（create/update/delete と before/after を jsonb 保存）。削除は**論理削除**で復元可能 |
-| **アーキテクチャ** | Next.js App Router の**サーバーコンポーネント＋サーバーアクション**でデータ取得・更新を型安全に実装（TypeScript strict）。ミドルウェアで認可を集中管理 |
-| **再利用設計** | 地図ピッカー・登録ダイアログ等をコンポーネント化し、複数画面で共有。重複コードを排除 |
-| **地図** | Leaflet + OpenStreetMap + Nominatim(住所検索) の**無料構成**。直近評価をSQLビューで算出しピン色に反映 |
-| **保守性** | `schema.sql` は**冪等**（再実行可能）。設計書・テスト仕様書・変更/バグ管理表を整備し、開発中に検出した不具合も記録 |
+| ![案件の一覧。状態と次の一手が1行で見える](docs/design-audit/claude-design/v2/screenshots/a-1-cases-pc.png) | ![見積の編集。明細・前回から写す・合計](docs/design-audit/claude-design/v2/screenshots/b-3-estimate-pc.png) |
 
-## システム構成
+| 案件の詳細(スマホ) | 案件の登録(スマホ) |
+|---|---|
+| ![案件の詳細。粗利と次にやること](docs/design-audit/claude-design/v2/screenshots/b-2-case-detail-sp-first-view.png) | ![案件の登録。物件・部屋・発注元を選ぶ](docs/design-audit/claude-design/v2/screenshots/b-5-case-new-sp-first-view.png) |
 
-```mermaid
-flowchart LR
-  subgraph Browser["ユーザー端末（ブラウザ）"]
-    Client["Next.js クライアント<br/>React / Tailwind / shadcn-ui"]
-    Leaflet["Leaflet 地図"]
-  end
-  subgraph VercelBox["Vercel（ホスティング）"]
-    Server["Next.js サーバー<br/>Server Components /<br/>Server Actions / Middleware"]
-  end
-  subgraph SupabaseBox["Supabase（BaaS）"]
-    Auth["Auth"]
-    PG[("PostgreSQL<br/>+ RLS / トリガー")]
-  end
-  OSM["OpenStreetMap"]
-  Nominatim["Nominatim"]
+## 設計で決めたこと
 
-  Client -->|"HTTPS / SSR・Server Actions"| Server
-  Leaflet -->|"地図タイル"| OSM
-  Leaflet -->|"住所検索"| Nominatim
-  Server -->|"認証・セッション"| Auth
-  Server -->|"データCRUD（RLS適用）"| PG
-```
+- **案件を軸にする(地図は使わない)**: 毎日の事務は「どの仕事がいまどこまで進んだか」から始まるため、入口を案件の一覧にした。
+- **状態は「人が動かす6つ+計算で出す2つ」**: 依頼・見積中・受注・施工中・完了・失注は人が動かす。請求済・入金済は請求と入金の記録から計算する。請求済・入金済まで列に持つと、請求を取り消したときや一部だけ入金されたときに、実際の記録とずれる。
+- **見積は提出したら書き換えず、版を増やす**: 発注元に出した金額を、あとから追えるようにした。
+- **金額は税抜の整数の円。税は合計に1回だけ計算し、端数は切り捨て**: 明細ごとに税を足すとずれが出るため。切り捨ては発注元に不利にならず、説明しやすい。
+- **削除は論理削除にし、変更は監査ログに残す**: 「間違えたら直す」を前提にした PoC なので、訂正の履歴を必ず追えるようにした。
+- **データを守る境界は RLS だけに置く**: ブラウザから Supabase を直接呼ぶ構成なので、ほかに守りが無い。未ログイン(anon)には何の権限も与えず、ログインした人にも DELETE の権限は与えない。
+- **入居者名・発注元の担当者名は持たない**: 管理会社側の情報を職人側のツールに持つことの是非が確かめられていないため。持たなければ漏れない。
 
-## 技術スタック
+## 技術
 
-| 層 | 採用技術 |
-|----|----------|
-| フロント | Next.js 15 (App Router) / React 19 / TypeScript |
-| UI | Tailwind CSS v4 / shadcn/ui / lucide-react |
-| 地図 | Leaflet / react-leaflet / OpenStreetMap / Nominatim |
-| 認証・DB | Supabase（Auth / PostgreSQL / RLS / トリガー / ビュー） |
-| ホスティング | Vercel |
+- Next.js 15(App Router・Server Actions)
+- Supabase(Postgres・Auth・RLS)
+- shadcn/ui+Tailwind CSS v4
+- zod(サーバー側の入力の検証)
+- TanStack Table(一覧の表)
+- デザインの土台は [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md)。デジタル庁デザインシステムと SmartHR Design System の考え方を参考にした
 
-## 画面構成
+## 動かし方
 
-```
-/            地図（ホーム。ピン表示・登録・配置・メモ）
-/list        一覧（配布履歴の一覧・登録・編集・削除・変更履歴・コピー）
-/schools     小学校マスタ管理
-/login       ログイン（メール+パスワード。初回はメールリンク）
-```
+開発者向けの手順です。Supabase のプロジェクトを1つ用意してください。
+
+1. `npm install`
+2. `.env.example` を `.env.local` に写し、Supabase の URL と anon key を入れる(値は README やコミットに書かない。`service_role` キーは使わない)
+3. Supabase の SQL エディタで、次の順に流す
+   1. `supabase/schema_poc.sql`(元になる表・ビュー・RLS)
+   2. `supabase/seed_poc.sql`(架空のデモデータ)
+   3. `supabase/migration_002_revoke_delete.sql` → `migration_003_audit_sites_clients.sql`
+   4. `migration_005` → `006` → `007` → `008` → `009` の順。それぞれ、先に同じ番号の `_dryrun.sql`(最後に rollback する予行演習)を流して確認してから本体を流す。`migration_005` が、seed の現場のデータを物件と部屋に移す
+4. Supabase の Authentication で、サインアップを止め、Users からログインに使うユーザーを作る(アプリにサインアップの画面は無い)
+5. `npm run dev` で起動し、http://localhost:3000 でログインする
+
+戻すときは `supabase/rollback_*.sql` を番号の逆順に流します。公開の手順(Vercel の設定・環境変数)は [`docs/deploy-runbook.md`](docs/deploy-runbook.md) にあります。
 
 ## ドキュメント
 
-- [設計書](./docs/設計書.md) — システム構成図・ER図・画面遷移図・認証シーケンス
-- [要件メモ](./REQUIREMENTS.md) — 機能要件
-- [コーディング規約](./docs/コーディング規約.md) — DB/クエリ/実装の共通ルール
-- [テスト仕様書](./docs/テスト仕様書.md) — 機能別テストケース
-- [変更管理表](./docs/変更管理表.md) ／ [バグ管理表](./docs/バグ管理表.md) — 変更履歴・不具合対応
-- [構想・ロードマップ](./docs/構想・ロードマップ.md) — 今後の拡張構想
+| ファイル | 内容 |
+|---|---|
+| [`docs/HANDOVER.md`](docs/HANDOVER.md) | 引き継ぎ。いまの状態・本番に入っているもの・やらなかったこと |
+| [`docs/SPEC-v2.md`](docs/SPEC-v2.md) | 仕様。範囲・用語・データモデル・金額と税・画面 |
+| [`docs/architecture.md`](docs/architecture.md) | 構成と信頼境界。どこで何を検証しているか |
+| [`docs/DESIGN-SYSTEM.md`](docs/DESIGN-SYSTEM.md) | 見た目の決まり。原則・色と文字・部品・文言 |
+| [`docs/deploy-runbook.md`](docs/deploy-runbook.md) | 公開の手順。環境変数・Supabase の設定・Vercel・戻し方 |
+| [`docs/test-scenarios.md`](docs/test-scenarios.md) | 確かめる手順と結果 |
+| [`docs/issue-log.md`](docs/issue-log.md) | 見つかった不具合と対応 |
+| [`docs/change-log.md`](docs/change-log.md) | 仕様・スキーマの変更の記録 |
+
+## 作り方の記録
+
+進め方を決める役(PM)のスレッドと、作業をするスレッドを分け、指示書(WO)→ 報告 → 受入の形で進めました。判断は番号を付けて記録しています。研修で使った進め方の報告は別のリポジトリにあり、ここには置いていません。
+
+## ライセンス・利用について
+
+ライセンスは付けていません(著作権法上、許可のない再利用はできません)。
+閲覧・参考にするのは歓迎します。コードを再利用したい場合は、GitHub の Issue でご相談ください。
 
 ---
 
-## 開発者向け: セットアップ
-
-```bash
-npm install
-cp .env.example .env.local   # Supabase の URL / anon key を記入
-npm run dev                  # http://localhost:3000
-```
-
-### 環境変数（`.env.local`）
-
-| 変数 | 説明 |
-|---|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase プロジェクトの URL |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase の anon public key |
-| `NEXT_PUBLIC_SITE_URL` | メールリンクのリダイレクト先（開発は `http://localhost:3000`） |
-
-### Supabase
-
-1. [supabase.com](https://supabase.com) でプロジェクトを作成
-2. SQL Editor で `supabase/schema.sql` を実行（テーブル・トリガー・ビュー・RLS を作成）
-3. Authentication → URL Configuration にリダイレクト URL（`http://localhost:3000/auth/confirm` と本番URL）を登録
-4. Authentication → Users からメンバーを追加（メール＋パスワード。初回ログイン後にアプリ内でパスワード設定も可）
-
-### デプロイ（Vercel）
-
-1. GitHub リポジトリを Vercel でインポート
-2. Environment Variables に上記3変数を設定（`NEXT_PUBLIC_SITE_URL` は本番URL）
-3. 独自ドメインを使う場合は Vercel の Domains に追加し、DNS(CNAME) を Vercel へ向ける
-4. Supabase の Auth リダイレクトURLに本番URL（`/auth/confirm`）を追加
-
-<details>
-<summary>デモ表示モードの構築手順</summary>
-
-本番と同じプロジェクト内に `demo` スキーマを用意し、ログイン画面のチェックボックスで
-参照先を `public`（本番）/ `demo`（ダミーデータ）に切り替える方式。
-**別プロジェクト・別デプロイ・専用URLは不要**。
-
-1. Supabase の SQL Editor で `supabase/schema_demo.sql` を実行（demo スキーマ・RLS・トリガー・ビューを作成）
-2. 続けて `supabase/seed_demo.sql` を実行（架空のダミーデータを投入。冪等）
-3. **`demo` スキーマを Data API に公開する**（これをしないとアプリから参照できず 404）
-   `Settings` → `Integrations` → **`Data API`** → **`Settings` タブ** → **`Exposed schemas`** に `demo` を追加して保存
-   - 似た名前の **`Extra search path`** は別物（スキーマ名を省略したときの検索順序）。**こちらは変更不要**
-   - `Automatically expose new tables` は OFF のままでよい（`schema_demo.sql` が GRANT を明示している）
-4. ログイン画面の「デモデータを参照する」にチェックを入れてログイン
-5. デモ中は画面上部にバナーが常時表示される。**解除はログアウト → ログイン画面でチェックを外す**
-   - あえてワンタップの解除ボタンは置いていない。デモは人に見せている最中の画面なので、
-     「押すと本番データが出るボタン」が画面上にあると誤タップで実データが露見しうるため
-
-##### 設計判断（なぜフラグ列ではなくスキーマ分離か）
-
-参照の切替はチェックボックス（＝クライアント由来）で行うため、**RLS では制御できない**
-（RLS は JWT＝「誰か」でしか出し分けられない）。同一テーブルに `is_demo` フラグで同居させると
-「絞り忘れ＝本番データが表示される」事故になるが、スキーマを分ければ demo を参照している限り
-本番の行は物理的に出てこない。切替点も `createClient()` の1か所に閉じるため改修が最小で済む。
-
-チェックボックスは**セキュリティ境界ではなく利便スイッチ**（デモは自分の端末で見せる前提）。
-本番データを守っているのは「demo スキーマに本番の行が存在しないこと」。
-
-> ⚠️ `public` にテーブル・カラムを追加したら、`demo` にも同じDDLを当てること（スキーマのドリフト防止）。
-
-</details>
+この README は 2026-10-26 に書き直しました。以前の README(このリポジトリの前の用途の説明)は `git log` で見られます。
