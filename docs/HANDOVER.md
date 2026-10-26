@@ -13,7 +13,7 @@
 ## 2. 本番と戻し先
 | 項目 | 内容 |
 |---|---|
-| 公開 URL | https://genba-daicho-poc.vercel.app (ログイン必須。リポジトリは private。**URL は資料に載せない**) |
+| 公開 URL | https://genba-daicho-poc.vercel.app (ログイン必須・サインアップ停止・noindex。リポジトリは 2026-10-26 に公開へ(D119)。守りは「ログイン+サインアップ停止+RLS」で、URL が知られても見えない前提) |
 | 配信 | GitHub の `main` を Vercel が自動でビルド・公開 |
 | **戻し先** | **Vercel の Deployments で、直前の Production(`f84586a`・段階3の版)を「Promote to Production」**。DB は変えていないので、戻すのは Vercel だけ |
 | さらに前の戻し先 | `186838b`(段階2の版)・`4e29e0d`(v1・地図つき)。経緯は `docs/deploy-runbook.md` §7 |
